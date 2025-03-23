@@ -1,25 +1,45 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import IssueForm from './components/IssueForm';
+import IssueList from './components/IssueList';
 
-function App() {
+const App = () => {
+  const mockIssues = [
+    { id: 1, title: 'Test Issue 1', description: 'This is the first test issue.' },
+    { id: 2, title: 'Test Issue 2', description: 'This is the second test issue.' },
+  ];
+
+  const handleCreateIssue = (newIssue) => {
+    console.log('New Issue Submitted:', newIssue);
+    // Here you could add functionality to update the list dynamically
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+    <div className="min-h-screen bg-gray-100">
+      {/* Header */}
+      <header className="bg-blue-500 text-white py-4">
+        <div className="container mx-auto text-center">
+          <h1 className="text-3xl font-bold">Academic Issue Tracking System</h1>
+        </div>
       </header>
+
+      {/* Main Content */}
+      <main className="container mx-auto py-6">
+        <div className="grid md:grid-cols-2 gap-4">
+          {/* Form Section */}
+          <section className="bg-white p-6 rounded-lg shadow-md">
+            <h2 className="text-xl font-bold text-blue-600">Submit an Issue</h2>
+            <IssueForm onSubmit={handleCreateIssue} />
+          </section>
+
+          {/* Issue List Section */}
+          <section className="bg-white p-6 rounded-lg shadow-md">
+            <h2 className="text-xl font-bold text-blue-600">All Issues</h2>
+            <IssueList issues={mockIssues} />
+          </section>
+        </div>
+      </main>
     </div>
   );
-}
+};
 
 export default App;
