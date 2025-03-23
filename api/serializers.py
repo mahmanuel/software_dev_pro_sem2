@@ -1,103 +1,91 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from .models import (
-    User,
-    Profile,
-    Forum,
-    Post,
-    ResearchMaterial,
-    CollaborationGroup,
-    Task,
-    Event,
-    Mentorship,
-    Notification,
-    Message,
-)
+from api.models import Profile, User
+from django.contrib.auth import get_user_model
+from rest_framework_simplejwt.tokens import RefreshToken
+from .models import AuditLog, Issue, Notification, Assignment, User
+
+User = get_user_model()
 
 
-# User serializer
-class ProfileSerializer(serializers.ModelSerializer):
-    user = serializers.PrimaryKeyRelatedField(read_only=True)
-
-    class Meta:
-        model = Profile
-        fields = "__all__"
-
-
-class UserSerializer(serializers.ModelSerializer):
-    profile = ProfileSerializer(required=False)  # Allow nested profile input
+# User Registration Serializer
+class UserRegistrationSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True, min_length=6)
 
     class Meta:
         model = User
-        fields = ["id", "username", "email", "role", "password", "profile"]
-        extra_kwargs = {"password": {"write_only": True}}  # Hide password in responses
+        fields = ["id", "username", "email", "password", "role"]
 
     def create(self, validated_data):
-        profile_data = validated_data.pop("profile", None)  # Extract profile data
-        user = User.objects.create_user(**validated_data)  # Create User
-
-        if profile_data:  # If profile data is provided, create profile
-            Profile.objects.create(user=user, **profile_data)
-
+        user = User.objects.create_user(
+            username=validated_data["username"],
+            email=validated_data["email"],
+            password=validated_data["password"],
+            role=validated_data.get("role", "Student"),
+        )
+        user.is_verified = False
+        user.save()
         return user
 
 
-# Forum Serializer
-class ForumSerializer(serializers.ModelSerializer):
+# User Login Serializer
+class UserLoginSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    password = serializers.CharField(write_only=True)
+
+
+# User Profile Serializer
+class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Forum
-        fields = "__all__"
+        model = User
+        fields = ["id", "username", "email", "role"]
 
 
-class PostSerializer(serializers.ModelSerializer):
+# Logout Serializer (Blacklist Token)
+class LogoutSerializer(serializers.Serializer):
+    refresh = serializers.CharField()
+
+
+class AssignmentSerializer(serializers.ModelSerializer):
+    faculty = UserRegistrationSerializer(read_only=True)
+    assigned_by = UserRegistrationSerializer(read_only=True)
+
     class Meta:
-        model = Post
-        fields = "__all__"
+        model = Assignment
+        fields = ["id", "issue", "faculty", "assigned_by", "assigned_at"]
 
 
-# Research Material Serializer
-class ResearchMaterialSerializer(serializers.ModelSerializer):
+class IssueSerializer(serializers.ModelSerializer):
+    created_by = UserRegistrationSerializer(read_only=True)
+    assigned_to = UserRegistrationSerializer(read_only=True)
+
     class Meta:
-        model = ResearchMaterial
-        fields = "__all__"
+        model = Issue
+        fields = [
+            "id",
+            "title",
+            "description",
+            "category",
+            "status",
+            "created_by",
+            "assigned_to",
+            "created_at",
+            "updated_at",
+        ]
 
 
-# Collaboration Group Serializer
-class CollaborationGroupSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CollaborationGroup
-        fields = "__all__"
-
-
-class TaskSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Task
-        fields = "__all__"
-
-
-# Event Serializer
-class EventSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Event
-        fields = "__all__"
-
-
-# Mentorship Serializer
-class MentorshipSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Mentorship
-        fields = "__all__"
-
-
-# Notification Serializer
 class NotificationSerializer(serializers.ModelSerializer):
+    user = UserRegistrationSerializer(read_only=True)
+    issue = IssueSerializer(read_only=True)
+
     class Meta:
         model = Notification
-        fields = "__all__"
+        fields = ["id", "user", "issue", "message", "timestamp", "is_read"]
 
 
-# Message Serializer
-class MessageSerializer(serializers.ModelSerializer):
+class AuditLogSerializer(serializers.ModelSerializer):
+    created_by = UserRegistrationSerializer(read_only=True)
+
     class Meta:
-        model = Message
-        fields = "__all__"
+        model = AuditLog
+        fields = ["id", "title", "description", "created_by", "created_at"]
