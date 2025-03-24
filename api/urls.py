@@ -12,8 +12,12 @@ from .views import (
     NotificationListView,
     AuditLogListView,
 )
+from .views import SendNotificationView
 
 urlpatterns = [
+    path(
+        "notifications/send/", SendNotificationView.as_view(), name="send_notification"
+    ),
     # Authentication Endpoints
     path("auth/register/", RegisterView.as_view(), name="register"),
     path("auth/login/", LoginView.as_view(), name="login"),

@@ -7,6 +7,7 @@ from rest_framework.views import APIView
 from django.contrib.auth import get_user_model
 from django.contrib.auth import get_user_model
 import jwt
+from rest_framework.permissions import IsAuthenticated
 from .models import Profile, Issue, Assignment, Notification, AuditLog
 from django.conf import settings
 from django.shortcuts import get_object_or_404
@@ -22,6 +23,8 @@ from .serializers import (
     NotificationSerializer,
     AuditLogSerializer,
 )
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
 
 User = get_user_model()
 
@@ -120,7 +123,7 @@ class LogoutView(APIView):
 class IssueListCreateView(generics.ListCreateAPIView):
     queryset = Issue.objects.all()
     serializer_class = IssueSerializer
-    permission_classes = [permissions.IsAuthenticaticated]
+    permission_classes = [permissions.IsAuthenticated]
 
     def perform_create(self, serializer):
         serializer.save(student=self.request.user)
@@ -161,3 +164,22 @@ class AuditLogListView(generics.ListAPIView):
     queryset = AuditLog.objects.all()
     serializer_class = AuditLogSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+
+class SendNotificationView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        message = request.data.get("message", "New notification")
+        user = request.user
+
+        # Save notification in database
+        notification = Notification.objects.create(user=user, message=message)
+
+        # Send WebSocket notification
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            "notifications", {"type": "send_notification", "message": message}
+        )
+
+        return Response({"message": "Notification sent successfully"})
