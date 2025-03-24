@@ -129,3 +129,18 @@ class IssueDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Issue.objects.all()
     serializer_class = IssueSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+
+# Assign to Faculty
+class AssignIssueView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, issue_id):
+        issue = get_object_or_404(Issue, id=issue_id)
+        faculty_id = request.data.get("faculty_id")
+        faculty = get_object_or_404(User, id=faculty_id, role="Faculty")
+
+        Assignment.objects.create(issue=issue, faculty=faculty)
+        return Response(
+            {"message": "Issue assigned successfully"}, status=status.HTTP_200_OK
+        )
