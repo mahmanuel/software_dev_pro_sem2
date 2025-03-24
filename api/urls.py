@@ -27,4 +27,7 @@ urlpatterns = [
     path(
         "issues/<int:issue_id>/assign/", AssignIssueView.as_view(), name="assign_issue"
     ),
+    # Notification & logs
+    path("notifications/", NotificationListView.as_view(), name="notifications"),
+    path("audit-logs/", AuditLogListView.as_view(), name="audit_logs"),
 ]
