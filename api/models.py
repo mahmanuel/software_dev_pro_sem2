@@ -7,7 +7,7 @@ from rest_framework.authtoken.models import Token
 from PIL import Image
 from rest_framework import serializers
 from rest_framework import serializers, permissions
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -24,6 +24,14 @@ class User(AbstractUser):
         ADMIN = "Admin", _("Admin")
 
     role = models.CharField(max_length=10, choices=Role.choices, default=Role.STUDENT)
+
+    groups = models.ManyToManyField(Group, related_name="api_users", blank=True)
+    user_permissions = models.ManyToManyField(
+        Permission, related_name="api_users_permissions", blank=True
+    )
+
+    def __str__(self):
+        return self.username
 
 
 # Profile Model
@@ -94,15 +102,9 @@ class Notification(models.Model):
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="notifications"
     )
-    issue = models.ForeignKey(
-        Issue, on_delete=models.CASCADE, related_name="notifications"
-    )
-    message = models.TextField()
-    timestamp = models.DateTimeField(auto_now_add=True)
+    message = models.CharField(max_length=255)
     is_read = models.BooleanField(default=False)
-
-    def __str__(self):
-        return f"Notification for {self.user.username} - {self.issue.title}"
+    created_at = models.DateTimeField(auto_now_add=True)
 
 
 # Audit Log Model

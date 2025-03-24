@@ -29,6 +29,11 @@ from asgiref.sync import async_to_sync
 User = get_user_model()
 
 
+class CreateUserView(generics.CreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserRegistrationSerializer
+
+
 class VerifyEmailView(APIView):
     def get(self, request):
         token = request.GET.get("token")
