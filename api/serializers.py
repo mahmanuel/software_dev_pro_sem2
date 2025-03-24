@@ -4,6 +4,7 @@ from api.models import Profile, User
 from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.tokens import RefreshToken
 from .models import AuditLog, Issue, Notification, Assignment, User
+from .utils import send_verification_email
 
 User = get_user_model()
 

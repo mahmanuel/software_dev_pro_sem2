@@ -7,16 +7,18 @@ from rest_framework.views import APIView
 from django.contrib.auth import get_user_model
 from django.contrib.auth import get_user_model
 import jwt
+from .models import Profile, Issue, Assignment, Notification, AuditLog
 from django.conf import settings
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
 from .serializers import (
-    UserRegistrationSerializer,
+    IssueSerializer,
+    LogoutSerializer,
     UserLoginSerializer,
     UserProfileSerializer,
-    LogoutSerializer,
+    UserRegistrationSerializer,
 )
 
 User = get_user_model()
@@ -109,3 +111,21 @@ class LogoutView(APIView):
             )
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+# ------------------------ ISSUE MANAGEMENT ------------------------
+# List and create Issues
+class IssueListCreateView(generics.ListCreateAPIView):
+    queryset = Issue.objects.all()
+    serializer_class = IssueSerializer
+    permission_classes = [permissions.IsAuthenticaticated]
+
+    def perform_create(self, serializer):
+        serializer.save(student=self.request.user)
+
+
+# Retrieve, Update, Delete Issues
+class IssueDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Issue.objects.all()
+    serializer_class = IssueSerializer
+    permission_classes = [permissions.IsAuthenticated]
