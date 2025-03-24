@@ -62,7 +62,22 @@ INSTALLED_APPS = [
     "api",
     "rest_framework",
     "corsheaders",
+    "channels",
 ]
+
+# WebSocket Configuration
+ASGI_APPLICATION = "backend.asgi.application"
+
+# Use Redis for WebSocket message handling
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
+    },
+}
+
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",  # React Frontend URL
