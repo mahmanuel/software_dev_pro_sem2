@@ -19,6 +19,8 @@ from .serializers import (
     UserLoginSerializer,
     UserProfileSerializer,
     UserRegistrationSerializer,
+    NotificationSerializer,
+    AuditLogSerializer,
 )
 
 User = get_user_model()
@@ -144,3 +146,18 @@ class AssignIssueView(APIView):
         return Response(
             {"message": "Issue assigned successfully"}, status=status.HTTP_200_OK
         )
+
+
+# ------------------------ NOTIFICATIONS & AUDIT LOGS ------------------------
+# List Notifications
+class NotificationListView(generics.ListAPIView):
+    queryset = Notification.objects.all()
+    serializer_class = NotificationSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+
+# List Audit Logs
+class AuditLogListView(generics.ListAPIView):
+    queryset = AuditLog.objects.all()
+    serializer_class = AuditLogSerializer
+    permission_classes = [permissions.IsAuthenticated]
