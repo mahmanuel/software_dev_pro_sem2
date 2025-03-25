@@ -101,6 +101,12 @@ class Notification(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     is_read = models.BooleanField(default=False)
 
+    class Meta:
+        ordering=['_created_at'] #order notifications by the newest first 
+        indexes=[
+            models.Index(fields-['user',is_read]), #optimize queres on user and is_read
+        ]
+
     def __str__(self):
         return f"Notification for {self.user.username} - {self.issue.title}"
 
