@@ -108,7 +108,7 @@ class Notification(models.Model):
         ]
 
     def __str__(self):
-        return f"Notification for {self.user.username} - {self.issue.title}"
+        return f"Notification for {self.user.username}:{'Read' if self.is_read else 'unread'}"
 
 
 # Audit Log Model
