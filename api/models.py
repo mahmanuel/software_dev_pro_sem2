@@ -103,8 +103,9 @@ class Notification(models.Model):
 
     class Meta:
         ordering=['_created_at'] #order notifications by the newest first 
-        indexes=[
-            models.Index(fields-['user',is_read]), #optimize queres on user and is_read
+        
+        indexes = [
+            models.Index(fields=['user', 'is_read']),  # Correctly defining the index
         ]
 
     def __str__(self):
