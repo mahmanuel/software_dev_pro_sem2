@@ -150,3 +150,12 @@ class Message(models.Model):
     )
     content = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
+
+from rest_framework import status
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from .serializers import UserSerializer  # Example import
+class CreateUserView(APIView):
+    def post(self, request, *args, **kwargs):
+        # Your logic for creating a user goes here
+        return Response({"message": "User created successfully"}, status=status.HTTP_201_CREATED)    
