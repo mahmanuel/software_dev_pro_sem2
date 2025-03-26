@@ -7,4 +7,6 @@ from django.contrib.auth.models import User
 class UserAuthenticationTests(APITestCase):
 
     def setUp(self):
-        
+         # Create a student user
+        self.student = User.objects.create_user(username='student1', password='password123', is_staff=False)
+        self.faculty = User.objects.create_user(username='faculty1', password='password123', is_staff=True)
