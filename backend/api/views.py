@@ -111,3 +111,8 @@ class CreateUserView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [AllowAny]
+
+    def some_view_function():
+        from .serializers import UserSerializer  # ✅ Import happens only when function is called
+        pass  # Add your logic here
+
