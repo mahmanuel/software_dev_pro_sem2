@@ -2,6 +2,7 @@ from django.shortcuts import render
 from rest_framework import generics
 from rest_framework import viewsets, generics
 from rest_framework.permissions import IsAuthenticated, AllowAny
+from .views import CreateUserView
 from .models import (
     User,
     Profile,
@@ -28,9 +29,7 @@ from .serializers import (
     NotificationSerializer,
     MessageSerializer,
 )
-from .views import CreateUserView  
-
-
+ 
 
 # User ViewSet
 class UserViewSet(viewsets.ModelViewSet):
