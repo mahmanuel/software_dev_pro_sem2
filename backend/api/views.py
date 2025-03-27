@@ -125,4 +125,4 @@ from django.views import View
 # CreateUserView Definition
 class CreateUserView(View):
     def post(self,request,*args,**kwargs):
-        return JsonResponse
+        return JsonResponse({'message':'user created successfully'},status = 201)
