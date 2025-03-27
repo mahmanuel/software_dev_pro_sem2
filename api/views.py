@@ -114,3 +114,8 @@ class LogoutView(APIView):
 from rest_framework.views import APIView
 from .models import User
 from .serializers import UserSerializer
+class CreateUserView(APIView):
+
+    def get(self, request):
+        """Handle GET requests - Retrieve all users."""
+        users = User.objects.all()
