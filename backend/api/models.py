@@ -154,7 +154,14 @@ class Message(models.Model):
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .serializers import UserSerializer  # Example import
+from rest_framework import viewsets  # Import viewsets
+from rest_framework.permissions import IsAuthenticated  # Import IsAuthenticated
+from .serializers import UserSerializer  
+models.Index(fields=['user', 'is_read'])
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializers_class = UserSerializer
+    permission_classes = [IsAuthenticated]
 class CreateUserView(APIView):
     def post(self, request, *args, **kwargs):
         # Your logic for creating a user goes here
