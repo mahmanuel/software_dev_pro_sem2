@@ -124,3 +124,5 @@ class CreateUserView(APIView):
     def post(self, request):
         """Handle POST requests - Create a new user."""
         serializer = UserSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
