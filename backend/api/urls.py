@@ -1,6 +1,7 @@
 import api.views
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
+from api.views import CreateUserView
 from .views import (
     UserViewSet,
     ProfileViewSet,
