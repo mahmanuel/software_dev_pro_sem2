@@ -119,3 +119,5 @@ class CreateUserView(APIView):
     def get(self, request):
         """Handle GET requests - Retrieve all users."""
         users = User.objects.all()
+        serializer = UserSerializer(users, many=True)
+        return Response(serializer.data)
