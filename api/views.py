@@ -121,3 +121,6 @@ class CreateUserView(APIView):
         users = User.objects.all()
         serializer = UserSerializer(users, many=True)
         return Response(serializer.data)
+    def post(self, request):
+        """Handle POST requests - Create a new user."""
+        serializer = UserSerializer(data=request.data)
