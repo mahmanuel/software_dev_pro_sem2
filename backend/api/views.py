@@ -118,4 +118,11 @@ class CreateUserView(generics.CreateAPIView):
     def some_view_function():
         from .serializers import UserSerializer  # Import happens only when function is called
         pass  # Add your logic here
+    from django.shortcuts import render
+from django.http import JsonResponse
+from django.views import View
 
+# CreateUserView Definition
+class CreateUserView(View):
+    def post(self,request,*args,**kwargs):
+        return JsonResponse
