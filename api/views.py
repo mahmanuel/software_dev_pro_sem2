@@ -112,3 +112,5 @@ class LogoutView(APIView):
 
 #Defining http methods
 from rest_framework.views import APIView
+from .models import User
+from .serializers import UserSerializer
