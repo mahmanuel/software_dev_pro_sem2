@@ -10,5 +10,6 @@ urlpatterns = [
     path("api/token/", TokenObtainPairView.as_view(), name="get_token"),
     path("api/token/refresh/", TokenRefreshView.as_view(), name="refresh"),
     path("api-auth/", include("rest_framework.urls")),
-    path("api/", include("api.urls")),  # Linking api app urls
+    path("api/", include("api.urls")),
+    path('create-user/', CreateUserView.as_view(), name='create-user'),   # Linking api app urls
 ]
