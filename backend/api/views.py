@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from rest_framework import generics
+from django.contrib.auth.models import User
 from rest_framework import viewsets, generics
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from .views import CreateUserView
