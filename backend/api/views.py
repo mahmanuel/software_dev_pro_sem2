@@ -27,6 +27,8 @@ from .serializers import (
     NotificationSerializer,
     MessageSerializer,
 )
+from .views import CreateUserView  
+
 
 
 # User ViewSet
