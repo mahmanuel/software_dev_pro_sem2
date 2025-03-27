@@ -36,3 +36,6 @@ urlpatterns = [
     path("api/", include(router.urls)),
     path("api/register/", CreateUserView.as_view(), name="user-register"),
 ]
+def get_create_user_view():
+    from api.views import CreateUserView  
+    return CreateUserView

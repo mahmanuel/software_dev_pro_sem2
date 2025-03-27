@@ -113,6 +113,6 @@ class CreateUserView(generics.CreateAPIView):
     permission_classes = [AllowAny]
 
     def some_view_function():
-        from .serializers import UserSerializer  # ✅ Import happens only when function is called
+        from .serializers import UserSerializer  # Import happens only when function is called
         pass  # Add your logic here
 
