@@ -4,6 +4,8 @@ from django.contrib.auth.models import User
 from rest_framework import viewsets, generics
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from .views import CreateUserView
+from django.http import JsonResponse
+from django.views import View
 from .models import (
     User,
     Profile,
@@ -118,11 +120,7 @@ class CreateUserView(generics.CreateAPIView):
     def some_view_function():
         from .serializers import UserSerializer  # Import happens only when function is called
         pass  # Add your logic here
-    from django.shortcuts import render
-from django.http import JsonResponse
-from django.views import View
-
-# CreateUserView Definition
+    
 class CreateUserView(View):
     def post(self,request,*args,**kwargs):
         return JsonResponse({'message':'user created successfully'},status = 201)
