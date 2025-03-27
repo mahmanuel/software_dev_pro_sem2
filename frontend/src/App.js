@@ -1,11 +1,12 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navigation from './components/Navigation'; // Navigation links
-import AdminPage from './pages/AdminPage'; // Admin page
-import StudentPage from './pages/StudentPage'; // Student page
-import LecturerPage from './pages/LecturerPage'; // Lecturer page
+import AdminPage from './components/AdminPage'; // Admin page
+import StudentPage from './components/StudentPage'; // Student page
+import LecturerPage from './components/LecturerPage'; // Lecturer page
 import IssueForm from './components/IssueForm'; // Existing IssueForm
 import IssueList from './components/IssueList'; // Existing IssueList
+import IssueResolution from './components/IssueResolution'; // New IssueResolution component
 
 const App = () => {
   const mockIssues = [
@@ -15,7 +16,12 @@ const App = () => {
 
   const handleCreateIssue = (newIssue) => {
     console.log('New Issue Submitted:', newIssue);
-    // Here you could add functionality to update the list dynamically
+    // Add functionality here to update the list dynamically
+  };
+
+  const handleUpdateStatus = (issueId, status) => {
+    console.log(`Issue ID ${issueId} status updated to ${status}`);
+    // Implement functionality to update issue status
   };
 
   return (
@@ -41,6 +47,12 @@ const App = () => {
                 <section className="bg-white p-6 rounded-lg shadow-md">
                   <h2 className="text-xl font-bold text-blue-600">All Issues</h2>
                   <IssueList issues={mockIssues} />
+                </section>
+
+                {/* Issue Resolution Section */}
+                <section className="bg-white p-6 rounded-lg shadow-md">
+                  <h2 className="text-xl font-bold text-blue-600">Issue Resolution</h2>
+                  <IssueResolution issues={mockIssues} onUpdateStatus={handleUpdateStatus} />
                 </section>
               </div>
             </div>
