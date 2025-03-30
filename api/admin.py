@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib import admin
-from .models import User, Profile, Issue, Assignment, Notification, AuditLog
+from .models import User, Profile, Issue, Assignment, AuditLog,Notification
 
 # Register your models here.
 admin.site.register(User)
