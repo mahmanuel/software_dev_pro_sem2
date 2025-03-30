@@ -1,28 +1,46 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import Login from './components/Login';
-import DashboardStudent from './components/DashboardStudent';
-import DashboardRegistrar from './components/DashboardRegistrar';
+// src/components/Login.js
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-function App() {
-  const user = JSON.parse(localStorage.getItem('user')) || null;
+function Login() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+    // Mock auth - replace with API call (e.g., POST /login)
+    const mockUser = { email, role: email.includes('registrar') ? 'registrar' : 'student' };
+    if (email && password) {
+      localStorage.setItem('user', JSON.stringify(mockUser)); // Store user data
+      mockUser.role === 'registrar' ? navigate('/registrar') : navigate('/student');
+    } else {
+      setError('Invalid credentials');
+    }
+  };
 
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Login />} />
-        <Route
-          path="/student"
-          element={user && user.role === 'student' ? <DashboardStudent /> : <Navigate to="/" />}
+    <div className="login-container">
+      <h2>Login</h2>
+      <form onSubmit={handleLogin}>
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
         />
-        <Route
-          path="/registrar"
-          element={user && user.role === 'registrar' ? <DashboardRegistrar /> : <Navigate to="/" />}
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
         />
-        <Route path="*" element={<Navigate to="/" />} />
-      </Routes>
-    </Router>
+        <button type="submit">Login</button>
+        {error && <p style={{ color: 'red' }}>{error}</p>}
+      </form>
+    </div>
   );
 }
 
-export default App;
+export default Login;
