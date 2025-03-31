@@ -1,0 +1,30 @@
+/* src/styles.css */
+.login-container, .dashboard, .issue-form {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+    text-align: center;
+  }
+  
+  input, textarea, button {
+    display: block;
+    width: 100%;
+    margin: 10px 0;
+    padding: 8px;
+  }
+  
+  button {
+    width: auto;
+    display: inline-block;
+    cursor: pointer;
+  }
+  
+  ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  li {
+    margin: 10px 0;
+    border-bottom: 1px solid #ccc;
+  }

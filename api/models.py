@@ -1,3 +1,4 @@
+#importing django models
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.conf import settings
@@ -64,7 +65,7 @@ class Issue(models.Model):
     assigned_to = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name="assigned_issues",
+        related_name="assigned_issues"
         null=True,
         blank=True,
     )
@@ -101,8 +102,15 @@ class Notification(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     is_read = models.BooleanField(default=False)
 
+    class Meta:
+        ordering=['_created_at'] #order notifications by the newest first 
+        
+        indexes = [
+            models.Index(fields=['user', 'is_read']),  # Correctly defining the index
+        ]
+
     def __str__(self):
-        return f"Notification for {self.user.username} - {self.issue.title}"
+        return f"Notification for {self.user.username}:{'Read' if self.is_read else 'unread'}"
 
 
 # Audit Log Model
