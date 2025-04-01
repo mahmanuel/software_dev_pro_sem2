@@ -153,7 +153,15 @@ class AssignIssueView(APIView):
         Assignment.objects.create(issue=issue, faculty=faculty)
         return Response(
             {"message": "Issue assigned successfully"}, status=status.HTTP_200_OK
+            
         )
+ # List Issues Assigned to Faculty
+class FacultyAssignedIssuesView(generics.ListAPIView):
+    serializer_class = IssueSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return Issue.objects.filter(assignment__faculty=self.request.user)
 
 
 # ------------------------ NOTIFICATIONS & AUDIT LOGS ------------------------
