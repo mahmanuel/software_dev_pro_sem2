@@ -1,1 +1,2 @@
 "# Admin configurations" 
+"# Admin configurations"
