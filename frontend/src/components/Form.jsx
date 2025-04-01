@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import CircularProgress from "@mui/material/CircularProgress";
+import "../styles/Form.css"
 
 const IssueForm = () => {
   const [issue, setIssue] = useState({ title: "", description: "", category: "" });
@@ -60,7 +61,7 @@ const IssueForm = () => {
           <option value="Corrections">Bachelor Of Information Systems And Technology</option>
           <option value="Appeal">Bachelor Of Information Technology</option>
           <option value="Appeal">Bachelor Of Information Systems</option>
-          <option value="Appeal">Bachelor Of Liberary And Information Sciences</option>
+          <option value="Appeal">Bachelor Of Library And Information Sciences</option>
         </select>
       </div>
       <div class="input-box">

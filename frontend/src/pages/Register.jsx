@@ -1,6 +1,11 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import Form from "../components/Form"
+
+function Register() {
+  return <Form route="api/auth/register/" method="register" />
+}
 
 const Register = () => {
   const [user, setUser] = useState({ username: "", email: "", password: "", role: "Student" });
