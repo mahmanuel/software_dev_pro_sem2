@@ -188,3 +188,12 @@ class SendNotificationView(APIView):
         )
 
         return Response({"message": "Notification sent successfully"})
+        # Mark Notification as Read
+class MarkNotificationAsReadView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, notification_id):
+        notification = get_object_or_404(Notification, id=notification_id, user=request.user)
+        notification.is_read = True
+        notification.save()
+        return Response({"message": "Notification marked as read"}, status=status.HTTP_200_OK)
