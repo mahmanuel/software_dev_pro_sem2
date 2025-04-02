@@ -1,20 +1,24 @@
 // src/components/DashboardRegistrar.js
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { getIssues } from '../mockData';
 
-function DashboardRegistrar() {
+function DashboardRegistrar({ setUser }) {
   const [issues, setIssues] = useState([]);
   const navigate = useNavigate();
 
+  const fetchIssues = () => {
+    const allIssues = getIssues();
+    setIssues(allIssues);
+  };
+
   useEffect(() => {
-    const mockIssues = [
-      { title: 'Room Issue', description: 'AC broken', submittedBy: 'student', date: '2025-03-29' },
-    ];
-    setIssues(mockIssues);
+    fetchIssues();
   }, []);
 
   const handleLogout = () => {
     localStorage.removeItem('user');
+    setUser(null); // Update App.js state
     navigate('/');
   };
 
