@@ -8,19 +8,19 @@ https://docs.djangoproject.com/en/5.1/howto/deployment/asgi/
 """
 
 import os
-
-from django.core.asgi import get_asgi_application
 from django.core.asgi import get_asgi_application
 from channels.routing import ProtocolTypeRouter, URLRouter
 from channels.auth import AuthMiddlewareStack
-import api.routing
+from channels.security.websocket import AllowedHostsOriginValidator
+import realtime.routing
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "backend.settings")
-
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "academic_issue_tracker.settings")
 
 application = ProtocolTypeRouter(
     {
         "http": get_asgi_application(),
-        "websocket": AuthMiddlewareStack(URLRouter(api.routing.websocket_urlpatterns)),
+        "websocket": AllowedHostsOriginValidator(
+            AuthMiddlewareStack(URLRouter(realtime.routing.websocket_urlpatterns))
+        ),
     }
 )
