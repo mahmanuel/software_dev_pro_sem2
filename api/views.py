@@ -1,3 +1,4 @@
+#importing django modules
 from django.shortcuts import render
 from rest_framework import viewsets, generics
 from django.contrib.auth import authenticate
