@@ -1,37 +1,42 @@
 from django.shortcuts import render
-from rest_framework import viewsets, generics
-from django.contrib.auth import authenticate
-from rest_framework import status, generics, permissions
-from rest_framework.response import Response
+from django.contrib.auth import get_user_model
+from rest_framework import generics, status
 from rest_framework.views import APIView
-from django.contrib.auth import get_user_model
-from django.contrib.auth import get_user_model
-import jwt
-from rest_framework.permissions import IsAuthenticated
-from .models import Profile, Issue, Assignment, Notification, AuditLog
-from django.conf import settings
-from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from django.contrib.auth import authenticate
+from django.shortcuts import get_object_or_404
 from rest_framework_simplejwt.tokens import RefreshToken
+from .models import User, Issue, Assignment, Notification, AuditLog
 from .serializers import (
     IssueSerializer,
     LogoutSerializer,
     UserLoginSerializer,
-    UserProfileSerializer,
     UserRegistrationSerializer,
     NotificationSerializer,
     AuditLogSerializer,
 )
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
+import jwt
+from django.conf import settings
 
 User = get_user_model()
 
 
-class CreateUserView(generics.CreateAPIView):
+class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserRegistrationSerializer
+    permission_classes = [AllowAny]
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+        return Response(
+            {"message": "Registration successful! Please verify your email."},
+            status=status.HTTP_201_CREATED,
+        )
 
 
 class VerifyEmailView(APIView):
@@ -64,16 +69,9 @@ class VerifyEmailView(APIView):
             )
 
 
-# User Registration API
-class RegisterView(generics.CreateAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserRegistrationSerializer
-    permission_classes = [permissions.AllowAny]
-
-
 # User Login API
 class LoginView(APIView):
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [AllowAny]
 
     def post(self, request):
         serializer = UserLoginSerializer(data=request.data)
@@ -96,18 +94,35 @@ class LoginView(APIView):
         )
 
 
-# User Profile API
+#  User Profile API
 class UserProfileView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        serializer = UserProfileSerializer(request.user)
-        return Response(serializer.data)
+        user = request.user
+        data = {
+            "username": user.username,
+            "role": user.role,
+            "phone_number": user.phone_number,
+            "department": user.department,
+            "profile_picture": (
+                user.profile_picture.url if user.profile_picture else None
+            ),
+            "created_at": user.created_at,
+            "total_issues": Issue.objects.filter(created_by=user).count(),
+            "pending_issues": Issue.objects.filter(
+                created_by=user, status="pending"
+            ).count(),
+            "resolved_issues": Issue.objects.filter(
+                created_by=user, status="resolved"
+            ).count(),
+        }
+        return Response(data)
 
 
 # Logout API (Blacklist Token)
 class LogoutView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def post(self, request):
         serializer = LogoutSerializer(data=request.data)
@@ -128,7 +143,7 @@ class LogoutView(APIView):
 class IssueListCreateView(generics.ListCreateAPIView):
     queryset = Issue.objects.all()
     serializer_class = IssueSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
         serializer.save(student=self.request.user)
@@ -138,12 +153,12 @@ class IssueListCreateView(generics.ListCreateAPIView):
 class IssueDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Issue.objects.all()
     serializer_class = IssueSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
 
 # Assign to Faculty
 class AssignIssueView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def post(self, request, issue_id):
         issue = get_object_or_404(Issue, id=issue_id)
@@ -161,14 +176,14 @@ class AssignIssueView(APIView):
 class NotificationListView(generics.ListAPIView):
     queryset = Notification.objects.all()
     serializer_class = NotificationSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
 
 # List Audit Logs
 class AuditLogListView(generics.ListAPIView):
     queryset = AuditLog.objects.all()
     serializer_class = AuditLogSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
 
 class SendNotificationView(APIView):

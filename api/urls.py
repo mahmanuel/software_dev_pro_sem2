@@ -16,7 +16,9 @@ from .views import SendNotificationView
 
 urlpatterns = [
     path(
-        "notifications/send/", SendNotificationView.as_view(), name="send_notification"
+        "send-notification/",
+        SendNotificationView.as_view(),
+        name="send_notification",
     ),
     # Authentication Endpoints
     path("auth/register/", RegisterView.as_view(), name="register"),
@@ -29,7 +31,9 @@ urlpatterns = [
     path("issues/", IssueListCreateView.as_view(), name="issues"),
     path("issues/<int:pk>/", IssueDetailView.as_view(), name="issue_detail"),
     path(
-        "issues/<int:issue_id>/assign/", AssignIssueView.as_view(), name="assign_issue"
+        "issues/<int:issue_id>/assign/",
+        AssignIssueView.as_view(),
+        name="assign_issue",
     ),
     # Notification & logs
     path("notifications/", NotificationListView.as_view(), name="notifications"),

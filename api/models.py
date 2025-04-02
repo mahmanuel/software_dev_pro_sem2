@@ -10,6 +10,7 @@ from rest_framework import serializers, permissions
 from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from django.utils import timezone
 
 # Create your models here.
 
@@ -24,28 +25,21 @@ class User(AbstractUser):
         ADMIN = "Admin", _("Admin")
 
     role = models.CharField(max_length=10, choices=Role.choices, default=Role.STUDENT)
-
-    groups = models.ManyToManyField(Group, related_name="api_users", blank=True)
-    user_permissions = models.ManyToManyField(
-        Permission, related_name="api_users_permissions", blank=True
-    )
-
-    def __str__(self):
-        return self.username
-
-
-# Profile Model
-class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
     phone_number = models.CharField(max_length=15, blank=True, null=True)
+    bio = models.TextField(blank=True, null=True)
     department = models.CharField(max_length=100, blank=True, null=True)
     profile_picture = models.ImageField(
         upload_to="profile_pics/", blank=True, null=True
     )
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(default=timezone.now)
+
+    groups = models.ManyToManyField("auth.Group", related_name="api_users", blank=True)
+    user_permissions = models.ManyToManyField(
+        "auth.Permission", related_name="api_users_permissions", blank=True
+    )
 
     def __str__(self):
-        return f"{self.user.username}'s Profile"
+        return self.username
 
 
 # Issue Model
