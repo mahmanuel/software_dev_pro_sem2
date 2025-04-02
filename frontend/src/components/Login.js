@@ -1,8 +1,9 @@
 // src/components/Login.js
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { getUser } from '../mockData';
 
-function Login() {
+function Login({ setUser }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -10,13 +11,19 @@ function Login() {
 
   const handleLogin = (e) => {
     e.preventDefault();
-    const mockUser = { email, role: email.includes('registrar') ? 'registrar' : 'student' };
-    if (email && password) {
-      localStorage.setItem('user', JSON.stringify(mockUser));
-      mockUser.role === 'registrar' ? navigate('/registrar') : navigate('/student');
-    } else {
-      setError('Invalid credentials');
+    const user = getUser(email);
+    if (!user) {
+      setError('User not found. Please register first.');
+      setTimeout(() => navigate('/register'), 2000);
+      return;
     }
+    if (user.password !== password) {
+      setError('Invalid credentials');
+      return;
+    }
+    localStorage.setItem('user', JSON.stringify({ email, role: user.role }));
+    setUser({ email, role: user.role }); // Update App.js state
+    user.role === 'registrar' ? navigate('/registrar') : navigate('/student');
   };
 
   return (
