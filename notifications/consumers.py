@@ -5,6 +5,7 @@ from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.tokens import AccessToken
 from rest_framework_simplejwt.exceptions import TokenError
 from .models import Notification
+from .serializers import NotificationSerializer
 
 User = get_user_model()
 
@@ -12,7 +13,16 @@ User = get_user_model()
 class NotificationConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         # Get token from query string
-        token = self.scope["query_string"].decode().split("=")[1]
+        query_string = self.scope["query_string"].decode()
+        token_param = (
+            query_string.split("token=")[1] if "token=" in query_string else None
+        )
+
+        if not token_param:
+            await self.close()
+            return
+
+        token = token_param.split("&")[0] if "&" in token_param else token_param
 
         # Validate token and get user
         try:
@@ -40,6 +50,9 @@ class NotificationConsumer(AsyncWebsocketConsumer):
 
         except TokenError:
             await self.close()
+        except Exception as e:
+            print(f"Error in connect: {str(e)}")
+            await self.close()
 
     async def disconnect(self, close_code):
         # Remove user from notification group
@@ -49,24 +62,34 @@ class NotificationConsumer(AsyncWebsocketConsumer):
             )
 
     async def receive(self, text_data):
-        data = json.loads(text_data)
-        message_type = data.get("type")
+        try:
+            data = json.loads(text_data)
+            message_type = data.get("type")
 
-        if message_type == "mark_as_read":
-            notification_id = data.get("id")
-            await self.mark_as_read(notification_id)
+            if message_type == "mark_as_read":
+                notification_id = data.get("id")
+                if notification_id:
+                    await self.mark_as_read(notification_id)
 
-            # Send updated unread count
-            unread_count = await self.get_unread_count()
-            await self.send(
-                text_data=json.dumps({"type": "unread_count", "count": unread_count})
-            )
+                    # Send updated unread count
+                    unread_count = await self.get_unread_count()
+                    await self.send(
+                        text_data=json.dumps(
+                            {"type": "unread_count", "count": unread_count}
+                        )
+                    )
 
-        elif message_type == "mark_all_as_read":
-            await self.mark_all_as_read()
+            elif message_type == "mark_all_as_read":
+                await self.mark_all_as_read()
 
-            # Send updated unread count
-            await self.send(text_data=json.dumps({"type": "unread_count", "count": 0}))
+                # Send updated unread count
+                await self.send(
+                    text_data=json.dumps({"type": "unread_count", "count": 0})
+                )
+        except json.JSONDecodeError:
+            pass
+        except Exception as e:
+            print(f"Error in receive: {str(e)}")
 
     async def notification_message(self, event):
         # Send notification to WebSocket
@@ -74,6 +97,12 @@ class NotificationConsumer(AsyncWebsocketConsumer):
             text_data=json.dumps(
                 {"type": "notification_message", "notification": event["notification"]}
             )
+        )
+
+    async def unread_count_message(self, event):
+        # Send unread count to WebSocket
+        await self.send(
+            text_data=json.dumps({"type": "unread_count", "count": event["count"]})
         )
 
     @database_sync_to_async
@@ -92,7 +121,7 @@ class NotificationConsumer(AsyncWebsocketConsumer):
         try:
             notification = Notification.objects.get(id=notification_id, user=self.user)
             notification.read = True
-            notification.save()
+            notification.save(update_fields=["read"])
             return True
         except Notification.DoesNotExist:
             return False
@@ -107,7 +136,15 @@ class IssueConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         # Get token and issue_id from query string
         query_string = self.scope["query_string"].decode()
-        token = query_string.split("token=")[1].split("&")[0]
+        token_param = (
+            query_string.split("token=")[1] if "token=" in query_string else None
+        )
+
+        if not token_param:
+            await self.close()
+            return
+
+        token = token_param.split("&")[0] if "&" in token_param else token_param
         self.issue_id = self.scope["url_route"]["kwargs"]["issue_id"]
 
         # Validate token and get user
@@ -127,6 +164,9 @@ class IssueConsumer(AsyncWebsocketConsumer):
             await self.accept()
 
         except TokenError:
+            await self.close()
+        except Exception as e:
+            print(f"Error in connect: {str(e)}")
             await self.close()
 
     async def disconnect(self, close_code):

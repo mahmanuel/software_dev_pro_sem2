@@ -49,7 +49,7 @@ class User(AbstractUser):
     username = None
     email = models.EmailField(_("email address"), unique=True)
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default="STUDENT")
-    department = models.CharField(max_length=100, blank=True)
+    department = models.CharField(max_length=100, blank=True, default="General")
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []

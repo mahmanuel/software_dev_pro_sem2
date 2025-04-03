@@ -92,17 +92,11 @@ ASGI_APPLICATION = "backend.asgi.application"
 
 # Use Redis for WebSocket message handling
 # Channels configuration
+
+# Channels settings
 CHANNEL_LAYERS = {
     "default": {
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {
-            "hosts": [
-                (
-                    os.getenv("REDIS_HOST", "localhost"),
-                    int(os.getenv("REDIS_PORT", 6379)),
-                )
-            ],
-        },
+        "BACKEND": "channels.layers.InMemoryChannelLayer",
     },
 }
 
@@ -110,7 +104,7 @@ CHANNEL_LAYERS = {
 # CORS settings
 CORS_ALLOW_ALL_ORIGINS = DEBUG
 CORS_ALLOWED_ORIGINS = os.getenv(
-    "CORS_ALLOWED_ORIGINS", "http://localhost:3000,http://127.0.0.1:3000"
+    "CORS_ALLOWED_ORIGINS", "http://localhost:5173,http://127.0.0.1:3000"
 ).split(",")
 CORS_ALLOW_CREDENTIALS = True
 
@@ -219,4 +213,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 # File upload settings
 FILE_UPLOAD_MAX_MEMORY_SIZE = 5 * 1024 * 1024  # 5 MB
 # Frontend URL for WebSocket connections
-FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3000")
+FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5173")
+# Frontend API settings
+FRONTEND_API_KEY = "your-frontend-api-key"
+FRONTEND_BASE_URL = "http://localhost:5173"  # Your frontend URL

@@ -1,31 +1,6 @@
 from rest_framework import serializers
-from django.contrib.auth import get_user_model
-from .models import Issue, IssueStatus, Comment, Attachment, StatusType
+from .models import Issue, IssueStatus, Comment, Attachment
 from users.serializers import UserSerializer
-
-User = get_user_model()
-
-
-class AttachmentSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Attachment
-        fields = [
-            "id",
-            "file",
-            "filename",
-            "mimetype",
-            "size",
-            "uploaded_by",
-            "created_at",
-        ]
-        read_only_fields = [
-            "id",
-            "uploaded_by",
-            "created_at",
-            "filename",
-            "mimetype",
-            "size",
-        ]
 
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -37,12 +12,12 @@ class CommentSerializer(serializers.ModelSerializer):
             "id",
             "issue",
             "user",
-            "user_details",
             "content",
             "created_at",
             "updated_at",
+            "user_details",
         ]
-        read_only_fields = ["id", "user", "created_at", "updated_at"]
+        read_only_fields = ["id", "user", "created_at", "updated_at", "user_details"]
 
     def create(self, validated_data):
         validated_data["user"] = self.context["request"].user
@@ -60,20 +35,43 @@ class IssueStatusSerializer(serializers.ModelSerializer):
             "status",
             "notes",
             "updated_by",
-            "updated_by_details",
             "created_at",
+            "updated_by_details",
         ]
-        read_only_fields = ["id", "updated_by", "created_at"]
+        read_only_fields = ["id", "updated_by", "created_at", "updated_by_details"]
 
     def create(self, validated_data):
         validated_data["updated_by"] = self.context["request"].user
         return super().create(validated_data)
 
 
+class AttachmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Attachment
+        fields = [
+            "id",
+            "issue",
+            "file",
+            "filename",
+            "uploaded_by",
+            "created_at",
+            "size",
+        ]
+        read_only_fields = ["id", "uploaded_by", "created_at", "filename", "size"]
+
+    def create(self, validated_data):
+        validated_data["uploaded_by"] = self.context["request"].user
+        validated_data["filename"] = validated_data["file"].name
+        validated_data["size"] = validated_data["file"].size
+        return super().create(validated_data)
+
+
 class IssueSerializer(serializers.ModelSerializer):
     submitted_by_details = UserSerializer(source="submitted_by", read_only=True)
     assigned_to_details = UserSerializer(source="assigned_to", read_only=True)
-    current_status = serializers.CharField(read_only=True)
+    comments = CommentSerializer(many=True, read_only=True)
+    statuses = IssueStatusSerializer(many=True, read_only=True)
+    attachments = AttachmentSerializer(many=True, read_only=True)
 
     class Meta:
         model = Issue
@@ -84,36 +82,33 @@ class IssueSerializer(serializers.ModelSerializer):
             "category",
             "priority",
             "submitted_by",
-            "submitted_by_details",
             "assigned_to",
-            "assigned_to_details",
             "current_status",
             "created_at",
             "updated_at",
+            "external_reference",
+            "submitted_by_details",
+            "assigned_to_details",
+            "comments",
+            "statuses",
+            "attachments",
         ]
-        read_only_fields = ["id", "submitted_by", "created_at", "updated_at"]
+        read_only_fields = [
+            "id",
+            "submitted_by",
+            "created_at",
+            "updated_at",
+            "external_reference",
+        ]
 
     def create(self, validated_data):
         validated_data["submitted_by"] = self.context["request"].user
-        issue = super().create(validated_data)
-
-        # Create initial status
-        IssueStatus.objects.create(
-            issue=issue,
-            status=StatusType.SUBMITTED,
-            updated_by=self.context["request"].user,
-        )
-
-        return issue
+        return super().create(validated_data)
 
 
-class IssueDetailSerializer(serializers.ModelSerializer):
+class IssueListSerializer(serializers.ModelSerializer):
     submitted_by_details = UserSerializer(source="submitted_by", read_only=True)
     assigned_to_details = UserSerializer(source="assigned_to", read_only=True)
-    statuses = IssueStatusSerializer(many=True, read_only=True)
-    comments = CommentSerializer(many=True, read_only=True)
-    attachments = AttachmentSerializer(many=True, read_only=True)
-    current_status = serializers.CharField(read_only=True)
 
     class Meta:
         model = Issue
@@ -123,25 +118,9 @@ class IssueDetailSerializer(serializers.ModelSerializer):
             "description",
             "category",
             "priority",
-            "submitted_by",
-            "submitted_by_details",
-            "assigned_to",
-            "assigned_to_details",
             "current_status",
-            "statuses",
-            "comments",
-            "attachments",
             "created_at",
             "updated_at",
+            "submitted_by_details",
+            "assigned_to_details",
         ]
-        read_only_fields = ["id", "submitted_by", "created_at", "updated_at"]
-
-
-class AssignIssueSerializer(serializers.Serializer):
-    faculty_id = serializers.PrimaryKeyRelatedField(
-        queryset=User.objects.filter(role="FACULTY")
-    )
-
-
-class EscalateIssueSerializer(serializers.Serializer):
-    reason = serializers.CharField(required=True)
