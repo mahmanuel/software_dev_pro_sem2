@@ -164,7 +164,7 @@ from .serializers import UserSerializer
 models.Index(fields=['user', 'is_read'])
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
-    serializers_class = UserSerializer
+    serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
 class CreateUserView(APIView):
     def post(self, request, *args, **kwargs):
