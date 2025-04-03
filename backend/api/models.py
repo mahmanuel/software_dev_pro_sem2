@@ -138,6 +138,10 @@ class Notification(models.Model):
     message = models.TextField()
     is_read = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
+    class Meta:
+        indexes = [
+            models.Index(fields=["user", "is_read"]),
+        ]
 
 
 # Messages Model for User Chat
