@@ -6,14 +6,21 @@ import IssueForm from './IssueForm';
 
 function DashboardStudent({ setUser }) {
   const [issues, setIssues] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   const fetchIssues = async () => {
+    setLoading(true);
     try {
       const response = await api.get('/api/issues/student');
       setIssues(response.data);
+      setError(null);
     } catch (err) {
+      setError('Error fetching issues. Please try again later.');
       console.error('Error fetching issues:', err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -22,8 +29,7 @@ function DashboardStudent({ setUser }) {
   }, []);
 
   const handleIssueSubmit = (newIssue) => {
-    setIssues([...issues, newIssue]);
-    fetchIssues();
+    setIssues([newIssue, ...issues]); // Add new issue at the beginning of the list
   };
 
   const handleLogout = () => {
@@ -34,24 +40,9 @@ function DashboardStudent({ setUser }) {
   };
 
   return (
-    <div className="dashboard">
-      <h1>Student Dashboard</h1>
-      <button onClick={handleLogout}>Logout</button>
-      <IssueForm onIssueSubmit={handleIssueSubmit} />
-      <h3>My Issues</h3>
-      {issues.length > 0 ? (
-        <ul>
-          {issues.map((issue, index) => (
-            <li key={index}>
-              <strong>{issue.title}</strong>: {issue.description} (Submitted: {issue.date})
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p>No issues logged yet.</p>
-      )}
-    </div>
-  );
-}
-
-export default DashboardStudent;
+    <div className="dashboard p-6 bg-gray-100 min-h-screen">
+      <h1 className="text-3xl font-bold text-center mb-4">Student Dashboard</h1>
+      <div className="flex justify-end mb-4">
+        <button
+          onClick={handleLogout}
+          className="
