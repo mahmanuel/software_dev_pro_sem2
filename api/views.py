@@ -27,7 +27,7 @@ class VerifyEmailView(APIView):
         token = request.GET.get("token")
         if not token:
             return Response(
-                {"error":"Token not provided!"}
+                {"error":"Token not provided!"},status = status.HTTP_400_BAD_REQUEST
             )
                 
             
