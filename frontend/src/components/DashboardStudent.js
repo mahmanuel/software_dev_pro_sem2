@@ -1,18 +1,20 @@
-// src/components/DashboardStudent.js
+// frontend/src/components/DashboardStudent.js
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getIssues } from '../mockData';
+import api from '../api';
 import IssueForm from './IssueForm';
 
 function DashboardStudent({ setUser }) {
   const [issues, setIssues] = useState([]);
   const navigate = useNavigate();
 
-  const fetchIssues = () => {
-    const allIssues = getIssues();
-    const user = JSON.parse(localStorage.getItem('user'));
-    const studentIssues = allIssues.filter(issue => issue.submittedBy === user?.email);
-    setIssues(studentIssues);
+  const fetchIssues = async () => {
+    try {
+      const response = await api.get('/api/issues/student');
+      setIssues(response.data);
+    } catch (err) {
+      console.error('Error fetching issues:', err);
+    }
   };
 
   useEffect(() => {
@@ -26,7 +28,8 @@ function DashboardStudent({ setUser }) {
 
   const handleLogout = () => {
     localStorage.removeItem('user');
-    setUser(null); // Update App.js state
+    localStorage.removeItem('token');
+    setUser(null);
     navigate('/');
   };
 

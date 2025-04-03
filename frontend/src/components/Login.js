@@ -1,7 +1,7 @@
-// src/components/Login.js
+// frontend/src/components/Login.js
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getUser } from '../mockData';
+import api from '../api';
 
 function Login({ setUser }) {
   const [email, setEmail] = useState('');
@@ -9,21 +9,23 @@ function Login({ setUser }) {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    const user = getUser(email);
-    if (!user) {
-      setError('User not found. Please register first.');
-      setTimeout(() => navigate('/register'), 2000);
-      return;
+    try {
+      const response = await api.post('/api/login', { email, password });
+      const user = response.data; // Expect { email, role, token }
+      if (!user) {
+        setError('User not found. Please register first.');
+        setTimeout(() => navigate('/register'), 2000);
+        return;
+      }
+      localStorage.setItem('user', JSON.stringify({ email, role: user.role }));
+      if (user.token) localStorage.setItem('token', user.token);
+      setUser({ email, role: user.role });
+      user.role === 'registrar' ? navigate('/registrar') : navigate('/student');
+    } catch (err) {
+      setError('Login failed: ' + (err.response?.data?.message || err.message));
     }
-    if (user.password !== password) {
-      setError('Invalid credentials');
-      return;
-    }
-    localStorage.setItem('user', JSON.stringify({ email, role: user.role }));
-    setUser({ email, role: user.role }); // Update App.js state
-    user.role === 'registrar' ? navigate('/registrar') : navigate('/student');
   };
 
   return (

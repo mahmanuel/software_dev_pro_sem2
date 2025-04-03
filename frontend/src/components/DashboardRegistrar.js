@@ -1,15 +1,19 @@
-// src/components/DashboardRegistrar.js
+// frontend/src/components/DashboardRegistrar.js
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getIssues } from '../mockData';
+import api from '../api';
 
 function DashboardRegistrar({ setUser }) {
   const [issues, setIssues] = useState([]);
   const navigate = useNavigate();
 
-  const fetchIssues = () => {
-    const allIssues = getIssues();
-    setIssues(allIssues);
+  const fetchIssues = async () => {
+    try {
+      const response = await api.get('/api/issues');
+      setIssues(response.data);
+    } catch (err) {
+      console.error('Error fetching issues:', err);
+    }
   };
 
   useEffect(() => {
@@ -18,7 +22,8 @@ function DashboardRegistrar({ setUser }) {
 
   const handleLogout = () => {
     localStorage.removeItem('user');
-    setUser(null); // Update App.js state
+    localStorage.removeItem('token');
+    setUser(null);
     navigate('/');
   };
 

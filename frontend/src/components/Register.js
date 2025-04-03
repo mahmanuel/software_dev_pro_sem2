@@ -1,7 +1,7 @@
-// src/components/Register.js
+// frontend/src/components/Register.js
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { addUser } from '../mockData';
+import api from '../api';
 
 function Register({ setUser }) {
   const [email, setEmail] = useState('');
@@ -11,14 +11,15 @@ function Register({ setUser }) {
 
   const handleRegister = async (e) => {
     e.preventDefault();
-    const user = { email, password, role: email.includes('registrar') ? 'registrar' : 'student' };
     try {
-      addUser(user);
+      const response = await api.post('/api/register', { email, password });
+      const user = response.data; // Expect { email, role, token }
       localStorage.setItem('user', JSON.stringify({ email, role: user.role }));
-      setUser({ email, role: user.role }); // Update App.js state
+      if (user.token) localStorage.setItem('token', user.token);
+      setUser({ email, role: user.role });
       user.role === 'registrar' ? navigate('/registrar') : navigate('/student');
     } catch (err) {
-      setError('Registration failed');
+      setError('Registration failed: ' + (err.response?.data?.message || err.message));
     }
   };
 

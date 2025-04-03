@@ -1,6 +1,6 @@
-// src/components/IssueForm.js
+// frontend/src/components/IssueForm.js
 import React, { useState } from 'react';
-import { addIssue } from '../mockData';
+import api from '../api';
 
 function IssueForm({ onIssueSubmit }) {
   const [title, setTitle] = useState('');
@@ -18,16 +18,14 @@ function IssueForm({ onIssueSubmit }) {
     };
 
     try {
-      // Mock backend call
-      addIssue(issue);
-      onIssueSubmit(issue);
+      const response = await api.post('/api/issues', issue);
+      onIssueSubmit(response.data);
       setTitle('');
       setDescription('');
       setError('');
       alert('Issue submitted successfully!');
     } catch (err) {
-      setError('Failed to submit issue');
-      console.error('Submission error:', err);
+      setError('Failed to submit issue: ' + (err.response?.data?.message || err.message));
     }
   };
 
