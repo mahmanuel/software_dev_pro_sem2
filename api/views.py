@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from rest_framework import viewsets, generics
+from rest_framework import status, generics
 from django.contrib.auth import authenticate
 from rest_framework import status, generics, permissions
 
@@ -25,6 +25,10 @@ User = get_user_model()
 class VerifyEmailView(APIView):
     def get(self, request):
         token = request.GET.get("token")
+        if not token:
+            return Response
+                
+            
 
         try:
             payload = jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])
