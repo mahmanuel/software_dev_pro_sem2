@@ -26,7 +26,9 @@ class VerifyEmailView(APIView):
     def get(self, request):
         token = request.GET.get("token")
         if not token:
-            return Response
+            return Response(
+                {"error":"Token not provided!"}
+            )
                 
             
 
