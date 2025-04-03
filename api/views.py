@@ -28,8 +28,7 @@ class VerifyEmailView(APIView):
         if not token:
             return Response(
                 {"error":"Token not provided!"},status = status.HTTP_400_BAD_REQUEST
-            )
-                
+            )         
             
 
         try:
@@ -83,7 +82,8 @@ class LoginView(APIView):
                 {
                     "access": str(refresh.access_token),
                     "refresh": str(refresh),
-                }
+                },
+               status=status.HTTP_200_OK, 
             )
         return Response(
             {"error": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED
