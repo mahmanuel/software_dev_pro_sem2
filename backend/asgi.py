@@ -12,15 +12,24 @@ from django.core.asgi import get_asgi_application
 from channels.routing import ProtocolTypeRouter, URLRouter
 from channels.auth import AuthMiddlewareStack
 from channels.security.websocket import AllowedHostsOriginValidator
-import realtime.routing
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "academic_issue_tracker.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "aits_project.settings")
+
+django_asgi_app = get_asgi_application()
+
+import notifications.routing
+import realtime.routing
 
 application = ProtocolTypeRouter(
     {
-        "http": get_asgi_application(),
+        "http": django_asgi_app,
         "websocket": AllowedHostsOriginValidator(
-            AuthMiddlewareStack(URLRouter(realtime.routing.websocket_urlpatterns))
+            AuthMiddlewareStack(
+                URLRouter(
+                    notifications.routing.websocket_urlpatterns
+                    + realtime.routing.websocket_urlpatterns
+                )
+            )
         ),
     }
 )

@@ -1,8 +1,5 @@
 from rest_framework import serializers
-from django.contrib.auth import get_user_model
-from django.contrib.auth.password_validation import validate_password
-
-User = get_user_model()
+from .models import User
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -12,27 +9,8 @@ class UserSerializer(serializers.ModelSerializer):
         read_only_fields = ["id"]
 
 
-class UserDetailSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = [
-            "id",
-            "email",
-            "first_name",
-            "last_name",
-            "role",
-            "department",
-            "date_joined",
-            "last_login",
-        ]
-        read_only_fields = ["id", "date_joined", "last_login"]
-
-
-class RegisterSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(
-        write_only=True, required=True, validators=[validate_password]
-    )
-    password2 = serializers.CharField(write_only=True, required=True)
+class UserRegistrationSerializer(serializers.ModelSerializer):
+    password2 = serializers.CharField(style={"input_type": "password"}, write_only=True)
 
     class Meta:
         model = User
@@ -45,28 +23,39 @@ class RegisterSerializer(serializers.ModelSerializer):
             "role",
             "department",
         ]
+        extra_kwargs = {"password": {"write_only": True}}
 
-    def validate(self, attrs):
-        if attrs["password"] != attrs["password2"]:
-            raise serializers.ValidationError(
-                {"password": "Password fields didn't match."}
-            )
-        return attrs
+    def validate(self, data):
+        # Check that the two password entries match
+        if data["password"] != data["password2"]:
+            raise serializers.ValidationError({"password": "Passwords don't match."})
+        return data
 
     def create(self, validated_data):
-        validated_data.pop("password2")
-        user = User.objects.create_user(**validated_data)
+        # Remove password2 from the data
+        validated_data.pop("password2", None)
+
+        # Create the user
+        user = User.objects.create_user(
+            email=validated_data["email"],
+            password=validated_data["password"],
+            first_name=validated_data.get("first_name", ""),
+            last_name=validated_data.get("last_name", ""),
+            role=validated_data.get("role", "STUDENT"),
+            department=validated_data.get("department", ""),
+        )
+
         return user
 
 
-class ChangePasswordSerializer(serializers.Serializer):
+class PasswordChangeSerializer(serializers.Serializer):
     old_password = serializers.CharField(required=True)
-    new_password = serializers.CharField(required=True, validators=[validate_password])
-    new_password2 = serializers.CharField(required=True)
+    new_password = serializers.CharField(required=True)
+    confirm_password = serializers.CharField(required=True)
 
-    def validate(self, attrs):
-        if attrs["new_password"] != attrs["new_password2"]:
+    def validate(self, data):
+        if data["new_password"] != data["confirm_password"]:
             raise serializers.ValidationError(
-                {"new_password": "Password fields didn't match."}
+                {"new_password": "Passwords don't match."}
             )
-        return attrs
+        return data

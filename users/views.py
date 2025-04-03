@@ -1,64 +1,58 @@
-from django.shortcuts import render
-
-from rest_framework import viewsets, generics, status, permissions
+from rest_framework import status, permissions
 from rest_framework.response import Response
-from rest_framework.decorators import action
-from django.contrib.auth import get_user_model
+from rest_framework.views import APIView
+from rest_framework.generics import CreateAPIView, RetrieveUpdateAPIView
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from .models import User
 from .serializers import (
     UserSerializer,
-    UserDetailSerializer,
-    RegisterSerializer,
-    ChangePasswordSerializer,
+    UserRegistrationSerializer,
+    PasswordChangeSerializer,
 )
-from .permissions import IsAdminUser, IsSelfOrAdmin
-
-User = get_user_model()
 
 
-class UserViewSet(viewsets.ModelViewSet):
+class UserRegistrationView(CreateAPIView):
     queryset = User.objects.all()
-    permission_classes = [permissions.IsAuthenticated, IsAdminUser]
+    serializer_class = UserRegistrationSerializer
+    permission_classes = [AllowAny]
 
-    def get_serializer_class(self):
-        if self.action == "retrieve":
-            return UserDetailSerializer
-        return UserSerializer
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(
+            {"message": "User registered successfully."},
+            status=status.HTTP_201_CREATED,
+            headers=headers,
+        )
 
-    @action(
-        detail=False, methods=["get"], permission_classes=[permissions.IsAuthenticated]
-    )
-    def me(self, request):
-        serializer = UserDetailSerializer(request.user)
-        return Response(serializer.data)
 
-    @action(
-        detail=True,
-        methods=["put"],
-        permission_classes=[permissions.IsAuthenticated, IsSelfOrAdmin],
-    )
-    def change_password(self, request, pk=None):
-        user = self.get_object()
-        serializer = ChangePasswordSerializer(data=request.data)
+class UserProfileView(RetrieveUpdateAPIView):
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated]
 
+    def get_object(self):
+        return self.request.user
+
+
+class PasswordChangeView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def put(self, request, *args, **kwargs):
+        serializer = PasswordChangeSerializer(data=request.data)
         if serializer.is_valid():
-            # Check old password
-            if not user.check_password(serializer.validated_data["old_password"]):
+            user = request.user
+            if not user.check_password(serializer.data.get("old_password")):
                 return Response(
                     {"old_password": ["Wrong password."]},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 
-            # Set new password
-            user.set_password(serializer.validated_data["new_password"])
+            user.set_password(serializer.data.get("new_password"))
             user.save()
             return Response(
-                {"message": "Password updated successfully"}, status=status.HTTP_200_OK
+                {"message": "Password updated successfully."}, status=status.HTTP_200_OK
             )
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class RegisterView(generics.CreateAPIView):
-    queryset = User.objects.all()
-    permission_classes = [permissions.AllowAny]
-    serializer_class = RegisterSerializer

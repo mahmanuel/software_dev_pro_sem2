@@ -48,8 +48,8 @@ class User(AbstractUser):
 
     username = None
     email = models.EmailField(_("email address"), unique=True)
-    role = models.CharField(max_length=10, choices=ROLE_CHOICES, default="STUDENT")
-    department = models.CharField(max_length=100, blank=True, null=True)
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default="STUDENT")
+    department = models.CharField(max_length=100, blank=True)
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
@@ -58,15 +58,3 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.email
-
-    @property
-    def is_student(self):
-        return self.role == "STUDENT"
-
-    @property
-    def is_faculty(self):
-        return self.role == "FACULTY"
-
-    @property
-    def is_admin(self):
-        return self.role == "ADMIN"

@@ -242,19 +242,19 @@ class IssueStatusViewSet(viewsets.ModelViewSet):
                 message=f"Issue '{issue.title}' status has been updated to {status_type}",
                 related_object=issue,
             )
-        
+
         # Send real-time update to issue channel
         channel_layer = get_channel_layer()
         status_data = IssueStatusSerializer(status_obj).data
-        
-        async_to_sync(channel_layer.group_send)(
-            f'issue_{issue.id}',
-            {
-                'type': 'status_updated',
-                'status': status_data,
-                'issue_id': str(issue.id)
-            }
 
+        async_to_sync(channel_layer.group_send)(
+            f"issue_{issue.id}",
+            {
+                "type": "status_updated",
+                "status": status_data,
+                "issue_id": str(issue.id),
+            },
+        )
         return status_obj
 
 
@@ -292,15 +292,35 @@ class CommentViewSet(viewsets.ModelViewSet):
         # Send real-time update to issue channel
         channel_layer = get_channel_layer()
         comment_data = CommentSerializer(comment).data
-        
-        async_to_sync(channel_layer.group_send)(
-            f'issue_{issue.id}',
-            {
-                'type': 'comment_added',
-                'comment': comment_data,
-                'issue_id': str(issue.id)
-            }
-        )
-        
-        return comment   
 
+        async_to_sync(channel_layer.group_send)(
+            f"issue_{issue.id}",
+            {
+                "type": "comment_added",
+                "comment": comment_data,
+                "issue_id": str(issue.id),
+            },
+        )
+
+        return comment
+
+
+class AttachmentViewSet(viewsets.ModelViewSet):
+    queryset = Attachment.objects.all()
+    serializer_class = AttachmentSerializer
+    permission_classes = [permissions.IsAuthenticated, IsOwnerOrStaffOrAdmin]
+
+    def get_queryset(self):
+        return Attachment.objects.filter(issue_id=self.kwargs.get("issue_pk"))
+
+    def perform_create(self, serializer):
+        issue = get_object_or_404(Issue, pk=self.kwargs.get("issue_pk"))
+        file_obj = self.request.data.get("file")
+
+        return serializer.save(
+            issue=issue,
+            uploaded_by=self.request.user,
+            filename=file_obj.name,
+            mimetype=file_obj.content_type,
+            size=file_obj.size,
+        )

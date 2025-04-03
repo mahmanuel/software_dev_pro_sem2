@@ -15,6 +15,8 @@ urlpatterns = [
     path("api/issues/", include("issues.urls")),
     path("api/notifications/", include("notifications.urls")),
     path("api/analytics/", include("analytics.urls")),
+    path("api/realtime/", include("realtime.urls")),
+    path("api/backend-api/", include("backend_api.urls")),
 ]
 
 if settings.DEBUG:

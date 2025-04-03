@@ -84,6 +84,7 @@ INSTALLED_APPS = [
     "notifications",
     "analytics",
     "realtime",
+    "backend_api",
 ]
 
 # WebSocket Configuration

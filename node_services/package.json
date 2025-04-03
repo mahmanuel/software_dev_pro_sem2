@@ -1,0 +1,16 @@
+{
+    "name": "api-client-service",
+    "version": "1.0.0",
+    "description": "Node.js API client service for Django",
+    "main": "api_client.js",
+    "scripts": {
+      "start": "node api_client.js"
+    },
+    "dependencies": {
+      "axios": "^1.6.7",
+      "express": "^4.18.2",
+      "body-parser": "^1.20.2"
+    }
+  }
+  
+  
