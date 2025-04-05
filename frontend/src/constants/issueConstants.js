@@ -1,0 +1,78 @@
+export const CATEGORIES = {
+    GRADE_DISPUTE: "GRADE_DISPUTE",
+    CLASS_SCHEDULE: "CLASS_SCHEDULE",
+    FACULTY_CONCERN: "FACULTY_CONCERN",
+    COURSE_REGISTRATION: "COURSE_REGISTRATION",
+    GRADUATION_REQUIREMENT: "GRADUATION_REQUIREMENT",
+    OTHER: "OTHER",
+  }
+  
+  export const CATEGORY_LABELS = {
+    [CATEGORIES.GRADE_DISPUTE]: "Grade Dispute",
+    [CATEGORIES.CLASS_SCHEDULE]: "Class Schedule",
+    [CATEGORIES.FACULTY_CONCERN]: "Faculty Concern",
+    [CATEGORIES.COURSE_REGISTRATION]: "Course Registration",
+    [CATEGORIES.GRADUATION_REQUIREMENT]: "Graduation Requirement",
+    [CATEGORIES.OTHER]: "Other",
+  }
+  
+  export const PRIORITIES = {
+    LOW: "LOW",
+    MEDIUM: "MEDIUM",
+    HIGH: "HIGH",
+    URGENT: "URGENT",
+  }
+  
+  export const PRIORITY_LABELS = {
+    [PRIORITIES.LOW]: "Low",
+    [PRIORITIES.MEDIUM]: "Medium",
+    [PRIORITIES.HIGH]: "High",
+    [PRIORITIES.URGENT]: "Urgent",
+  }
+  
+  export const STATUS_TYPES = {
+    SUBMITTED: "SUBMITTED",
+    ASSIGNED: "ASSIGNED",
+    IN_PROGRESS: "IN_PROGRESS",
+    PENDING_INFO: "PENDING_INFO",
+    RESOLVED: "RESOLVED",
+    CLOSED: "CLOSED",
+    ESCALATED: "ESCALATED",
+  }
+  
+  export const STATUS_LABELS = {
+    [STATUS_TYPES.SUBMITTED]: "Submitted",
+    [STATUS_TYPES.ASSIGNED]: "Assigned",
+    [STATUS_TYPES.IN_PROGRESS]: "In Progress",
+    [STATUS_TYPES.PENDING_INFO]: "Pending Information",
+    [STATUS_TYPES.RESOLVED]: "Resolved",
+    [STATUS_TYPES.CLOSED]: "Closed",
+    [STATUS_TYPES.ESCALATED]: "Escalated",
+  }
+  
+  export const STATUS_COLORS = {
+    [STATUS_TYPES.SUBMITTED]: "#3498db", // Blue
+    [STATUS_TYPES.ASSIGNED]: "#9b59b6", // Purple
+    [STATUS_TYPES.IN_PROGRESS]: "#f39c12", // Orange
+    [STATUS_TYPES.PENDING_INFO]: "#e67e22", // Dark Orange
+    [STATUS_TYPES.RESOLVED]: "#2ecc71", // Green
+    [STATUS_TYPES.CLOSED]: "#27ae60", // Dark Green
+    [STATUS_TYPES.ESCALATED]: "#e74c3c", // Red
+  }
+  
+  export const PRIORITY_COLORS = {
+    [PRIORITIES.LOW]: "#3498db", // Blue
+    [PRIORITIES.MEDIUM]: "#f39c12", // Orange
+    [PRIORITIES.HIGH]: "#e67e22", // Dark Orange
+    [PRIORITIES.URGENT]: "#e74c3c", // Red
+  }
+  
+  export const NOTIFICATION_TYPES = {
+    ISSUE_CREATED: "ISSUE_CREATED",
+    ISSUE_ASSIGNED: "ISSUE_ASSIGNED",
+    STATUS_UPDATED: "STATUS_UPDATED",
+    COMMENT_ADDED: "COMMENT_ADDED",
+    ISSUE_ESCALATED: "ISSUE_ESCALATED",
+  }
+  
+  
