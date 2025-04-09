@@ -81,6 +81,7 @@ function Register({ setUser }) {
       setIsLoading(false);
     }
   };
+  
 
   return (
     <div className="register-container">
