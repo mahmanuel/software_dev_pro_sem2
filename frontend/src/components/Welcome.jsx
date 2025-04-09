@@ -1,8 +1,7 @@
-"use client"
-import { useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router-dom";
 
 function Welcome() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   return (
     <div className="welcome-page">
@@ -35,7 +34,9 @@ function Welcome() {
             <li>Request transcripts</li>
             <li>Track progress in real-time</li>
           </ul>
-          <button onClick={() => navigate("/register")}>Register as Student</button>
+          <button onClick={() => navigate("/register", { state: { role: "student" } })}>
+            Register as Student
+          </button>
         </div>
         <div className="role-card">
           <h3>For Lecturers</h3>
@@ -46,7 +47,9 @@ function Welcome() {
             <li>Respond to student appeals</li>
             <li>Track resolution history</li>
           </ul>
-          <button onClick={() => navigate("/register")}>Register as Lecturer</button>
+          <button onClick={() => navigate("/register", { state: { role: "lecturer" } })}>
+            Register as Lecturer
+          </button>
         </div>
         <div className="role-card">
           <h3>For Administrators</h3>
@@ -57,7 +60,9 @@ function Welcome() {
             <li>Monitor resolution progress</li>
             <li>Generate reports and analytics</li>
           </ul>
-          <button onClick={() => navigate("/register")}>Register as Admin</button>
+          <button onClick={() => navigate("/register", { state: { role: "admin" } })}>
+            Register as Admin
+          </button>
         </div>
       </section>
 
@@ -86,8 +91,7 @@ function Welcome() {
         <p>Designed by CSC 1202 group 7</p>
       </footer>
     </div>
-  )
+  );
 }
 
-export default Welcome
-
+export default Welcome;

@@ -1,87 +1,99 @@
 "use client"
 
-import { useState } from "react"
-import { useNavigate } from "react-router-dom"
-import { register } from "../services/authService"
+import { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { register } from "../services/authService";
 
 function Register({ setUser }) {
+  const location = useLocation();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
     password2: "",
     first_name: "",
     last_name: "",
-    role: "STUDENT",
+    role: "STUDENT", // Default role
     department: "",
-  })
-  const [error, setError] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
-  const navigate = useNavigate()
+  });
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Set the role from navigation state when the component mounts
+  useEffect(() => {
+    if (location.state && location.state.role) {
+      const roleMap = {
+        student: "STUDENT",
+        lecturer: "FACULTY",
+        admin: "ADMIN",
+      };
+      const mappedRole = roleMap[location.state.role.toLowerCase()] || "STUDENT";
+      setFormData((prev) => ({ ...prev, role: mappedRole }));
+    }
+  }, [location]);
 
   const handleChange = (e) => {
-    const { name, value } = e.target
+    const { name, value } = e.target;
     setFormData({
       ...formData,
       [name]: value,
-    })
-  }
+    });
+  };
 
   const handleRegister = async (e) => {
-    e.preventDefault()
-    setIsLoading(true)
-    setError("")
+    e.preventDefault();
+    setIsLoading(true);
+    setError("");
 
-    // Validate passwords match
     if (formData.password !== formData.password2) {
-      setError("Passwords do not match")
-      setIsLoading(false)
-      return
+      setError("Passwords do not match");
+      setIsLoading(false);
+      return;
     }
 
     try {
-      // Register the user
-      const response = await register(formData)
-      console.log("Registration successful:", response)
+      const response = await register(formData);
+      console.log("Registration successful:", response);
 
-      // Store user info in localStorage
       const userData = {
         email: formData.email,
         role: formData.role,
         first_name: formData.first_name,
         last_name: formData.last_name,
-      }
+      };
 
-      localStorage.setItem("user", JSON.stringify(userData))
+      localStorage.setItem("user", JSON.stringify(userData));
+      setUser(userData);
 
-      // Update app state
-      setUser(userData)
-
-      // Show success message
-      alert("Registration successful! Please log in with your credentials.")
-
-      // Redirect to login page
-      navigate("/login")
+      alert("Registration successful! Please log in with your credentials.");
+      navigate("/login");
     } catch (err) {
-      console.error("Registration error:", err)
+      console.error("Registration error:", err);
       if (typeof err === "object") {
-        // Format error messages from the API
         const errorMessages = Object.entries(err)
           .map(([key, value]) => `${key}: ${value}`)
-          .join(", ")
-        setError(errorMessages)
+          .join(", ");
+        setError(errorMessages);
       } else {
-        setError("Registration failed. Please try again.")
+        setError("Registration failed. Please try again.");
       }
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <div className="register-container">
       <h2>Register</h2>
       <form onSubmit={handleRegister}>
-        <input type="email" name="email" placeholder="Email" value={formData.email} onChange={handleChange} required />
+        <input
+          type="email"
+          name="email"
+          placeholder="Email"
+          value={formData.email}
+          onChange={handleChange}
+          required
+        />
         <input
           type="text"
           name="first_name"
@@ -138,8 +150,7 @@ function Register({ setUser }) {
         </span>
       </p>
     </div>
-  )
+  );
 }
 
-export default Register
-
+export default Register;
