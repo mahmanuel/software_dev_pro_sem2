@@ -7,7 +7,6 @@ import { logout } from "../services/authService"
 import NotificationBell from "./NotificationBell"
 import { STATUS_LABELS, CATEGORY_LABELS, PRIORITY_LABELS } from "../constants/issueConstants"
 
-
 function DashboardRegistrar({ setUser }) {
   const [issues, setIssues] = useState([])
   const [isLoading, setIsLoading] = useState(true)
