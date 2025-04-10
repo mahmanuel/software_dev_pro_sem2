@@ -8,6 +8,7 @@ import IssueForm from "./IssueForm"
 import IssueList from "./IssueList"
 import NotificationBell from "./NotificationBell"
 
+
 function DashboardStudent({ setUser }) {
   const [issues, setIssues] = useState([])
   const [isLoading, setIsLoading] = useState(true)
