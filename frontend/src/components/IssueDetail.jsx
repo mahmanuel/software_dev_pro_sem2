@@ -6,6 +6,7 @@ import { getIssueDetails, addComment, addIssueStatus, uploadAttachment } from ".
 import { IssueSocket } from "../services/websocketService"
 import { CATEGORY_LABELS, PRIORITY_LABELS, STATUS_LABELS, STATUS_COLORS } from "../constants/issueConstants"
 
+
 function IssueDetail() {
   const { issueId } = useParams()
   const navigate = useNavigate()
