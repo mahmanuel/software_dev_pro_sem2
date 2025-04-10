@@ -4,7 +4,6 @@ import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import api from "../services/api"
 
-
 function AnalyticsDashboard() {
   const [dashboardStats, setDashboardStats] = useState(null)
   const [issueTrends, setIssueTrends] = useState([])
