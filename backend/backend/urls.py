@@ -12,6 +12,7 @@ urlpatterns = [
     path("api-auth/", include("rest_framework.urls")),
     path("api/", include("api.urls")),  # Linking api app urls
 ]
+
 from django.urls import path
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
