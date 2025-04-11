@@ -24,6 +24,7 @@ schema_view = get_schema_view(
         default_version="v1",
         description="API documentation for Automated Academic Issue Resolution System",
     ),
+    
     public=True,
     permission_classes=[permissions.AllowAny],
 )
