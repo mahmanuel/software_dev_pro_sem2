@@ -65,7 +65,7 @@ class Issue(models.Model):
     assigned_to = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name="assigned_issues"
+        related_name="assigned_issues",
         null=True,
         blank=True,
     )
