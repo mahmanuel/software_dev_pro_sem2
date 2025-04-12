@@ -1,93 +1,59 @@
-# importing django modules
-from django.contrib.auth.models import User
 from rest_framework import serializers
-from api.models import Profile, User
-from django.contrib.auth import get_user_model
-from rest_framework_simplejwt.tokens import RefreshToken
-from .models import AuditLog, Issue, Notification, Assignment, User
-from .utils import send_verification_email
-
-User = get_user_model()
+from .models import UserActivity, IssueMetrics, UserMetrics, DashboardStat
 
 
-# User Registration Serializer
-class UserRegistrationSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True, min_length=6)
+class UserActivitySerializer(serializers.ModelSerializer):
+    user_email = serializers.SerializerMethodField()
 
     class Meta:
-        model = User
-        fields = ["id", "username", "email", "password", "role"]
-
-    def create(self, validated_data):
-        user = User.objects.create_user(
-            username=validated_data["username"],
-            email=validated_data["email"],
-            password=validated_data["password"],
-            role=validated_data.get("role", "Student"),
-        )
-        user.is_verified = False
-        user.save()
-        return user
-
-
-# User Login Serializer
-class UserLoginSerializer(serializers.Serializer):
-    username = serializers.CharField()
-    password = serializers.CharField(write_only=True)
-
-
-# User Profile Serializer
-class UserProfileSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ["id", "username", "email", "role"]
-
-
-# Logout Serializer (Blacklist Token)
-class LogoutSerializer(serializers.Serializer):
-    refresh = serializers.CharField()
-
-
-class AssignmentSerializer(serializers.ModelSerializer):
-    faculty = UserRegistrationSerializer(read_only=True)
-    assigned_by = UserRegistrationSerializer(read_only=True)
-
-    class Meta:
-        model = Assignment
-        fields = ["id", "issue", "faculty", "assigned_by", "assigned_at"]
-
-
-class IssueSerializer(serializers.ModelSerializer):
-    created_by = UserRegistrationSerializer(read_only=True)
-    assigned_to = UserRegistrationSerializer(read_only=True)
-
-    class Meta:
-        model = Issue
+        model = UserActivity
         fields = [
             "id",
-            "title",
-            "description",
-            "category",
-            "status",
-            "created_by",
-            "assigned_to",
-            "created_at",
-            "updated_at",
+            "user",
+            "user_email",
+            "activity_type",
+            "timestamp",
+            "ip_address",
+            "user_agent",
+            "related_issue",
+            "additional_data",
+        ]
+        read_only_fields = ["id", "timestamp"]
+
+    def get_user_email(self, obj):
+        return obj.user.email if obj.user else None
+
+
+class IssueMetricsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = IssueMetrics
+        fields = [
+            "date",
+            "total_issues",
+            "new_issues",
+            "resolved_issues",
+            "avg_resolution_time",
+            "issues_by_category",
+            "issues_by_priority",
+            "issues_by_status",
         ]
 
 
-class NotificationSerializer(serializers.ModelSerializer):
-    user = UserRegistrationSerializer(read_only=True)
-    issue = IssueSerializer(read_only=True)
-
+class UserMetricsSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Notification
-        fields = ["id", "user", "issue", "message", "timestamp", "is_read"]
+        model = UserMetrics
+        fields = [
+            "date",
+            "active_users",
+            "new_users",
+            "active_students",
+            "active_faculty",
+            "active_admins",
+            "logins",
+        ]
 
 
-class AuditLogSerializer(serializers.ModelSerializer):
-    created_by = UserRegistrationSerializer(read_only=True)
-
+class DashboardStatSerializer(serializers.ModelSerializer):
     class Meta:
-        model = AuditLog
-        fields = ["id", "title", "description", "created_by", "created_at"]
+        model = DashboardStat
+        fields = ["key", "value", "last_updated"]
