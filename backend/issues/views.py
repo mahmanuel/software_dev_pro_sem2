@@ -12,7 +12,10 @@ from .serializers import (
 )
 from notifications.models import Notification
 from django.db.models import Q
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
+from django.contrib.contenttypes.models import ContentType
+
+User = get_user_model()
 
 
 class IssueViewSet(viewsets.ModelViewSet):
@@ -67,10 +70,13 @@ class IssueViewSet(viewsets.ModelViewSet):
 
         # Create notification for admins
         if self.request.user.role == "STUDENT":
+            # Get ContentType for Issue model
+            issue_content_type = ContentType.objects.get_for_model(Issue)
+
             for admin in User.objects.filter(role="ADMIN"):
                 Notification.objects.create(
                     user=admin,
-                    content_type="issues.issue",
+                    content_type=issue_content_type,
                     object_id=issue.id,
                     message=f"New issue submitted: {issue.title}",
                     notification_type="ISSUE_CREATED",
@@ -110,6 +116,10 @@ class IssueViewSet(viewsets.ModelViewSet):
             )
 
         try:
+            # Convert faculty_id to integer if it's a string
+            if isinstance(faculty_id, str) and faculty_id.isdigit():
+                faculty_id = int(faculty_id)
+
             faculty = User.objects.get(id=faculty_id, role="FACULTY")
         except User.DoesNotExist:
             return Response(
@@ -128,17 +138,21 @@ class IssueViewSet(viewsets.ModelViewSet):
             updated_by=request.user,
         )
 
+        # Get ContentType for Issue model
+        issue_content_type = ContentType.objects.get_for_model(Issue)
+
         # Create notification for faculty
         Notification.objects.create(
             user=faculty,
-            content_type="issues.issue",
+            content_type=issue_content_type,
             object_id=issue.id,
             message=f"You have been assigned to issue: {issue.title}",
             notification_type="ISSUE_ASSIGNED",
         )
 
         return Response(
-            {"message": f"Issue assigned to {faculty.email}"}, status=status.HTTP_200_OK
+            {"message": f"Issue assigned to {faculty.email}", "success": True},
+            status=status.HTTP_200_OK,
         )
 
     @action(detail=True, methods=["post"])
@@ -160,11 +174,14 @@ class IssueViewSet(viewsets.ModelViewSet):
             updated_by=request.user,
         )
 
+        # Get ContentType for Issue model
+        issue_content_type = ContentType.objects.get_for_model(Issue)
+
         # Create notification for admins
         for admin in User.objects.filter(role="ADMIN"):
             Notification.objects.create(
                 user=admin,
-                content_type="issues.issue",
+                content_type=issue_content_type,
                 object_id=issue.id,
                 message=f"Issue escalated: {issue.title}",
                 notification_type="ISSUE_ESCALATED",
@@ -199,11 +216,14 @@ class IssueStatusViewSet(viewsets.ModelViewSet):
         # Save the status update
         status_update = serializer.save(issue=issue, updated_by=self.request.user)
 
+        # Get ContentType for Issue model
+        issue_content_type = ContentType.objects.get_for_model(Issue)
+
         # Create notification for the issue submitter
         if issue.submitted_by != self.request.user:
             Notification.objects.create(
                 user=issue.submitted_by,
-                content_type="issues.issue",
+                content_type=issue_content_type,
                 object_id=issue.id,
                 message=f"Status updated to {status_update.get_status_display()} for your issue: {issue.title}",
                 notification_type="STATUS_UPDATED",
@@ -229,6 +249,9 @@ class CommentViewSet(viewsets.ModelViewSet):
         # Save the comment
         comment = serializer.save(issue=issue, user=self.request.user)
 
+        # Get ContentType for Issue model
+        issue_content_type = ContentType.objects.get_for_model(Issue)
+
         # Create notification for the issue submitter and assignee
         recipients = []
         if issue.submitted_by != self.request.user:
@@ -240,7 +263,7 @@ class CommentViewSet(viewsets.ModelViewSet):
         for recipient in recipients:
             Notification.objects.create(
                 user=recipient,
-                content_type="issues.issue",
+                content_type=issue_content_type,
                 object_id=issue.id,
                 message=f"New comment on issue: {issue.title}",
                 notification_type="COMMENT_ADDED",
