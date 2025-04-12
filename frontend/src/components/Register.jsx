@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { register } from "../services/authService"
+import { DEPARTMENTS } from "../constants/academicConstants"
 
 function Register({ setUser }) {
   const [formData, setFormData] = useState({
@@ -13,6 +14,7 @@ function Register({ setUser }) {
     last_name: "",
     role: "STUDENT",
     department: "",
+    student_id: "",
   })
   const [error, setError] = useState("")
   const [isLoading, setIsLoading] = useState(false)
@@ -34,6 +36,20 @@ function Register({ setUser }) {
     // Validate passwords match
     if (formData.password !== formData.password2) {
       setError("Passwords do not match")
+      setIsLoading(false)
+      return
+    }
+
+    // Validate department is selected
+    if (!formData.department) {
+      setError("Please select a department")
+      setIsLoading(false)
+      return
+    }
+
+    // Validate student ID for students
+    if (formData.role === "STUDENT" && !formData.student_id) {
+      setError("Student ID is required for student accounts")
       setIsLoading(false)
       return
     }
@@ -103,13 +119,16 @@ function Register({ setUser }) {
           <option value="FACULTY">Faculty</option>
           <option value="ADMIN">Admin</option>
         </select>
-        <input
-          type="text"
-          name="department"
-          placeholder="Department (optional)"
-          value={formData.department}
-          onChange={handleChange}
-        />
+        <select name="department"
+            value={formData.department}
+            onChange={handleChange}
+            className="input" >
+          <option value="">Select Department (optional)</option>
+  {DEPARTMENTS.map((dept) => (
+          <option key={dept.id} value={dept.id}>
+      {dept.name}</option>
+  ))}
+</select>
         <input
           type="password"
           name="password"
@@ -126,6 +145,19 @@ function Register({ setUser }) {
           onChange={handleChange}
           required
         />
+         {formData.role === "STUDENT" && (
+            <div className="form-group">
+              <label htmlFor="student_id">Student ID</label>
+              <input
+                id="student_id"
+                type="text"
+                name="student_id"
+                value={formData.student_id}
+                onChange={handleChange}
+                required={formData.role === "STUDENT"}
+              />
+            </div>
+          )}
         <button type="submit" disabled={isLoading}>
           {isLoading ? "Registering..." : "Register"}
         </button>

@@ -8,8 +8,8 @@ import Login from "./components/Login"
 import Register from "./components/Register"
 import DashboardStudent from "./components/DashboardStudent"
 import DashboardRegistrar from "./components/DashboardRegistrar"
+import DashboardFaculty from "./components/DashboardFaculty"
 import IssueDetail from "./components/IssueDetail"
-import AnalyticsDashboard from "./components/AnalyticsDashboard"
 import "./styles.css"
 
 function App() {
@@ -53,16 +53,16 @@ function App() {
     return user && (user.role === "STUDENT" || user.role === "student")
   }
 
-  // Helper function to check if user is admin or faculty
-  const isAdminOrFaculty = (user) => {
-    return (
-      user && (user.role === "ADMIN" || user.role === "FACULTY" || user.role === "admin" || user.role === "faculty")
-    )
+  // Helper function to check if user is faculty
+  const isFaculty = (user) => {
+    return user && (user.role === "FACULTY" || user.role === "faculty")
   }
 
-  // Helper function to check if user is admin
-  const isAdmin = (user) => {
-    return user && (user.role === "ADMIN" || user.role === "admin")
+  // Helper function to check if user is admin or registrar
+  const isAdminOrRegistrar = (user) => {
+    return (
+      user && (user.role === "ADMIN" || user.role === "REGISTRAR" || user.role === "admin" || user.role === "registrar")
+    )
   }
 
   if (isLoading) {
@@ -79,7 +79,9 @@ function App() {
             user ? (
               isStudent(user) ? (
                 <Navigate to="/student" />
-              ) : isAdminOrFaculty(user) ? (
+              ) : isFaculty(user) ? (
+                <Navigate to="/faculty" />
+              ) : isAdminOrRegistrar(user) ? (
                 <Navigate to="/registrar" />
               ) : (
                 <Welcome />
@@ -96,7 +98,9 @@ function App() {
             user ? (
               isStudent(user) ? (
                 <Navigate to="/student" />
-              ) : isAdminOrFaculty(user) ? (
+              ) : isFaculty(user) ? (
+                <Navigate to="/faculty" />
+              ) : isAdminOrRegistrar(user) ? (
                 <Navigate to="/registrar" />
               ) : (
                 <Login setUser={setUser} />
@@ -113,7 +117,9 @@ function App() {
             user ? (
               isStudent(user) ? (
                 <Navigate to="/student" />
-              ) : isAdminOrFaculty(user) ? (
+              ) : isFaculty(user) ? (
+                <Navigate to="/faculty" />
+              ) : isAdminOrRegistrar(user) ? (
                 <Navigate to="/registrar" />
               ) : (
                 <Register setUser={setUser} />
@@ -130,14 +136,17 @@ function App() {
           element={isStudent(user) ? <DashboardStudent setUser={setUser} /> : <Navigate to="/login" />}
         />
 
-        {/* Protected admin/faculty routes */}
+        {/* Protected faculty routes */}
         <Route
-          path="/registrar"
-          element={isAdminOrFaculty(user) ? <DashboardRegistrar setUser={setUser} /> : <Navigate to="/login" />}
+          path="/faculty"
+          element={isFaculty(user) ? <DashboardFaculty setUser={setUser} /> : <Navigate to="/login" />}
         />
 
-        {/* Analytics dashboard - admin only */}
-        <Route path="/analytics" element={isAdmin(user) ? <AnalyticsDashboard /> : <Navigate to="/login" />} />
+        {/* Protected admin/registrar routes */}
+        <Route
+          path="/registrar"
+          element={isAdminOrRegistrar(user) ? <DashboardRegistrar setUser={setUser} /> : <Navigate to="/login" />}
+        />
 
         {/* Issue detail route - accessible to all authenticated users */}
         <Route path="/issues/:issueId" element={user ? <IssueDetail /> : <Navigate to="/login" />} />
@@ -150,4 +159,3 @@ function App() {
 }
 
 export default App
-

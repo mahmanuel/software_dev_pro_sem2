@@ -1,23 +1,30 @@
 import api from "./api"
 
-// Get all notifications for the current user
-export const getNotifications = async (limit = 20) => {
+// Get unread notification count
+export const getUnreadCount = async () => {
   try {
-    const response = await api.get(`notifications/?limit=${limit}`)
-    return response.data
+    const response = await api.get("notifications/unread-count/")
+    return response.data.count
   } catch (error) {
-    console.error("Error fetching notifications:", error)
+    console.error("Error in getUnreadCount:", error)
     throw error.response ? error.response.data : error.message
   }
 }
 
-// Get recent notifications
-export const getRecentNotifications = async (limit = 10) => {
+// Get notifications
+export const getNotifications = async (params = {}) => {
   try {
-    const response = await api.get(`notifications/recent/?limit=${limit}`)
+    const queryParams = new URLSearchParams()
+
+    // Add params to query string
+    Object.entries(params).forEach(([key, value]) => {
+      if (value) queryParams.append(key, value)
+    })
+
+    const response = await api.get(`notifications/?${queryParams.toString()}`)
     return response.data
   } catch (error) {
-    console.error("Error fetching recent notifications:", error)
+    console.error("Error in getNotifications:", error)
     throw error.response ? error.response.data : error.message
   }
 }
@@ -25,10 +32,10 @@ export const getRecentNotifications = async (limit = 10) => {
 // Mark a notification as read
 export const markAsRead = async (notificationId) => {
   try {
-    const response = await api.post(`notifications/${notificationId}/mark_as_read/`)
+    const response = await api.post(`notifications/${notificationId}/read/`)
     return response.data
   } catch (error) {
-    console.error("Error marking notification as read:", error)
+    console.error("Error in markAsRead:", error)
     throw error.response ? error.response.data : error.message
   }
 }
@@ -36,22 +43,10 @@ export const markAsRead = async (notificationId) => {
 // Mark all notifications as read
 export const markAllAsRead = async () => {
   try {
-    const response = await api.post("notifications/mark_all_as_read/")
+    const response = await api.post("notifications/mark-all-read/")
     return response.data
   } catch (error) {
-    console.error("Error marking all notifications as read:", error)
+    console.error("Error in markAllAsRead:", error)
     throw error.response ? error.response.data : error.message
   }
 }
-
-// Get unread notification count
-export const getUnreadCount = async () => {
-  try {
-    const response = await api.get("notifications/unread_count/")
-    return response.data.count
-  } catch (error) {
-    console.error("Error fetching unread count:", error)
-    throw error.response ? error.response.data : error.message
-  }
-}
-

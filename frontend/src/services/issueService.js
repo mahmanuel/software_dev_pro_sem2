@@ -1,11 +1,11 @@
 import api from "./api"
 
-// Get all issues (filtered by user role)
+// Get all issues (with optional filters)
 export const getAllIssues = async (filters = {}) => {
   try {
     const queryParams = new URLSearchParams()
 
-    // Add filters to query params
+    // Add filters to query string
     Object.entries(filters).forEach(([key, value]) => {
       if (value) queryParams.append(key, value)
     })
@@ -18,10 +18,17 @@ export const getAllIssues = async (filters = {}) => {
   }
 }
 
-// Get issues for current user
-export const getUserIssues = async () => {
+// Get issues submitted by the current user
+export const getUserIssues = async (filters = {}) => {
   try {
-    const response = await api.get("issues/my-issues/")
+    const queryParams = new URLSearchParams()
+
+    // Add filters to query string
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value) queryParams.append(key, value)
+    })
+
+    const response = await api.get(`issues/my-issues/?${queryParams.toString()}`)
     return response.data
   } catch (error) {
     console.error("Error in getUserIssues:", error)
@@ -29,7 +36,7 @@ export const getUserIssues = async () => {
   }
 }
 
-// Get a specific issue with details
+// Get issue details by ID
 export const getIssueDetails = async (issueId) => {
   try {
     const response = await api.get(`issues/${issueId}/`)
@@ -43,36 +50,10 @@ export const getIssueDetails = async (issueId) => {
 // Create a new issue
 export const createIssue = async (issueData) => {
   try {
-    console.log("Creating issue with data:", issueData)
     const response = await api.post("issues/", issueData)
-    console.log("Create issue response:", response.data)
     return response.data
   } catch (error) {
     console.error("Error in createIssue:", error)
-    if (error.response) {
-      console.error("Error response data:", error.response.data)
-      throw error.response.data
-    }
-    throw error.message
-  }
-}
-
-// Update an issue
-export const updateIssue = async (issueId, issueData) => {
-  try {
-    const response = await api.patch(`issues/${issueId}/`, issueData)
-    return response.data
-  } catch (error) {
-    throw error.response ? error.response.data : error.message
-  }
-}
-
-// Delete an issue
-export const deleteIssue = async (issueId) => {
-  try {
-    const response = await api.delete(`issues/${issueId}/`)
-    return response.data
-  } catch (error) {
     throw error.response ? error.response.data : error.message
   }
 }
@@ -80,39 +61,30 @@ export const deleteIssue = async (issueId) => {
 // Assign an issue to a faculty member
 export const assignIssue = async (issueId, facultyId) => {
   try {
-    const response = await api.post(`issues/${issueId}/assign/`, { faculty_id: facultyId })
-    return response.data
-  } catch (error) {
-    throw error.response ? error.response.data : error.message
-  }
-}
+    console.log(`API call: Assigning issue ${issueId} to faculty ${facultyId}`)
 
-// Escalate an issue
-export const escalateIssue = async (issueId, reason) => {
-  try {
-    const response = await api.post(`issues/${issueId}/escalate/`, { reason })
+    // Ensure we're sending the correct payload format
+    const payload = { faculty_id: facultyId }
+    console.log("Assignment payload:", payload)
+
+    const response = await api.post(`issues/${issueId}/assign/`, payload)
+    console.log("Assignment response:", response.data)
     return response.data
   } catch (error) {
-    throw error.response ? error.response.data : error.message
+    console.error("Error in assignIssue:", error)
+    // Provide more detailed error information
+    const errorMessage = error.response?.data?.detail || error.message || "Unknown error"
+    throw new Error(errorMessage)
   }
 }
 
 // Add a status update to an issue
 export const addIssueStatus = async (issueId, statusData) => {
   try {
-    const response = await api.post(`issues/${issueId}/statuses/`, statusData)
+    const response = await api.post(`issues/${issueId}/status/`, statusData)
     return response.data
   } catch (error) {
-    throw error.response ? error.response.data : error.message
-  }
-}
-
-// Get status history for an issue
-export const getIssueStatuses = async (issueId) => {
-  try {
-    const response = await api.get(`issues/${issueId}/statuses/`)
-    return response.data
-  } catch (error) {
+    console.error("Error in addIssueStatus:", error)
     throw error.response ? error.response.data : error.message
   }
 }
@@ -123,16 +95,7 @@ export const addComment = async (issueId, content) => {
     const response = await api.post(`issues/${issueId}/comments/`, { content })
     return response.data
   } catch (error) {
-    throw error.response ? error.response.data : error.message
-  }
-}
-
-// Get comments for an issue
-export const getComments = async (issueId) => {
-  try {
-    const response = await api.get(`issues/${issueId}/comments/`)
-    return response.data
-  } catch (error) {
+    console.error("Error in addComment:", error)
     throw error.response ? error.response.data : error.message
   }
 }
@@ -150,17 +113,7 @@ export const uploadAttachment = async (issueId, file) => {
     })
     return response.data
   } catch (error) {
+    console.error("Error in uploadAttachment:", error)
     throw error.response ? error.response.data : error.message
   }
 }
-
-// Get attachments for an issue
-export const getAttachments = async (issueId) => {
-  try {
-    const response = await api.get(`issues/${issueId}/attachments/`)
-    return response.data
-  } catch (error) {
-    throw error.response ? error.response.data : error.message
-  }
-}
-

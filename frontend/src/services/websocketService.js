@@ -1,11 +1,12 @@
-// WebSocket connection for notifications
+// WebSocket service for real-time notifications and issue updates
+
 export class NotificationSocket {
   constructor(token, onMessage, onOpen) {
-    this.socket = null
     this.token = token
     this.onMessage = onMessage
     this.onOpen = onOpen
-    this.connected = false
+    this.socket = null
+    this.isConnected = false
     this.reconnectAttempts = 0
     this.maxReconnectAttempts = 5
     this.reconnectTimeout = null
@@ -13,52 +14,56 @@ export class NotificationSocket {
 
   connect() {
     try {
-      const protocol = window.location.protocol === "https:" ? "wss:" : "ws:"
-      const host = process.env.NODE_ENV === "production" ? window.location.host : "localhost:8000"
+      // Get the WebSocket URL from environment or use default
+      const wsProtocol = window.location.protocol === "https:" ? "wss:" : "ws:"
+      const wsHost = process.env.REACT_APP_WS_HOST || window.location.host
+      const wsUrl = `${wsProtocol}//${wsHost}/ws/notifications/?token=${this.token}`
 
-      this.socket = new WebSocket(`${protocol}//${host}/ws/notifications/?token=${this.token}`)
+      this.socket = new WebSocket(wsUrl)
 
       this.socket.onopen = () => {
-        console.log("Notification WebSocket connected")
-        this.connected = true
+        console.log("NotificationSocket: Connected")
+        this.isConnected = true
         this.reconnectAttempts = 0
-        if (this.onOpen) {
-          this.onOpen()
-        }
+        if (this.onOpen) this.onOpen()
       }
 
       this.socket.onmessage = (event) => {
         try {
           const data = JSON.parse(event.data)
-          this.onMessage(data)
+          if (this.onMessage) this.onMessage(data)
         } catch (error) {
-          console.error("Error parsing WebSocket message:", error)
+          console.error("NotificationSocket: Error parsing message", error)
         }
       }
 
       this.socket.onclose = (event) => {
-        console.log("Notification WebSocket disconnected", event)
-        this.connected = false
+        console.log("NotificationSocket: Disconnected", event)
+        this.isConnected = false
         this.attemptReconnect()
       }
 
       this.socket.onerror = (error) => {
-        console.error("Notification WebSocket error:", error)
+        console.error("NotificationSocket: Error", error)
       }
     } catch (error) {
-      console.error("Failed to create WebSocket connection:", error)
+      console.error("NotificationSocket: Failed to connect", error)
     }
   }
 
   attemptReconnect() {
     if (this.reconnectAttempts < this.maxReconnectAttempts) {
       this.reconnectAttempts++
-      const timeout = Math.min(1000 * Math.pow(2, this.reconnectAttempts), 30000)
+      console.log(
+        `NotificationSocket: Attempting to reconnect (${this.reconnectAttempts}/${this.maxReconnectAttempts})`,
+      )
+
+      // Exponential backoff for reconnect
+      const delay = Math.min(1000 * 2 ** this.reconnectAttempts, 30000)
 
       this.reconnectTimeout = setTimeout(() => {
-        console.log(`Attempting to reconnect (${this.reconnectAttempts}/${this.maxReconnectAttempts})...`)
         this.connect()
-      }, timeout)
+      }, delay)
     }
   }
 
@@ -67,50 +72,44 @@ export class NotificationSocket {
       clearTimeout(this.reconnectTimeout)
     }
 
-    if (this.socket && this.connected) {
+    if (this.socket) {
       this.socket.close()
+      this.socket = null
     }
+
+    this.isConnected = false
   }
 
   markAsRead(notificationId) {
-    if (this.socket && this.connected) {
-      try {
-        this.socket.send(
-          JSON.stringify({
-            type: "mark_as_read",
-            id: notificationId,
-          }),
-        )
-      } catch (error) {
-        console.error("Error sending markAsRead message:", error)
-      }
+    if (this.isConnected) {
+      this.socket.send(
+        JSON.stringify({
+          type: "mark_read",
+          notification_id: notificationId,
+        }),
+      )
     }
   }
 
   markAllAsRead() {
-    if (this.socket && this.connected) {
-      try {
-        this.socket.send(
-          JSON.stringify({
-            type: "mark_all_as_read",
-          }),
-        )
-      } catch (error) {
-        console.error("Error sending markAllAsRead message:", error)
-      }
+    if (this.isConnected) {
+      this.socket.send(
+        JSON.stringify({
+          type: "mark_all_read",
+        }),
+      )
     }
   }
 }
 
-// WebSocket connection for issue updates
 export class IssueSocket {
   constructor(token, issueId, onMessage, onOpen) {
-    this.socket = null
     this.token = token
     this.issueId = issueId
     this.onMessage = onMessage
     this.onOpen = onOpen
-    this.connected = false
+    this.socket = null
+    this.isConnected = false
     this.reconnectAttempts = 0
     this.maxReconnectAttempts = 5
     this.reconnectTimeout = null
@@ -118,52 +117,54 @@ export class IssueSocket {
 
   connect() {
     try {
-      const protocol = window.location.protocol === "https:" ? "wss:" : "ws:"
-      const host = process.env.NODE_ENV === "production" ? window.location.host : "localhost:8000"
+      // Get the WebSocket URL from environment or use default
+      const wsProtocol = window.location.protocol === "https:" ? "wss:" : "ws:"
+      const wsHost = process.env.REACT_APP_WS_HOST || window.location.host
+      const wsUrl = `${wsProtocol}//${wsHost}/ws/issues/${this.issueId}/?token=${this.token}`
 
-      this.socket = new WebSocket(`${protocol}//${host}/ws/issues/${this.issueId}/?token=${this.token}`)
+      this.socket = new WebSocket(wsUrl)
 
       this.socket.onopen = () => {
-        console.log(`Issue ${this.issueId} WebSocket connected`)
-        this.connected = true
+        console.log(`IssueSocket: Connected to issue ${this.issueId}`)
+        this.isConnected = true
         this.reconnectAttempts = 0
-        if (this.onOpen) {
-          this.onOpen()
-        }
+        if (this.onOpen) this.onOpen()
       }
 
       this.socket.onmessage = (event) => {
         try {
           const data = JSON.parse(event.data)
-          this.onMessage(data)
+          if (this.onMessage) this.onMessage(data)
         } catch (error) {
-          console.error("Error parsing WebSocket message:", error)
+          console.error("IssueSocket: Error parsing message", error)
         }
       }
 
       this.socket.onclose = (event) => {
-        console.log(`Issue ${this.issueId} WebSocket disconnected`, event)
-        this.connected = false
+        console.log(`IssueSocket: Disconnected from issue ${this.issueId}`, event)
+        this.isConnected = false
         this.attemptReconnect()
       }
 
       this.socket.onerror = (error) => {
-        console.error(`Issue ${this.issueId} WebSocket error:`, error)
+        console.error(`IssueSocket: Error for issue ${this.issueId}`, error)
       }
     } catch (error) {
-      console.error("Failed to create WebSocket connection:", error)
+      console.error(`IssueSocket: Failed to connect to issue ${this.issueId}`, error)
     }
   }
 
   attemptReconnect() {
     if (this.reconnectAttempts < this.maxReconnectAttempts) {
       this.reconnectAttempts++
-      const timeout = Math.min(1000 * Math.pow(2, this.reconnectAttempts), 30000)
+      console.log(`IssueSocket: Attempting to reconnect (${this.reconnectAttempts}/${this.maxReconnectAttempts})`)
+
+      // Exponential backoff for reconnect
+      const delay = Math.min(1000 * 2 ** this.reconnectAttempts, 30000)
 
       this.reconnectTimeout = setTimeout(() => {
-        console.log(`Attempting to reconnect (${this.reconnectAttempts}/${this.maxReconnectAttempts})...`)
         this.connect()
-      }, timeout)
+      }, delay)
     }
   }
 
@@ -172,9 +173,11 @@ export class IssueSocket {
       clearTimeout(this.reconnectTimeout)
     }
 
-    if (this.socket && this.connected) {
+    if (this.socket) {
       this.socket.close()
+      this.socket = null
     }
+
+    this.isConnected = false
   }
 }
-
