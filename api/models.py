@@ -1,118 +1,91 @@
-#importing django
-from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.conf import settings
-from django.db.models.signals import post_save
-from django.dispatch import receiver
-from rest_framework.authtoken.models import Token
-from PIL import Image
-from rest_framework import serializers
-from rest_framework import serializers, permissions
-from django.contrib.auth.models import AbstractUser, Group, Permission
-from django.db import models
-from django.utils.translation import gettext_lazy as _
-
-# Create your models here.
+from django.utils import timezone
+from issues.models import Issue
 
 
-# Custom User Model
-class User(AbstractUser):
-    is_verified = models.BooleanField(default=False)
+class UserActivity(models.Model):
+    """Model to track user activity in the system."""
 
-    class Role(models.TextChoices):
-        STUDENT = "Student", _("Student")
-        FACULTY = "Faculty", _("Faculty")
-        ADMIN = "Admin", _("Admin")
-
-    role = models.CharField(max_length=10, choices=Role.choices, default=Role.STUDENT)
-
-    groups = models.ManyToManyField(Group, related_name="api_users", blank=True)
-    user_permissions = models.ManyToManyField(
-        Permission, related_name="api_users_permissions", blank=True
+    ACTIVITY_TYPES = (
+        ("LOGIN", "User Login"),
+        ("LOGOUT", "User Logout"),
+        ("ISSUE_CREATE", "Issue Created"),
+        ("ISSUE_UPDATE", "Issue Updated"),
+        ("ISSUE_VIEW", "Issue Viewed"),
+        ("COMMENT_ADD", "Comment Added"),
+        ("STATUS_CHANGE", "Status Changed"),
+        ("ASSIGNMENT", "Issue Assigned"),
     )
 
-    def __str__(self):
-        return self.username
-
-
-#Profile Model
-class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
-    phone_number = models.CharField(max_length=15, blank=True, null=True)
-    department = models.CharField(max_length=100, blank=True, null=True)
-    profile_picture = models.ImageField(
-        upload_to="profile_pics/", blank=True, null=True
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="activities"
     )
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"{self.user.username}'s Profile"
-
-
-# Issue Model
-class Issue(models.Model):
-    STATUS_CHOICES = [
-        ("pending", "Pending"),
-        ("in_progress", "In Progress"),
-        ("resolved", "Resolved"),
-        ("escalated", "Escalated"),
-    ]
-    CATEGORY_CHOICES = [
-        ("grade_dispute", "Grade Dispute"),
-        ("schedule_error", "Schedule Error"),
-        ("faculty_concern", "Faculty Concern"),
-        ("other", "Other"),
-    ]
-    title = models.CharField(max_length=200)
-    description = models.TextField()
-    category = models.CharField(max_length=50, choices=CATEGORY_CHOICES)
-    status = models.CharField(max_length=50, choices=STATUS_CHOICES, default="pending")
-    created_by = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="created_issues"
-    )
-    assigned_to = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name="assigned_issues",
+    activity_type = models.CharField(max_length=20, choices=ACTIVITY_TYPES)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+    user_agent = models.TextField(null=True, blank=True)
+    related_issue = models.ForeignKey(
+        Issue,
+        on_delete=models.SET_NULL,
         null=True,
         blank=True,
+        related_name="activities",
     )
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    additional_data = models.JSONField(null=True, blank=True)
+
+    class Meta:
+        ordering = ["-timestamp"]
+        verbose_name_plural = "User Activities"
 
     def __str__(self):
-        return self.title
+        return f"{self.user.email} - {self.activity_type} - {self.timestamp}"
 
 
+class IssueMetrics(models.Model):
+    """Model to store aggregated metrics about issues."""
 
-class Assignment(models.Model):
-    issue = models.ForeignKey(
-        Issue, on_delete=models.CASCADE, related_name="assignments"
-    )
-    faculty = models.ForeignKey(
-        User, on_delete=models.CASCADE, limit_choices_to={"role": User.Role.FACULTY}
-    )
-    assigned_at = models.DateTimeField(auto_now_add=True)
+    date = models.DateField(unique=True)
+    total_issues = models.IntegerField(default=0)
+    new_issues = models.IntegerField(default=0)
+    resolved_issues = models.IntegerField(default=0)
+    avg_resolution_time = models.FloatField(null=True, blank=True)  # in hours
+    issues_by_category = models.JSONField(default=dict)
+    issues_by_priority = models.JSONField(default=dict)
+    issues_by_status = models.JSONField(default=dict)
+
+    class Meta:
+        ordering = ["-date"]
 
     def __str__(self):
-        return f"{self.faculty.username} assigned to {self.issue.title}"
+        return f"Issue Metrics for {self.date}"
 
 
-# Notifications Model
-class Notification(models.Model):
-    user = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="notifications"
-    )
-    message = models.CharField(max_length=255)
-    is_read = models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now_add=True)
+class UserMetrics(models.Model):
+    """Model to store aggregated metrics about user activity."""
+
+    date = models.DateField(unique=True)
+    active_users = models.IntegerField(default=0)
+    new_users = models.IntegerField(default=0)
+    active_students = models.IntegerField(default=0)
+    active_faculty = models.IntegerField(default=0)
+    active_admins = models.IntegerField(default=0)
+    logins = models.IntegerField(default=0)
+
+    class Meta:
+        ordering = ["-date"]
+
+    def __str__(self):
+        return f"User Metrics for {self.date}"
 
 
-# Audit Log Model
-class AuditLog(models.Model):
-    issue = models.ForeignKey(
-        Issue, on_delete=models.CASCADE, related_name="audit_logs"
-    )
-    changed_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    action = models.CharField(max_length=255)
-    timestamp = models.DateTimeField(auto_now_add=True)
+class DashboardStat(models.Model):
+    """Model to store pre-calculated dashboard statistics."""
+
+    key = models.CharField(max_length=100, unique=True)
+    value = models.JSONField()
+    last_updated = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.key
+
