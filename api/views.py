@@ -1,218 +1,395 @@
-from django.shortcuts import render
-from rest_framework import viewsets, generics
-from django.contrib.auth import authenticate
-from rest_framework import status, generics, permissions
+from rest_framework import viewsets, permissions, status
+from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.views import APIView
-from django.contrib.auth import get_user_model
-from django.contrib.auth import get_user_model
-import jwt
-from rest_framework.permissions import IsAuthenticated
-from .models import Profile, Issue, Assignment, Notification, AuditLog
-from django.conf import settings
-from django.shortcuts import get_object_or_404
-from rest_framework.response import Response
-from rest_framework import status
-from rest_framework_simplejwt.tokens import RefreshToken
+from django.db.models import Count, Avg, F, Q
+from django.db.models.functions import TruncDate
+from django.utils import timezone
+from datetime import timedelta
+import json
+
+from .models import UserActivity, IssueMetrics, UserMetrics, DashboardStat
 from .serializers import (
-    IssueSerializer,
-    LogoutSerializer,
-    UserLoginSerializer,
-    UserProfileSerializer,
-    UserRegistrationSerializer,
-    NotificationSerializer,
-    AuditLogSerializer,
+    UserActivitySerializer,
+    IssueMetricsSerializer,
+    UserMetricsSerializer,
+    DashboardStatSerializer,
 )
-from channels.layers import get_channel_layer
-from asgiref.sync import async_to_sync
+from issues.models import Issue, IssueStatus
+from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
 
-class CreateUserView(generics.CreateAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserRegistrationSerializer
+class AnalyticsViewSet(viewsets.ViewSet):
+    """
+    ViewSet for analytics data.
+    """
 
-
-class VerifyEmailView(APIView):
-    def get(self, request):
-        token = request.GET.get("token")
-
-        try:
-            payload = jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])
-            user = get_object_or_404(User, id=payload["user_id"])
-            if user.is_verified:
-                return Response(
-                    {"message": "Your email is already verified!"},
-                    status=status.HTTP_200_OK,
-                )
-
-            user.is_verified = True
-            user.save()
-
-            return Response(
-                {"message": "Email verified successfully!"}, status=status.HTTP_200_OK
-            )
-        except jwt.ExpiredSignatureError:
-            return Response(
-                {"error": "Verification link expired!"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-        except jwt.DecodeError:
-            return Response(
-                {"error": "Invalid token!"}, status=status.HTTP_400_BAD_REQUEST
-            )
-
-
-# User Registration API
-class RegisterView(generics.CreateAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserRegistrationSerializer
-    permission_classes = [permissions.AllowAny]
-
-
-# User Login API
-class LoginView(APIView):
-    permission_classes = [permissions.AllowAny]
-
-    def post(self, request):
-        serializer = UserLoginSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-
-        username = serializer.validated_data["username"]
-        password = serializer.validated_data["password"]
-        user = authenticate(username=username, password=password)
-
-        if user:
-            refresh = RefreshToken.for_user(user)
-            return Response(
-                {
-                    "access": str(refresh.access_token),
-                    "refresh": str(refresh),
-                }
-            )
-        return Response(
-            {"error": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED
-        )
-
-
-# User Profile API
-class UserProfileView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
-    def get(self, request):
-        serializer = UserProfileSerializer(request.user)
+    def get_permissions(self):
+        """
+        Override to ensure only admin and faculty can access analytics.
+        """
+        if self.action in [
+            "list",
+            "retrieve",
+            "dashboard_stats",
+            "issue_trends",
+            "user_activity",
+        ]:
+            return [permissions.IsAuthenticated()]
+        return super().get_permissions()
+
+    @action(detail=False, methods=["get"])
+    def dashboard_stats(self, request):
+        """
+        Get dashboard statistics.
+        """
+        # Check if we have cached stats
+        try:
+            dashboard_stats = DashboardStat.objects.get(key="dashboard_stats")
+            # Check if stats are fresh (less than 1 hour old)
+            if dashboard_stats.last_updated > timezone.now() - timedelta(hours=1):
+                return Response(dashboard_stats.value)
+        except DashboardStat.DoesNotExist:
+            dashboard_stats = None
+
+        # Calculate fresh stats
+        today = timezone.now().date()
+        yesterday = today - timedelta(days=1)
+
+        # Total issues
+        total_issues = Issue.objects.count()
+
+        # Issues by status
+        issues_by_status = Issue.objects.values("current_status").annotate(
+            count=Count("id")
+        )
+        status_data = {
+            item["current_status"]: item["count"] for item in issues_by_status
+        }
+
+        # Issues by category
+        issues_by_category = Issue.objects.values("category").annotate(
+            count=Count("id")
+        )
+        category_data = {item["category"]: item["count"] for item in issues_by_category}
+
+        # Issues by priority
+        issues_by_priority = Issue.objects.values("priority").annotate(
+            count=Count("id")
+        )
+        priority_data = {item["priority"]: item["count"] for item in issues_by_priority}
+
+        # Recent activity
+        recent_activity = UserActivity.objects.select_related("user").order_by(
+            "-timestamp"
+        )[:10]
+        recent_activity_data = UserActivitySerializer(recent_activity, many=True).data
+
+        # New issues today
+        new_issues_today = Issue.objects.filter(created_at__date=today).count()
+
+        # Resolved issues today
+        resolved_today = (
+            IssueStatus.objects.filter(status="RESOLVED", created_at__date=today)
+            .values("issue")
+            .distinct()
+            .count()
+        )
+
+        # Active users today
+        active_users_today = (
+            UserActivity.objects.filter(timestamp__date=today)
+            .values("user")
+            .distinct()
+            .count()
+        )
+
+        # Compile stats
+        stats = {
+            "total_issues": total_issues,
+            "issues_by_status": status_data,
+            "issues_by_category": category_data,
+            "issues_by_priority": priority_data,
+            "recent_activity": recent_activity_data,
+            "new_issues_today": new_issues_today,
+            "resolved_today": resolved_today,
+            "active_users_today": active_users_today,
+            "generated_at": timezone.now().isoformat(),
+        }
+
+        # Cache the stats
+        if dashboard_stats:
+            dashboard_stats.value = stats
+            dashboard_stats.save()
+        else:
+            DashboardStat.objects.create(key="dashboard_stats", value=stats)
+
+        return Response(stats)
+
+    @action(detail=False, methods=["get"])
+    def issue_trends(self, request):
+        """
+        Get issue trends over time.
+        """
+        days = int(request.query_params.get("days", 30))
+        start_date = timezone.now().date() - timedelta(days=days)
+
+        # Get issue metrics for the period
+        metrics = IssueMetrics.objects.filter(date__gte=start_date).order_by("date")
+
+        # If we don't have enough metrics, calculate them
+        if metrics.count() < days:
+            self._calculate_missing_metrics(start_date)
+            metrics = IssueMetrics.objects.filter(date__gte=start_date).order_by("date")
+
+        serializer = IssueMetricsSerializer(metrics, many=True)
         return Response(serializer.data)
-# Update User Profile
-class UpdateUserProfileView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
 
-    def put(self, request):
-        profile = get_object_or_404(Profile, user=request.user)
-        serializer = UserProfileSerializer(profile, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    @action(detail=False, methods=["get"])
+    def user_activity(self, request):
+        """
+        Get user activity trends.
+        """
+        days = int(request.query_params.get("days", 30))
+        start_date = timezone.now().date() - timedelta(days=days)
 
+        # Get user metrics for the period
+        metrics = UserMetrics.objects.filter(date__gte=start_date).order_by("date")
 
-# Logout API (Blacklist Token)
-class LogoutView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+        # If we don't have enough metrics, calculate them
+        if metrics.count() < days:
+            self._calculate_missing_user_metrics(start_date)
+            metrics = UserMetrics.objects.filter(date__gte=start_date).order_by("date")
 
-    def post(self, request):
-        serializer = LogoutSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        try:
-            token = RefreshToken(serializer.validated_data["refresh"])
-            token.blacklist()
-            return Response(
-                {"message": "Successfully logged out"},
-                status=status.HTTP_205_RESET_CONTENT,
+        serializer = UserMetricsSerializer(metrics, many=True)
+        return Response(serializer.data)
+
+    def _calculate_missing_metrics(self, start_date):
+        """
+        Calculate missing issue metrics.
+        """
+        end_date = timezone.now().date()
+        current_date = start_date
+
+        while current_date <= end_date:
+            # Skip if we already have metrics for this date
+            if IssueMetrics.objects.filter(date=current_date).exists():
+                current_date += timedelta(days=1)
+                continue
+
+            # Calculate metrics for this date
+            total_issues = Issue.objects.filter(
+                created_at__date__lte=current_date
+            ).count()
+            new_issues = Issue.objects.filter(created_at__date=current_date).count()
+
+            # Resolved issues on this date
+            resolved_issues = (
+                IssueStatus.objects.filter(
+                    status="RESOLVED", created_at__date=current_date
+                )
+                .values("issue")
+                .distinct()
+                .count()
             )
-        except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+            # Average resolution time for issues resolved on this date
+            resolved_issues_ids = (
+                IssueStatus.objects.filter(
+                    status="RESOLVED", created_at__date=current_date
+                )
+                .values_list("issue_id", flat=True)
+                .distinct()
+            )
+
+            avg_resolution_time = None
+            if resolved_issues_ids:
+                # For each resolved issue, find the time between creation and resolution
+                resolution_times = []
+                for issue_id in resolved_issues_ids:
+                    try:
+                        issue = Issue.objects.get(id=issue_id)
+                        resolution_status = (
+                            IssueStatus.objects.filter(
+                                issue_id=issue_id, status="RESOLVED"
+                            )
+                            .order_by("created_at")
+                            .first()
+                        )
+
+                        if resolution_status:
+                            time_diff = resolution_status.created_at - issue.created_at
+                            resolution_times.append(
+                                time_diff.total_seconds() / 3600
+                            )  # Convert to hours
+                    except Issue.DoesNotExist:
+                        continue
+
+                if resolution_times:
+                    avg_resolution_time = sum(resolution_times) / len(resolution_times)
+
+            # Issues by category
+            issues_by_category = (
+                Issue.objects.filter(created_at__date__lte=current_date)
+                .values("category")
+                .annotate(count=Count("id"))
+            )
+            category_data = {
+                item["category"]: item["count"] for item in issues_by_category
+            }
+
+            # Issues by priority
+            issues_by_priority = (
+                Issue.objects.filter(created_at__date__lte=current_date)
+                .values("priority")
+                .annotate(count=Count("id"))
+            )
+            priority_data = {
+                item["priority"]: item["count"] for item in issues_by_priority
+            }
+
+            # Issues by status
+            issues_by_status = (
+                Issue.objects.filter(created_at__date__lte=current_date)
+                .values("current_status")
+                .annotate(count=Count("id"))
+            )
+            status_data = {
+                item["current_status"]: item["count"] for item in issues_by_status
+            }
+
+            # Create metrics record
+            IssueMetrics.objects.create(
+                date=current_date,
+                total_issues=total_issues,
+                new_issues=new_issues,
+                resolved_issues=resolved_issues,
+                avg_resolution_time=avg_resolution_time,
+                issues_by_category=category_data,
+                issues_by_priority=priority_data,
+                issues_by_status=status_data,
+            )
+
+            current_date += timedelta(days=1)
+
+    def _calculate_missing_user_metrics(self, start_date):
+        """
+        Calculate missing user metrics.
+        """
+        end_date = timezone.now().date()
+        current_date = start_date
+
+        while current_date <= end_date:
+            # Skip if we already have metrics for this date
+            if UserMetrics.objects.filter(date=current_date).exists():
+                current_date += timedelta(days=1)
+                continue
+
+            # Active users on this date
+            active_users = (
+                UserActivity.objects.filter(timestamp__date=current_date)
+                .values("user")
+                .distinct()
+                .count()
+            )
+
+            # New users on this date
+            new_users = User.objects.filter(date_joined__date=current_date).count()
+
+            # Active users by role
+            active_students = (
+                UserActivity.objects.filter(
+                    timestamp__date=current_date, user__role="STUDENT"
+                )
+                .values("user")
+                .distinct()
+                .count()
+            )
+
+            active_faculty = (
+                UserActivity.objects.filter(
+                    timestamp__date=current_date, user__role="FACULTY"
+                )
+                .values("user")
+                .distinct()
+                .count()
+            )
+
+            active_admins = (
+                UserActivity.objects.filter(
+                    timestamp__date=current_date, user__role="ADMIN"
+                )
+                .values("user")
+                .distinct()
+                .count()
+            )
+
+            # Login count
+            logins = UserActivity.objects.filter(
+                timestamp__date=current_date, activity_type="LOGIN"
+            ).count()
+
+            # Create metrics record
+            UserMetrics.objects.create(
+                date=current_date,
+                active_users=active_users,
+                new_users=new_users,
+                active_students=active_students,
+                active_faculty=active_faculty,
+                active_admins=active_admins,
+                logins=logins,
+            )
+
+            current_date += timedelta(days=1)
 
 
-# ------------------------ ISSUE MANAGEMENT ------------------------
-# List and create Issues
-class IssueListCreateView(generics.ListCreateAPIView):
-    queryset = Issue.objects.all()
-    serializer_class = IssueSerializer
-    permission_classes = [permissions.IsAuthenticated]
+class UserActivityViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet for user activity.
+    """
 
-    def perform_create(self, serializer):
-        serializer.save(student=self.request.user)
-
-
-# Retrieve, Update, Delete Issues
-class IssueDetailView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Issue.objects.all()
-    serializer_class = IssueSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-
-# Assign to Faculty
-class AssignIssueView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
-
-    def post(self, request, issue_id):
-        issue = get_object_or_404(Issue, id=issue_id)
-        faculty_id = request.data.get("faculty_id")
-        faculty = get_object_or_404(User, id=faculty_id, role="Faculty")
-
-        Assignment.objects.create(issue=issue, faculty=faculty)
-        return Response(
-            {"message": "Issue assigned successfully"}, status=status.HTTP_200_OK
-            
-        )
- # List Issues Assigned to Faculty
-class FacultyAssignedIssuesView(generics.ListAPIView):
-    serializer_class = IssueSerializer
+    queryset = UserActivity.objects.all()
+    serializer_class = UserActivitySerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        return Issue.objects.filter(assignment__faculty=self.request.user)
+        """
+        Filter activities based on user role.
+        """
+        user = self.request.user
 
+        # Admins can see all activities
+        if user.role == "ADMIN":
+            return UserActivity.objects.all()
 
-# ------------------------ NOTIFICATIONS & AUDIT LOGS ------------------------
-# List Notifications
-class NotificationListView(generics.ListAPIView):
-    queryset = Notification.objects.all()
-    serializer_class = NotificationSerializer
-    permission_classes = [permissions.IsAuthenticated]
+        # Faculty can see their own activities and activities related to issues assigned to them
+        if user.role == "FACULTY":
+            return UserActivity.objects.filter(
+                Q(user=user) | Q(related_issue__assigned_to=user)
+            )
 
+        # Students can only see their own activities
+        return UserActivity.objects.filter(user=user)
 
-# List Audit Logs
-class AuditLogListView(generics.ListAPIView):
-    queryset = AuditLog.objects.all()
-    serializer_class = AuditLogSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    def create(self, request, *args, **kwargs):
+        """
+        Create a new activity record.
+        """
+        # Set the user to the current user if not provided
+        if "user" not in request.data:
+            request.data["user"] = request.user.id
 
+        # Get IP address and user agent
+        ip_address = request.META.get("REMOTE_ADDR")
+        user_agent = request.META.get("HTTP_USER_AGENT")
 
-class SendNotificationView(APIView):
-    permission_classes = [IsAuthenticated]
+        if ip_address:
+            request.data["ip_address"] = ip_address
 
-    def post(self, request):
-        message = request.data.get("message", "New notification")
-        user = request.user
+        if user_agent:
+            request.data["user_agent"] = user_agent
 
-        # Save notification in database
-        notification = Notification.objects.create(user=user, message=message)
-
-        # Send WebSocket notification
-        channel_layer = get_channel_layer()
-        async_to_sync(channel_layer.group_send)(
-            "notifications", {"type": "send_notification", "message": message}
-        )
-
-        return Response({"message": "Notification sent successfully"})
-        # Mark Notification as Read
-class MarkNotificationAsReadView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
-
-    def post(self, request, notification_id):
-        notification = get_object_or_404(Notification, id=notification_id, user=request.user)
-        notification.is_read = True
-        notification.save()
-        return Response({"message": "Notification marked as read"}, status=status.HTTP_200_OK)
+        return super().create(request, *args, **kwargs)
