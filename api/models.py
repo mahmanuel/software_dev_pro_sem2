@@ -113,7 +113,6 @@ class Notification(models.Model):
         return f"Notification for {self.user.username}:{'Read' if self.is_read else 'unread'}"
 
 
-# Audit Log Model
 class AuditLog(models.Model):
     issue = models.ForeignKey(
         Issue, on_delete=models.CASCADE, related_name="audit_logs"
