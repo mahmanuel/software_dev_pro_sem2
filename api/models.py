@@ -90,7 +90,7 @@ class Assignment(models.Model):
         return f"{self.faculty.username} assigned to {self.issue.title}"
 
 
-# Notifications Model
+
 class Notification(models.Model):
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="notifications"
