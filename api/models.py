@@ -76,7 +76,7 @@ class Issue(models.Model):
         return self.title
 
 
-# Issue Assignment Model
+
 class Assignment(models.Model):
     issue = models.ForeignKey(
         Issue, on_delete=models.CASCADE, related_name="assignments"
