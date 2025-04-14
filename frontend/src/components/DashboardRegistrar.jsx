@@ -1,5 +1,6 @@
-"use client"
+"use client";
 
+<<<<<<< HEAD
 import { useState, useEffect, useCallback } from "react"
 import { useNavigate } from "react-router-dom"
 import { getAllIssues, assignIssue, addIssueStatus, addComment } from "../services/issueService"
@@ -47,24 +48,39 @@ function DashboardRegistrar({ setUser }) {
   // Use useCallback to memoize the fetchIssues function
   const fetchIssues = useCallback(async () => {
     setIsLoading(true)
+=======
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { toast } from "react-toastify";
+import { getAllIssues, assignIssue, addIssueStatus } from "../services/issueService";
+import { logout } from "../services/authService";
+import { fetchIssuesStart, fetchIssuesSuccess, fetchIssuesFailure } from "../slices/issuesSlice";
+import NotificationBell from "./NotificationBell";
+import LoadingSpinner from "./LoadingSpinner";
+import { STATUS_LABELS, CATEGORY_LABELS, PRIORITY_LABELS } from "../constants/issueConstants";
+
+function DashboardRegistrar({ setUser }) {
+  const dispatch = useDispatch();
+  const { list: issues, loading: isLoading, error } = useSelector((state) => state.issues);
+  const [filters, setFilters] = useState({ status: "", category: "", priority: "" });
+  const [facultyList, setFacultyList] = useState([]);
+  const navigate = useNavigate();
+
+  const fetchIssues = async () => {
+    dispatch(fetchIssuesStart());
+>>>>>>> 1bd985f633aa89c6c2965f3d23758b9c4e7f1ff3
     try {
-      console.log("Fetching issues for registrar dashboard")
-      // Remove empty filters
-      const activeFilters = Object.fromEntries(Object.entries(filters).filter(([_, value]) => value !== ""))
-
-      const data = await getAllIssues(activeFilters)
-      console.log("Issues fetched:", data)
-
-      // Check if the response is paginated and extract the results array
-      const issuesArray = data.results ? data.results : Array.isArray(data) ? data : []
-      setIssues(issuesArray)
-      setError("")
+      const activeFilters = Object.fromEntries(Object.entries(filters).filter(([_, value]) => value !== ""));
+      const data = await getAllIssues(activeFilters);
+      const issuesArray = data.results ? data.results : Array.isArray(data) ? data : [];
+      dispatch(fetchIssuesSuccess(issuesArray));
     } catch (err) {
-      console.error("Error fetching issues:", err)
-      setError("Failed to load issues. Please try again later.")
-    } finally {
-      setIsLoading(false)
+      console.error("Error fetching issues:", err);
+      dispatch(fetchIssuesFailure("Failed to load issues."));
+      toast.error("Failed to load issues. Please try again later.");
     }
+<<<<<<< HEAD
   }, [filters])
 
   const fetchAuditLogs = async () => {
@@ -108,6 +124,17 @@ function DashboardRegistrar({ setUser }) {
       setIsLoadingAnalytics(false)
     }
   }
+=======
+  };
+
+  const fetchFacultyList = async () => {
+    setFacultyList([
+      { id: 1, email: "faculty1@example.com", name: "Faculty One" },
+      { id: 2, email: "faculty2@example.com", name: "Faculty Two" },
+      { id: 3, email: "faculty3@example.com", name: "Faculty Three" },
+    ]);
+  };
+>>>>>>> 1bd985f633aa89c6c2965f3d23758b9c4e7f1ff3
 
   const fetchFacultyList = useCallback(async () => {
     setIsFacultyLoading(true)
@@ -141,6 +168,7 @@ function DashboardRegistrar({ setUser }) {
 
   // Setup auto-refresh for issues
   useEffect(() => {
+<<<<<<< HEAD
     // Initial fetch
     fetchIssues()
     fetchFacultyList()
@@ -201,6 +229,11 @@ function DashboardRegistrar({ setUser }) {
       [name]: value,
     }))
   }
+=======
+    fetchIssues();
+    fetchFacultyList();
+  }, [filters, dispatch]);
+>>>>>>> 1bd985f633aa89c6c2965f3d23758b9c4e7f1ff3
 
   const handleLogFilterChange = (e) => {
     const { name, value } = e.target
@@ -212,6 +245,7 @@ function DashboardRegistrar({ setUser }) {
 
   const handleAssignIssue = async (issueId, facultyId) => {
     try {
+<<<<<<< HEAD
       // Don't proceed if facultyId is empty
       if (!facultyId) {
         console.log("No faculty selected, skipping assignment")
@@ -288,11 +322,20 @@ function DashboardRegistrar({ setUser }) {
           type: "error",
         })
       }
+=======
+      await assignIssue(issueId, facultyId);
+      toast.success("Issue assigned successfully!");
+      fetchIssues();
+    } catch (err) {
+      console.error("Error assigning issue:", err);
+      toast.error("Failed to assign issue.");
+>>>>>>> 1bd985f633aa89c6c2965f3d23758b9c4e7f1ff3
     }
-  }
+  };
 
   const handleStatusChange = async (issueId, newStatus) => {
     try {
+<<<<<<< HEAD
       console.log(`Updating issue ${issueId} status to ${newStatus}`)
       await addIssueStatus(issueId, {
         status: newStatus,
@@ -347,15 +390,24 @@ function DashboardRegistrar({ setUser }) {
         message: "Failed to post comment. Please try again.",
         type: "error",
       })
+=======
+      await addIssueStatus(issueId, { status: newStatus, notes: `Status updated to ${newStatus}` });
+      toast.success("Status updated successfully!");
+      fetchIssues();
+    } catch (err) {
+      console.error("Error updating status:", err);
+      toast.error("Failed to update status.");
+>>>>>>> 1bd985f633aa89c6c2965f3d23758b9c4e7f1ff3
     }
-  }
+  };
 
   const handleLogout = () => {
-    logout()
-    setUser(null)
-    navigate("/")
-  }
+    logout();
+    setUser(null);
+    navigate("/");
+  };
 
+<<<<<<< HEAD
   const toggleAuditLog = () => {
     setShowAuditLog(!showAuditLog)
     setShowAnalytics(false)
@@ -391,9 +443,18 @@ function DashboardRegistrar({ setUser }) {
     }
     return colors[action] || "default"
   }
+=======
+  const handleNotificationClick = (notification) => {
+    if (notification.content_type === "issues.issue" && notification.object_id) {
+      navigate(`/issues/${notification.object_id}`);
+    } else if (notification.viewAll) {
+      alert("View all notifications clicked");
+    }
+  };
+>>>>>>> 1bd985f633aa89c6c2965f3d23758b9c4e7f1ff3
 
-  const userInfo = JSON.parse(localStorage.getItem("user") || "{}")
-  const isAdmin = userInfo.role === "ADMIN" || userInfo.role === "admin"
+  const userInfo = JSON.parse(localStorage.getItem("user") || "{}");
+  const isAdmin = userInfo.role.toUpperCase() === "ADMIN";
 
   return (
     <div className="dashboard registrar-dashboard">
@@ -408,6 +469,7 @@ function DashboardRegistrar({ setUser }) {
       <div className="dashboard-header">
         <h1>{isAdmin ? "Admin" : "Registrar"} Dashboard</h1>
         <div className="dashboard-actions">
+<<<<<<< HEAD
           <button onClick={refreshIssues} className="refresh-button">
             Refresh Issues
           </button>
@@ -421,16 +483,18 @@ function DashboardRegistrar({ setUser }) {
           <button onClick={handleLogout} className="logout-button">
             Logout
           </button>
+=======
+          <NotificationBell onNotificationClick={handleNotificationClick} />
+          <button onClick={handleLogout} className="logout-button">Logout</button>
+>>>>>>> 1bd985f633aa89c6c2965f3d23758b9c4e7f1ff3
         </div>
       </div>
-
       <div className="user-info">
-        <p>
-          Welcome, {userInfo.first_name} {userInfo.last_name}
-        </p>
+        <p>Welcome, {userInfo.first_name} {userInfo.last_name}</p>
         <p>Email: {userInfo.email}</p>
         <p>Role: {userInfo.role}</p>
       </div>
+<<<<<<< HEAD
 
       {showAnalytics && (
         <div className="analytics-section">
@@ -687,26 +751,51 @@ function DashboardRegistrar({ setUser }) {
             <div className="no-issues">No issues found. When students submit issues, they will appear here.</div>
           ) : (
             issues.map((issue) => (
+=======
+      <div className="issues-section">
+        <h2>Student Issues</h2>
+        <div className="filter-controls">
+          <div className="filter-group">
+            <label>Status:</label>
+            <select name="status" value={filters.status} onChange={(e) => setFilters({ ...filters, status: e.target.value })}>
+              <option value="">All Statuses</option>
+              {Object.entries(STATUS_LABELS).map(([value, label]) => (
+                <option key={value} value={value}>{label}</option>
+              ))}
+            </select>
+          </div>
+          <div className="filter-group">
+            <label>Category:</label>
+            <select name="category" value={filters.category} onChange={(e) => setFilters({ ...filters, category: e.target.value })}>
+              <option value="">All Categories</option>
+              {Object.entries(CATEGORY_LABELS).map(([value, label]) => (
+                <option key={value} value={value}>{label}</option>
+              ))}
+            </select>
+          </div>
+          <div className="filter-group">
+            <label>Priority:</label>
+            <select name="priority" value={filters.priority} onChange={(e) => setFilters({ ...filters, priority: e.target.value })}>
+              <option value="">All Priorities</option>
+              {Object.entries(PRIORITY_LABELS).map(([value, label]) => (
+                <option key={value} value={value}>{label}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+        {isLoading ? (
+          <LoadingSpinner />
+        ) : error ? (
+          <div className="error-message">{error}</div>
+        ) : issues.length === 0 ? (
+          <div className="no-issues">No issues found.</div>
+        ) : (
+          <div className="issue-list">
+            {issues.map((issue) => (
+>>>>>>> 1bd985f633aa89c6c2965f3d23758b9c4e7f1ff3
               <div key={issue.id} className="issue-card">
-                <div className="issue-header">
-                  <h3>
-                    <a href={`/issues/${issue.id}`}>{issue.title}</a>
-                  </h3>
-                  <div className="issue-meta">
-                    <span className="issue-category">{CATEGORY_LABELS[issue.category] || issue.category}</span>
-                    <span className="issue-priority">{PRIORITY_LABELS[issue.priority] || issue.priority}</span>
-                    <span className="issue-status">
-                      {STATUS_LABELS[issue.current_status] || issue.current_status || "SUBMITTED"}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="issue-body">
-                  <p>
-                    {issue.description.length > 150 ? `${issue.description.substring(0, 150)}...` : issue.description}
-                  </p>
-                </div>
-
+                <h3><a href={`/issues/${issue.id}`}>{issue.title}</a></h3>
+                <p>{issue.description.substring(0, 150)}...</p>
                 <div className="issue-actions">
                   <div className="action-group">
                     <label>Status:</label>
@@ -715,18 +804,22 @@ function DashboardRegistrar({ setUser }) {
                       onChange={(e) => handleStatusChange(issue.id, e.target.value)}
                     >
                       {Object.entries(STATUS_LABELS).map(([value, label]) => (
-                        <option key={value} value={value}>
-                          {label}
-                        </option>
+                        <option key={value} value={value}>{label}</option>
                       ))}
                     </select>
                   </div>
+<<<<<<< HEAD
 
                   <div className="action-group">
                     <label>Assign to:</label>
                     {isFacultyLoading ? (
                       <div className="loading-select">Loading faculty...</div>
                     ) : (
+=======
+                  {isAdmin && (
+                    <div className="action-group">
+                      <label>Assign To:</label>
+>>>>>>> 1bd985f633aa89c6c2965f3d23758b9c4e7f1ff3
                       <select
                         value={issue.assigned_to?.id || ""}
                         onChange={(e) => {
@@ -735,6 +828,7 @@ function DashboardRegistrar({ setUser }) {
                         }}
                       >
                         <option value="">Unassigned</option>
+<<<<<<< HEAD
                         {facultyList && facultyList.length > 0 ? (
                           facultyList.map((faculty) => (
                             <option key={faculty.id} value={faculty.id}>
@@ -773,14 +867,26 @@ function DashboardRegistrar({ setUser }) {
                 <div className="issue-footer">
                   <div className="issue-submitter">Submitted by: {issue.submitted_by_details?.email || "Unknown"}</div>
                   <div className="issue-date">{new Date(issue.created_at).toLocaleDateString()}</div>
+=======
+                        {facultyList.map((faculty) => (
+                          <option key={faculty.id} value={faculty.id}>{faculty.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+>>>>>>> 1bd985f633aa89c6c2965f3d23758b9c4e7f1ff3
                 </div>
               </div>
-            ))
-          )}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
-  )
+  );
 }
 
+<<<<<<< HEAD
 export default DashboardRegistrar
+=======
+export default DashboardRegistrar;
+>>>>>>> 1bd985f633aa89c6c2965f3d23758b9c4e7f1ff3
