@@ -13,7 +13,7 @@ class UserActivityAdmin(admin.ModelAdmin):
 @admin.register(IssueMetrics)
 class IssueMetricsAdmin(admin.ModelAdmin):
     list_display = (
-        "date",
+        "date"
         "total_issues",
         "new_issues",
         "resolved_issues",
