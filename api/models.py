@@ -15,7 +15,7 @@ from django.utils.translation import gettext_lazy as _
 
 #create your models here
 
-# Custom User Model
+
 class User(AbstractUser):
     is_verified = models.BooleanField(default=False)
 
