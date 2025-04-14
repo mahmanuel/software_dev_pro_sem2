@@ -36,3 +36,4 @@ urlpatterns = [
     path("api/", include(router.urls)),
     path("api/register/", CreateUserView.as_view(), name="user-register"),
 ]
+
