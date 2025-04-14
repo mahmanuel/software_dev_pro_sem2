@@ -150,4 +150,4 @@ class Message(models.Model):
     )
     content = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
-    is_deleted = models.BooleanField
+    is_deleted = models.BooleanField(default=False)
