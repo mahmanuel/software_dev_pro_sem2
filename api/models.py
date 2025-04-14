@@ -41,7 +41,7 @@ class Profile(models.Model):
         return f"{self.user.username}'s Profile"
 
 
-# This is an Issue Model
+
 class Issue(models.Model):
     STATUS_CHOICES = [
         ("pending", "Pending"),
