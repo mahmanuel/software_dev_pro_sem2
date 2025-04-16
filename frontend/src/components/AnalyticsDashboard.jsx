@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import api from "../services/api";
 import LoadingSpinner from "./LoadingSpinner";
 
+
 function AnalyticsDashboard() {
   const [dashboardStats, setDashboardStats] = useState(null);
   const [issueTrends, setIssueTrends] = useState([]);

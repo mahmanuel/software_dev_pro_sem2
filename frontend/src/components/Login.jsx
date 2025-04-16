@@ -54,6 +54,10 @@ function Login({ setUser }) {
     }
   };
 
+  const handleBackToWelcome = () => {
+    navigate("/"); // Navigate to the welcome page
+  };
+
   return (
     <div className="login-container">
       <h2>Login to Your Account</h2>
@@ -87,6 +91,16 @@ function Login({ setUser }) {
         </button>
         {error && <p className="error-message">{error}</p>}
       </form>
+      
+      {/* Back to Welcome Button */}
+      <button onClick={handleBackToWelcome} className="back-to-welcome-button">
+        Back to Welcome Page
+      </button>
+
+      {/* Register Link */}
+      <p className="register-link">
+        Don't have an account? <a href="/register">Register here</a>
+      </p>
     </div>
   );
 }

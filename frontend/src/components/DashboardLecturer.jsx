@@ -16,10 +16,11 @@ function DashboardLecturer({ setUser }) {
   const { list: issues, loading: isLoading, error } = useSelector((state) => state.issues);
   const navigate = useNavigate();
 
+  // Fetch assigned issues for the lecturer
   const fetchIssues = async () => {
     dispatch(fetchIssuesStart());
     try {
-      const userIssues = await getUserIssues(); // Assuming this fetches assigned issues for faculty
+      const userIssues = await getUserIssues(); // Assuming this fetches issues assigned to the lecturer
       const issuesArray = userIssues.results ? userIssues.results : Array.isArray(userIssues) ? userIssues : [];
       dispatch(fetchIssuesSuccess(issuesArray));
     } catch (err) {
@@ -29,27 +30,31 @@ function DashboardLecturer({ setUser }) {
     }
   };
 
+  // Call fetchIssues when the component mounts
   useEffect(() => {
     fetchIssues();
   }, [dispatch]);
 
+  // Handle status update when the lecturer solves the issue
   const handleStatusChange = async (issueId, newStatus) => {
     try {
       await addIssueStatus(issueId, { status: newStatus, notes: `Status updated to ${newStatus}` });
       toast.success("Status updated successfully!");
-      fetchIssues();
+      fetchIssues(); // Re-fetch issues to update the list
     } catch (err) {
       console.error("Error updating status:", err);
       toast.error("Failed to update status.");
     }
   };
 
+  // Handle logout
   const handleLogout = () => {
     logout();
     setUser(null);
-    navigate("/");
+    navigate("/"); // Redirect to the home page
   };
 
+  // Handle notification click (if notifications are integrated)
   const handleNotificationClick = (notification) => {
     if (notification.content_type === "issues.issue" && notification.object_id) {
       navigate(`/issues/${notification.object_id}`);
@@ -69,11 +74,13 @@ function DashboardLecturer({ setUser }) {
           <button onClick={handleLogout} className="logout-button">Logout</button>
         </div>
       </div>
+
       <div className="user-info">
         <p>Welcome, {userInfo.first_name} {userInfo.last_name}</p>
         <p>Email: {userInfo.email}</p>
         <p>Role: {userInfo.role}</p>
       </div>
+
       <div className="issues-section">
         <h2>Assigned Issues</h2>
         {isLoading ? (
@@ -99,6 +106,14 @@ function DashboardLecturer({ setUser }) {
                         <option key={value} value={value}>{label}</option>
                       ))}
                     </select>
+                  </div>
+                  <div className="action-group">
+                    <button
+                      className="resolve-button"
+                      onClick={() => handleStatusChange(issue.id, "RESOLVED")}
+                    >
+                      Mark as Resolved
+                    </button>
                   </div>
                 </div>
               </div>

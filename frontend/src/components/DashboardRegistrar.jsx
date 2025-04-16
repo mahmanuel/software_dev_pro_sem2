@@ -10,6 +10,7 @@ import { fetchIssuesStart, fetchIssuesSuccess, fetchIssuesFailure } from "../sli
 import NotificationBell from "./NotificationBell";
 import LoadingSpinner from "./LoadingSpinner";
 import { STATUS_LABELS, CATEGORY_LABELS, PRIORITY_LABELS } from "../constants/issueConstants";
+import { getLecturers } from "../services/userService"; // Import the service to fetch lecturers
 
 function DashboardRegistrar({ setUser }) {
   const dispatch = useDispatch();
@@ -33,11 +34,13 @@ function DashboardRegistrar({ setUser }) {
   };
 
   const fetchFacultyList = async () => {
-    setFacultyList([
-      { id: 1, email: "faculty1@example.com", name: "Faculty One" },
-      { id: 2, email: "faculty2@example.com", name: "Faculty Two" },
-      { id: 3, email: "faculty3@example.com", name: "Faculty Three" },
-    ]);
+    try {
+      const data = await getLecturers(); // Fetch the list of lecturers
+      setFacultyList(data);
+    } catch (err) {
+      console.error("Error fetching lecturers:", err);
+      toast.error("Failed to load lecturers. Please try again later.");
+    }
   };
 
   useEffect(() => {
@@ -86,20 +89,23 @@ function DashboardRegistrar({ setUser }) {
 
   return (
     <div className="dashboard registrar-dashboard">
-    <div className="dashboard-header">
+      <div className="dashboard-header">
         <h1>{isAdmin ? "Admin" : "Registrar"} Dashboard</h1>
         <div className="dashboard-actions">
           <NotificationBell onNotificationClick={handleNotificationClick} />
           <button onClick={handleLogout} className="logout-button">Logout</button>
         </div>
       </div>
+
       <div className="user-info">
         <p>Welcome, {userInfo.first_name} {userInfo.last_name}</p>
         <p>Email: {userInfo.email}</p>
         <p>Role: {userInfo.role}</p>
       </div>
+
       <div className="issues-section">
         <h2>Student Issues</h2>
+
         <div className="filter-controls">
           <div className="filter-group">
             <label>Status:</label>
@@ -129,6 +135,7 @@ function DashboardRegistrar({ setUser }) {
             </select>
           </div>
         </div>
+
         {isLoading ? (
           <LoadingSpinner />
         ) : error ? (
@@ -141,6 +148,7 @@ function DashboardRegistrar({ setUser }) {
               <div key={issue.id} className="issue-card">
                 <h3><a href={`/issues/${issue.id}`}>{issue.title}</a></h3>
                 <p>{issue.description.substring(0, 150)}...</p>
+
                 <div className="issue-actions">
                   <div className="action-group">
                     <label>Status:</label>
@@ -153,23 +161,20 @@ function DashboardRegistrar({ setUser }) {
                       ))}
                     </select>
                   </div>
-                  {isAdmin && (
-                    <div className="action-group">
-                      <label>Assign To:</label>
-                      <select
-                        value={issue.assigned_to?.id || ""}
-                        onChange={(e) => {
-                          console.log("Selected faculty ID:", e.target.value)
-                          handleAssignIssue(issue.id, e.target.value)
-                        }}
-                      >
-                        <option value="">Unassigned</option>
-                        {facultyList.map((faculty) => (
-                          <option key={faculty.id} value={faculty.id}>{faculty.name}</option>
-                        ))}
-                      </select>
-                    </div>
-                  )}
+
+                  {/* Assign to faculty only if it's not already assigned */}
+                  <div className="action-group">
+                    <label>Assign To:</label>
+                    <select
+                      value={issue.assigned_to?.id || ""}
+                      onChange={(e) => handleAssignIssue(issue.id, e.target.value)}
+                    >
+                      <option value="">Unassigned</option>
+                      {facultyList.map((faculty) => (
+                        <option key={faculty.id} value={faculty.id}>{faculty.name}</option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
               </div>
             ))}

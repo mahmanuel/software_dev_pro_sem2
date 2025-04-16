@@ -1456,4 +1456,31 @@ select {
     padding-bottom: 10px;
   }
 }
+.back-to-welcome-button {
+  background-color: #4CAF50; /* Green */
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  margin-top: 20px; /* Increased margin for more space */
+}
+
+.back-to-welcome-button:hover {
+  background-color: #45a049;
+}
+
+.register-link {
+  margin-top: 20px; /* Increased margin for more space from the button */
+  text-align: center;
+}
+
+.register-link a {
+  color: #007BFF;
+  text-decoration: none;
+}
+
+.register-link a:hover {
+  text-decoration: underline;
+}
 
