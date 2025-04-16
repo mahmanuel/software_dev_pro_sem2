@@ -86,7 +86,7 @@ function DashboardRegistrar({ setUser }) {
 
   return (
     <div className="dashboard registrar-dashboard">
-      <div className="dashboard-header">
+    <div className="dashboard-header">
         <h1>{isAdmin ? "Admin" : "Registrar"} Dashboard</h1>
         <div className="dashboard-actions">
           <NotificationBell onNotificationClick={handleNotificationClick} />
@@ -158,7 +158,10 @@ function DashboardRegistrar({ setUser }) {
                       <label>Assign To:</label>
                       <select
                         value={issue.assigned_to?.id || ""}
-                        onChange={(e) => handleAssignIssue(issue.id, e.target.value)}
+                        onChange={(e) => {
+                          console.log("Selected faculty ID:", e.target.value)
+                          handleAssignIssue(issue.id, e.target.value)
+                        }}
                       >
                         <option value="">Unassigned</option>
                         {facultyList.map((faculty) => (
