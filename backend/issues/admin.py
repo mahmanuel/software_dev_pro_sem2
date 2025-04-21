@@ -1,5 +1,16 @@
 from django.contrib import admin
 from .models import Issue, IssueStatus, Comment, Attachment
+from rest_framework.permissions import BasePermission
+from django import forms
+
+
+class IsRegistrar(BasePermission):
+    """
+    Custom permission to allow only registrars (admins) to assign issues.
+    """
+
+    def has_permission(self, request, view):
+        return request.user.is_authenticated and request.user.role == "ADMIN"
 
 
 class IssueStatusInline(admin.TabularInline):
@@ -15,6 +26,23 @@ class CommentInline(admin.TabularInline):
 class AttachmentInline(admin.TabularInline):
     model = Attachment
     extra = 0
+
+
+class IssueForm(forms.ModelForm):
+    """
+    Custom form for the Issue model to allow assigning issues to lecturers.
+    """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Assuming 'lecturer' is a user role in your system
+        self.fields["assigned_to"].queryset = self.fields[
+            "assigned_to"
+        ].queryset.filter(role="LECTURER")
+
+    class Meta:
+        model = Issue
+        fields = "__all__"
 
 
 @admin.register(Issue)

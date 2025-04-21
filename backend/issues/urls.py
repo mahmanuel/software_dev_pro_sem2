@@ -1,6 +1,15 @@
 from django.urls import path, include
 from rest_framework_nested import routers
-from .views import IssueViewSet, IssueStatusViewSet, CommentViewSet, AttachmentViewSet
+from .views import (
+    IssueViewSet,
+    IssueStatusViewSet,
+    CommentViewSet,
+    AttachmentViewSet,
+    my_issues,
+    assign_issue,
+    resolve_issue,
+    lecturer_assigned_issues,
+)
 
 router = routers.SimpleRouter()
 router.register(r"", IssueViewSet)
@@ -14,4 +23,8 @@ issue_router.register(r"attachments", AttachmentViewSet, basename="issue-attachm
 urlpatterns = [
     path("", include(router.urls)),
     path("", include(issue_router.urls)),
+    path("assign/", assign_issue, name="assign_issue"),
+    path("my-issues/", my_issues, name="my_issues"),
+    path("lecturer_issues/", lecturer_assigned_issues, name="lecturer_assigned_issues"),
+    path("resolve/<int:issue_id>/", resolve_issue, name="resolve_issue"),
 ]

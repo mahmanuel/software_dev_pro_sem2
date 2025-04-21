@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
+from django.core.exceptions import PermissionDenied
 
 
 class Issue(models.Model):
@@ -64,6 +65,27 @@ class Issue(models.Model):
 
     def __str__(self):
         return self.title
+
+    def assign_to(self, user, registrar):
+        """Assign the issue to a lecturer."""
+        if not registrar.is_staff:  # Assuming registrars are staff users
+            raise PermissionDenied("Only registrars can assign issues.")
+        self.assigned_to = user
+        self.current_status = "ASSIGNED"
+        self.save()
+
+    def resolve(self, lecturer):
+        """Mark the issue as resolved by the assigned lecturer."""
+        if self.assigned_to != lecturer:
+            raise PermissionDenied("Only the assigned lecturer can resolve this issue.")
+        self.current_status = "RESOLVED"
+        self.save()
+        IssueStatus.objects.create(
+            issue=self,
+            status="RESOLVED",
+            updated_by=lecturer,
+            notes="Issue resolved by lecturer.",
+        )
 
 
 class IssueStatus(models.Model):

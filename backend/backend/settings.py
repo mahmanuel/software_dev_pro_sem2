@@ -86,6 +86,7 @@ INSTALLED_APPS = [
     "analytics",
     "realtime",
     "backend_api",
+    "api",
 ]
 
 # WebSocket Configuration

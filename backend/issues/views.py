@@ -1,21 +1,131 @@
 from rest_framework import viewsets, status, permissions
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.decorators import action
+from rest_framework.views import APIView
 from rest_framework.response import Response
+from .models import Issue
+from rest_framework.permissions import IsAuthenticated
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
 from .models import Issue, IssueStatus, Comment, Attachment
 from .serializers import (
     IssueSerializer,
-    IssueListSerializer,
     IssueStatusSerializer,
     CommentSerializer,
     AttachmentSerializer,
 )
 from notifications.models import Notification
 from django.db.models import Q
+from .permissions import IsRegistrar, IsAssignedLecturer
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 
 User = get_user_model()
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def my_issues(request):
+    user = request.user
+
+    # Filter issues assigned to the logged-in user
+    issues = Issue.objects.filter(assigned_to=user)
+    serializer = IssueSerializer(issues, many=True)
+    return Response(serializer.data)
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def get_user_issues(request):
+    user = request.user
+
+    # Ensure the user is a lecturer
+    if user.role != "FACULTY":
+        return Response({"error": "Unauthorized access"}, status=403)
+
+    # Filter issues assigned to the logged-in lecturer
+    issues = Issue.objects.filter(assigned_to=user)
+    serializer = IssueSerializer(issues, many=True)
+    return Response(serializer.data)
+
+
+@api_view(["POST"])
+def update_status(request, issue_id):
+    print(request.data)  # Debugging: Log the payload
+    # ...existing code...
+    if not request.data.get("status"):
+        return Response(
+            {"error": "Status is required"}, status=status.HTTP_400_BAD_REQUEST
+        )
+
+
+@api_view(["POST"])
+def assign_issue(request):
+    issue_id = request.data.get("issue_id")
+    faculty_id = request.data.get("faculty_id")
+
+    try:
+        issue = Issue.objects.get(id=issue_id)
+        faculty = User.objects.get(id=faculty_id, role="FACULTY")
+        issue.assigned_to = faculty
+        issue.save()
+        return Response(
+            {"detail": "Issue assigned successfully."}, status=status.HTTP_200_OK
+        )
+    except Issue.DoesNotExist:
+        return Response(
+            {"detail": "Issue not found."}, status=status.HTTP_404_NOT_FOUND
+        )
+    except User.DoesNotExist:
+        return Response(
+            {"detail": "Faculty not found."}, status=status.HTTP_404_NOT_FOUND
+        )
+    except Exception as e:
+        return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated, IsAssignedLecturer])
+def resolve_issue(request, issue_id):
+    """
+    Endpoint for lecturers to resolve an issue assigned to them.
+    """
+    user = request.user
+    issue = get_object_or_404(Issue, id=issue_id)
+
+    if issue.assigned_to != user:
+        return Response(
+            {"error": "You are not authorized to resolve this issue."},
+            status=status.HTTP_403_FORBIDDEN,
+        )
+
+    # Mark the issue as resolved
+    issue.current_status = "RESOLVED"
+    issue.save()
+
+    # Create a status update
+    IssueStatus.objects.create(
+        issue=issue,
+        status="RESOLVED",
+        updated_by=user,
+        notes="Issue resolved by lecturer.",
+    )
+
+    return Response(
+        {"message": "Issue resolved successfully."}, status=status.HTTP_200_OK
+    )
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated, IsAssignedLecturer])
+def lecturer_assigned_issues(request):
+    """
+    Endpoint for lecturers to view issues assigned to them.
+    """
+    user = request.user
+    issues = Issue.objects.filter(assigned_to=user)
+    serializer = IssueSerializer(issues, many=True)
+    return Response(serializer.data)
 
 
 class IssueViewSet(viewsets.ModelViewSet):
@@ -25,11 +135,6 @@ class IssueViewSet(viewsets.ModelViewSet):
 
     queryset = Issue.objects.all()
     serializer_class = IssueSerializer
-
-    def get_serializer_class(self):
-        if self.action == "list":
-            return IssueListSerializer
-        return IssueSerializer
 
     def get_queryset(self):
         user = self.request.user
@@ -42,67 +147,11 @@ class IssueViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(Q(assigned_to=user) | Q(submitted_by=user))
         # Admins can see all issues
 
-        # Apply filters from query params
-        status_filter = self.request.query_params.get("status", None)
-        if status_filter:
-            queryset = queryset.filter(current_status=status_filter)
-
-        category_filter = self.request.query_params.get("category", None)
-        if category_filter:
-            queryset = queryset.filter(category=category_filter)
-
-        priority_filter = self.request.query_params.get("priority", None)
-        if priority_filter:
-            queryset = queryset.filter(priority=priority_filter)
-
         return queryset
 
-    def perform_create(self, serializer):
-        issue = serializer.save()
-
-        # Create initial status
-        IssueStatus.objects.create(
-            issue=issue,
-            status="SUBMITTED",
-            notes="Issue submitted",
-            updated_by=self.request.user,
-        )
-
-        # Create notification for admins
-        if self.request.user.role == "STUDENT":
-            # Get ContentType for Issue model
-            issue_content_type = ContentType.objects.get_for_model(Issue)
-
-            for admin in User.objects.filter(role="ADMIN"):
-                Notification.objects.create(
-                    user=admin,
-                    content_type=issue_content_type,
-                    object_id=issue.id,
-                    message=f"New issue submitted: {issue.title}",
-                    notification_type="ISSUE_CREATED",
-                )
-
-    @action(detail=False, methods=["get"])
-    def my_issues(self, request):
-        """
-        Return issues submitted by the current user.
-        """
-        issues = Issue.objects.filter(submitted_by=request.user)
-
-        # Apply filters
-        status_filter = request.query_params.get("status", None)
-        if status_filter:
-            issues = issues.filter(current_status=status_filter)
-
-        page = self.paginate_queryset(issues)
-        if page is not None:
-            serializer = IssueListSerializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
-
-        serializer = IssueListSerializer(issues, many=True)
-        return Response(serializer.data)
-
-    @action(detail=True, methods=["post"])
+    @action(
+        detail=True, methods=["post"], permission_classes=[IsAuthenticated, IsRegistrar]
+    )
     def assign(self, request, pk=None):
         """
         Assign an issue to a faculty member.
@@ -116,10 +165,6 @@ class IssueViewSet(viewsets.ModelViewSet):
             )
 
         try:
-            # Convert faculty_id to integer if it's a string
-            if isinstance(faculty_id, str) and faculty_id.isdigit():
-                faculty_id = int(faculty_id)
-
             faculty = User.objects.get(id=faculty_id, role="FACULTY")
         except User.DoesNotExist:
             return Response(
@@ -138,13 +183,10 @@ class IssueViewSet(viewsets.ModelViewSet):
             updated_by=request.user,
         )
 
-        # Get ContentType for Issue model
-        issue_content_type = ContentType.objects.get_for_model(Issue)
-
         # Create notification for faculty
         Notification.objects.create(
             user=faculty,
-            content_type=issue_content_type,
+            content_type=ContentType.objects.get_for_model(Issue),
             object_id=issue.id,
             message=f"You have been assigned to issue: {issue.title}",
             notification_type="ISSUE_ASSIGNED",
@@ -198,7 +240,7 @@ class IssueStatusViewSet(viewsets.ModelViewSet):
     """
 
     serializer_class = IssueStatusSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsAssignedLecturer]
 
     def get_queryset(self):
         issue_id = self.kwargs.get("issue_pk")
@@ -214,20 +256,7 @@ class IssueStatusViewSet(viewsets.ModelViewSet):
         issue.save()
 
         # Save the status update
-        status_update = serializer.save(issue=issue, updated_by=self.request.user)
-
-        # Get ContentType for Issue model
-        issue_content_type = ContentType.objects.get_for_model(Issue)
-
-        # Create notification for the issue submitter
-        if issue.submitted_by != self.request.user:
-            Notification.objects.create(
-                user=issue.submitted_by,
-                content_type=issue_content_type,
-                object_id=issue.id,
-                message=f"Status updated to {status_update.get_status_display()} for your issue: {issue.title}",
-                notification_type="STATUS_UPDATED",
-            )
+        serializer.save(issue=issue, updated_by=self.request.user)
 
 
 class CommentViewSet(viewsets.ModelViewSet):
@@ -286,3 +315,13 @@ class AttachmentViewSet(viewsets.ModelViewSet):
         issue_id = self.kwargs.get("issue_pk")
         issue = get_object_or_404(Issue, id=issue_id)
         serializer.save(issue=issue, uploaded_by=self.request.user)
+
+
+class MyIssuesAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        my_issues = Issue.objects.filter(submitted_by=user)
+        serializer = IssueSerializer(my_issues, many=True)
+        return Response(serializer.data)
