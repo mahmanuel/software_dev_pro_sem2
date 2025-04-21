@@ -10,3 +10,4 @@ urlpatterns = [
     path("auth/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     path("auth/verify-email/", VerifyEmailView.as_view(), name="verify_email"),
 ]
+

@@ -56,6 +56,7 @@ class VerifyEmailView(APIView):
 # User Registration API
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
+
     serializer_class = UserRegistrationSerializer
     permission_classes = [permissions.AllowAny]
 
