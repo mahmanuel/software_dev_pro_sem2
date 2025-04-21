@@ -4,11 +4,25 @@ from rest_framework.views import APIView
 from rest_framework.generics import CreateAPIView, RetrieveUpdateAPIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from .models import User
+from django.http import JsonResponse
+from django.contrib.auth import get_user_model
 from .serializers import (
     UserSerializer,
     UserRegistrationSerializer,
     PasswordChangeSerializer,
 )
+
+User = get_user_model()
+
+
+def get_faculty_list(request):
+    try:
+        faculty = User.objects.filter(role="FACULTY").values(
+            "first_name", "last_name", "department"
+        )
+        return JsonResponse(list(faculty), safe=False)
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
 
 
 class UserRegistrationView(CreateAPIView):

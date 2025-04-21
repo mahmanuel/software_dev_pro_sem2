@@ -1,10 +1,21 @@
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from django.http import JsonResponse
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import api_view, permission_classes
 from django.db.models import Q
 from .models import Notification
 from .serializers import NotificationSerializer
+from django.contrib.auth.decorators import login_required
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def unread_count(request):
+    user = request.user
+    count = Notification.objects.filter(user=user, is_read=False).count()
+    return Response({"count": count})
 
 
 class NotificationViewSet(viewsets.ReadOnlyModelViewSet):
