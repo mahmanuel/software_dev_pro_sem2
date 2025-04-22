@@ -135,3 +135,4 @@ class AuditLog(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     is_deleted = models.BooleanField(default=False)
     
+    
