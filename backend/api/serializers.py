@@ -91,4 +91,5 @@ class AuditLogSerializer(serializers.ModelSerializer):
         model = AuditLog
         fields = ["id", "title", "description", "created_by", "created_at"]
         
+        
        
