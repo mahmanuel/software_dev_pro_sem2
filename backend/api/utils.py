@@ -22,3 +22,4 @@ def send_verification_email(user):
     message = f"Hi {user.username},\n\nPlease click the link below to verify your email:\n{verify_url}\n\nThank you!"
 
     send_mail(subject, message, settings.EMAIL_HOST_USER, [user.email])
+    
