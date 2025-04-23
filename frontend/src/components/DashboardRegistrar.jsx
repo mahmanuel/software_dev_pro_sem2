@@ -212,40 +212,41 @@ function DashboardRegistrar({ setUser }) {
 
   const handleAssignIssue = async (issueId, facultyId) => {
     try {
-      // Don't proceed if facultyId is empty
-      if (!facultyId) {
-        console.log("No faculty selected, skipping assignment")
-        return
+      // Ensure facultyId is valid
+      if (!facultyId || isNaN(Number(facultyId))) {
+        setNotification({
+          message: `Invalid faculty ID: ${facultyId}. Please select a valid faculty member.`,
+          type: "error",
+        });
+        return;
       }
-
-      console.log(`Assigning issue ${issueId} to faculty ${facultyId}`)
-
-      // Convert facultyId to number if it's a string (select values are often strings)
-      const facultyIdNum = Number.parseInt(facultyId, 10)
-
-      await assignIssue(issueId, facultyIdNum)
-
+  
+      console.log(`Assigning issue ${issueId} to faculty ID ${facultyId}`);
+  
+      // Call the API to assign the issue
+      await assignIssue(issueId, Number(facultyId));
+  
       // Find the faculty name for the notification
-      const faculty = facultyList.find((f) => f.id === facultyIdNum || f.id.toString() === facultyId.toString())
-      const facultyName = faculty ? faculty.name || faculty.email : "selected lecturer"
-
+      const faculty = facultyList.find((f) => f.id === Number(facultyId));
+      const facultyName = faculty ? faculty.name || faculty.email : "selected lecturer";
+  
       // Automatically update status to ASSIGNED
       await addIssueStatus(issueId, {
         status: STATUS_TYPES.ASSIGNED,
         notes: `Issue assigned to ${facultyName}`,
-      })
-
+      });
+  
       // Show success notification
       setNotification({
         message: `Issue successfully assigned to ${facultyName}`,
         type: "success",
-      })
-
-      fetchIssues() // Refresh the list
+      });
+  
+      fetchIssues(); // Refresh the list
     } catch (err) {
-      console.error("Error assigning issue:", err)
-
-      // Check if this is the Django User model error
+      console.error("Error assigning issue:", err);
+  
+      // Handle backend-specific errors
       if (err.message && err.message.includes("Backend configuration error: The User model")) {
         setNotification({
           message: `${err.message} Please provide the following instructions to your backend developer:
@@ -260,7 +261,7 @@ function DashboardRegistrar({ setUser }) {
           And then use:
           faculty = User.objects.get(id=faculty_id, role="FACULTY")`,
           type: "error",
-        })
+        });
       } else if (err.message && err.message.includes("ContentType")) {
         setNotification({
           message: `${err.message} Please provide the following instructions to your backend developer:
@@ -281,15 +282,15 @@ function DashboardRegistrar({ setUser }) {
               notification_type="ISSUE_ASSIGNED",
           )`,
           type: "error",
-        })
+        });
       } else {
         setNotification({
           message: `Failed to assign issue: ${err.message || "Unknown error"}`,
           type: "error",
-        })
+        });
       }
     }
-  }
+  };
 
   const handleStatusChange = async (issueId, newStatus) => {
     try {
@@ -728,25 +729,25 @@ function DashboardRegistrar({ setUser }) {
                       <div className="loading-select">Loading faculty...</div>
                     ) : (
                       <select
-                        value={issue.assigned_to?.id || ""}
-                        onChange={(e) => {
-                          console.log("Selected faculty ID:", e.target.value)
-                          handleAssignIssue(issue.id, e.target.value)
-                        }}
-                      >
-                        <option value="">Unassigned</option>
-                        {facultyList && facultyList.length > 0 ? (
-                          facultyList.map((faculty) => (
-                            <option key={faculty.id} value={faculty.id}>
-                              {faculty.name} ({faculty.department})
-                            </option>
-                          ))
-                        ) : (
-                          <option value="" disabled>
-                            No faculty members available
+                      value={issue.assigned_to?.id || ""}
+                      onChange={(e) => {
+                        console.log("Selected faculty ID:", e.target.value);
+                        handleAssignIssue(issue.id, e.target.value);
+                      }}
+                    >
+                      <option value="">Unassigned</option>
+                      {facultyList && facultyList.length > 0 ? (
+                        facultyList.map((faculty) => (
+                          <option key={faculty.id} value={faculty.id}>
+                            {faculty.name} ({faculty.department})
                           </option>
-                        )}
-                      </select>
+                        ))
+                      ) : (
+                        <option value="" disabled>
+                          No faculty members available
+                        </option>
+                      )}
+                    </select>
                     )}
                   </div>
 

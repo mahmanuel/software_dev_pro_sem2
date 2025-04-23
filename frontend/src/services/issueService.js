@@ -18,7 +18,7 @@ export const getAllIssues = async (filters = {}) => {
   }
 }
 
-// Get issues submitted by the current user
+// Get issues assigned to the current user (faculty)
 export const getUserIssues = async (filters = {}) => {
   try {
     const queryParams = new URLSearchParams()
@@ -28,7 +28,7 @@ export const getUserIssues = async (filters = {}) => {
       if (value) queryParams.append(key, value)
     })
 
-    const response = await api.get(`issues/my-issues/?${queryParams.toString()}`)
+    const response = await api.get(`issues/user-issues/?${queryParams.toString()}`)
     return response.data
   } catch (error) {
     console.error("Error in getUserIssues:", error)
