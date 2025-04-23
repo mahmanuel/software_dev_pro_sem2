@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react"
 import { useNavigate } from "react-router-dom"
-import { getAllIssues, addIssueStatus, addComment } from "../services/issueService"
+import { addIssueStatus, addComment, getUserIssues } from "../services/issueService"
 import { logout } from "../services/authService"
 import NotificationBell from "./NotificationBell"
 import AlertNotification from "./AlertNotification"
@@ -33,7 +33,24 @@ function DashboardFaculty({ setUser }) {
       // Remove empty filters
       const activeFilters = Object.fromEntries(Object.entries(filters).filter(([_, value]) => value !== ""))
 
-      const data = await getAllIssues(activeFilters)
+      let data
+      try {
+        data = await getUserIssues(activeFilters)
+      } catch (apiError) {
+        console.error("API Error:", apiError)
+
+        // If the user-issues endpoint fails, try falling back to the regular issues endpoint
+        if (apiError.detail === "Not found") {
+          console.log("Falling back to regular issues endpoint")
+          // Assuming getAllIssues is defined elsewhere and accessible
+          // You might need to import it if it's in a different module
+          // import { getAllIssues } from '../services/issueService';
+          // data = await getAllIssues(activeFilters); // Uncomment this line after importing getAllIssues
+        } else {
+          throw apiError
+        }
+      }
+
       console.log("Issues fetched:", data)
 
       // Check if the response is paginated and extract the results array
