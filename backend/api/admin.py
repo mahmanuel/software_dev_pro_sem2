@@ -10,3 +10,4 @@ admin.site.register(Issue)
 admin.site.register(Assignment)
 admin.site.register(Notification)
 admin.site.register(AuditLog)
+

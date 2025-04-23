@@ -10,12 +10,9 @@ from rest_framework import serializers
 from rest_framework import serializers, permissions
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-from django.utils.translation import gettext_lazy as _
-
-# Create your models here.
+from django.utils.translation import gettext_lazy as 
 
 
-# Custom User Model
 class User(AbstractUser):
     is_verified = models.BooleanField(default=False)
 
@@ -27,7 +24,7 @@ class User(AbstractUser):
     role = models.CharField(max_length=10, choices=Role.choices, default=Role.STUDENT)
 
 
-# Profile Model
+
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
     phone_number = models.CharField(max_length=15, blank=True, null=True)
@@ -41,7 +38,7 @@ class Profile(models.Model):
         return f"{self.user.username}'s Profile"
 
 
-# This is an Issue Model
+
 class Issue(models.Model):
     STATUS_CHOICES = [
         ("pending", "Pending"),
@@ -76,7 +73,7 @@ class Issue(models.Model):
         return self.title
 
 
-# Issue Assignment Model
+
 class Assignment(models.Model):
     issue = models.ForeignKey(
         Issue, on_delete=models.CASCADE, related_name="assignments"
@@ -90,7 +87,7 @@ class Assignment(models.Model):
         return f"{self.faculty.username} assigned to {self.issue.title}"
 
 
-# Notifications Model
+
 class Notification(models.Model):
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="notifications"
@@ -113,7 +110,6 @@ class Notification(models.Model):
         return f"Notification for {self.user.username}:{'Read' if self.is_read else 'unread'}"
 
 
-# Audit Log Model
 class AuditLog(models.Model):
     issue = models.ForeignKey(
         Issue, on_delete=models.CASCADE, related_name="audit_logs"

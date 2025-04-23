@@ -90,3 +90,6 @@ class AuditLogSerializer(serializers.ModelSerializer):
     class Meta:
         model = AuditLog
         fields = ["id", "title", "description", "created_by", "created_at"]
+        
+        
+       
