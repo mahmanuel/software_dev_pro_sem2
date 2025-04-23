@@ -3,7 +3,6 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.decorators import action
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .models import Issue
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
@@ -14,7 +13,9 @@ from .serializers import (
     CommentSerializer,
     AttachmentSerializer,
 )
-from notifications.models import Notification
+from notifications.models import (
+    Notification,
+)  # Import from notifications app, not issues
 from django.db.models import Q
 from .permissions import IsRegistrar, IsAssignedLecturer
 from django.contrib.auth import get_user_model
@@ -36,15 +37,40 @@ def my_issues(request):
 
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
-def get_user_issues(request):
+def getUserIssues(request):
+    """
+    Endpoint for users to view issues assigned to them.
+    This is an alias for get_user_issues to maintain compatibility with frontend.
+    """
     user = request.user
 
-    # Ensure the user is a lecturer
-    if user.role != "FACULTY":
-        return Response({"error": "Unauthorized access"}, status=403)
+    # Filter issues based on user role
+    if user.role == "FACULTY":
+        issues = Issue.objects.filter(assigned_to=user)
+    else:
+        # For students and other roles, show issues they submitted
+        issues = Issue.objects.filter(submitted_by=user)
 
-    # Filter issues assigned to the logged-in lecturer
-    issues = Issue.objects.filter(assigned_to=user)
+    serializer = IssueSerializer(issues, many=True)
+    return Response(serializer.data)
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def getUserIssues(request):
+    """
+    Endpoint for users to view issues assigned to them.
+    This is an alias for get_user_issues to maintain compatibility with frontend.
+    """
+    user = request.user
+
+    # Filter issues based on user role
+    if user.role == "FACULTY":
+        issues = Issue.objects.filter(assigned_to=user)
+    else:
+        # For students and other roles, show issues they submitted
+        issues = Issue.objects.filter(submitted_by=user)
+
     serializer = IssueSerializer(issues, many=True)
     return Response(serializer.data)
 
@@ -57,31 +83,6 @@ def update_status(request, issue_id):
         return Response(
             {"error": "Status is required"}, status=status.HTTP_400_BAD_REQUEST
         )
-
-
-@api_view(["POST"])
-def assign_issue(request):
-    issue_id = request.data.get("issue_id")
-    faculty_id = request.data.get("faculty_id")
-
-    try:
-        issue = Issue.objects.get(id=issue_id)
-        faculty = User.objects.get(id=faculty_id, role="FACULTY")
-        issue.assigned_to = faculty
-        issue.save()
-        return Response(
-            {"detail": "Issue assigned successfully."}, status=status.HTTP_200_OK
-        )
-    except Issue.DoesNotExist:
-        return Response(
-            {"detail": "Issue not found."}, status=status.HTTP_404_NOT_FOUND
-        )
-    except User.DoesNotExist:
-        return Response(
-            {"detail": "Faculty not found."}, status=status.HTTP_404_NOT_FOUND
-        )
-    except Exception as e:
-        return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(["POST"])
@@ -149,89 +150,124 @@ class IssueViewSet(viewsets.ModelViewSet):
 
         return queryset
 
-    @action(
-        detail=True, methods=["post"], permission_classes=[IsAuthenticated, IsRegistrar]
+
+@action(
+    detail=True, methods=["post"], permission_classes=[IsAuthenticated, IsRegistrar]
+)
+def assign(self, request, pk=None):
+    issue = self.get_object()
+    faculty_id = request.data.get("faculty_id")
+
+    # Handle unassignment
+    if faculty_id is None:
+        issue.assigned_to = None
+        issue.current_status = "SUBMITTED"  # Or appropriate status
+        issue.save()
+
+        IssueStatus.objects.create(
+            issue=issue,
+            status=issue.current_status,
+            notes="Issue unassigned",
+            updated_by=request.user,
+        )
+
+        return Response(
+            {"message": "Issue unassigned successfully"}, status=status.HTTP_200_OK
+        )
+
+    # Log the incoming payload for debugging
+    print(f"Assigning issue {issue.id} with payload: {request.data}")
+
+    if not faculty_id:
+        return Response(
+            {"error": "Faculty ID is required"}, status=status.HTTP_400_BAD_REQUEST
+        )
+
+    # Ensure faculty_id is an integer
+    try:
+        faculty_id = int(faculty_id)
+    except (ValueError, TypeError):
+        return Response(
+            {"error": f"Invalid faculty ID: {faculty_id}. Must be an integer."},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    # Check if the faculty exists and has the correct role
+    try:
+        faculty = User.objects.get(id=faculty_id, role="FACULTY")
+    except User.DoesNotExist:
+        return Response(
+            {
+                "error": f"Faculty with ID {faculty_id} not found or is not a faculty member"
+            },
+            status=status.HTTP_404_NOT_FOUND,
+        )
+
+    # Assign the issue to the faculty
+    issue.assigned_to = faculty
+    issue.current_status = "ASSIGNED"
+    issue.save()
+
+    # Create status update
+    IssueStatus.objects.create(
+        issue=issue,
+        status="ASSIGNED",
+        notes=f"Assigned to {faculty.first_name} {faculty.last_name}",
+        updated_by=request.user,
     )
-    def assign(self, request, pk=None):
-        """
-        Assign an issue to a faculty member.
-        """
-        issue = self.get_object()
-        faculty_id = request.data.get("faculty_id")
 
-        if not faculty_id:
-            return Response(
-                {"error": "Faculty ID is required"}, status=status.HTTP_400_BAD_REQUEST
-            )
+    # Create notification for faculty
+    Notification.objects.create(
+        user=faculty,
+        content_type=ContentType.objects.get_for_model(Issue),
+        object_id=issue.id,
+        message=f"You have been assigned to issue: {issue.title}",
+        notification_type="ISSUE_ASSIGNED",
+        is_read=False,
+    )
 
-        try:
-            faculty = User.objects.get(id=faculty_id, role="FACULTY")
-        except User.DoesNotExist:
-            return Response(
-                {"error": "Faculty not found"}, status=status.HTTP_404_NOT_FOUND
-            )
+    return Response(
+        {"message": f"Issue assigned to {faculty.email}", "success": True},
+        status=status.HTTP_200_OK,
+    )
 
-        issue.assigned_to = faculty
-        issue.current_status = "ASSIGNED"
-        issue.save()
 
-        # Create status update
-        IssueStatus.objects.create(
-            issue=issue,
-            status="ASSIGNED",
-            notes=f"Assigned to {faculty.first_name} {faculty.last_name}",
-            updated_by=request.user,
-        )
+@action(detail=True, methods=["post"])
+def escalate(self, request, pk=None):
+    """
+    Escalate an issue to admin.
+    """
+    issue = self.get_object()
+    reason = request.data.get("reason", "No reason provided")
 
-        # Create notification for faculty
+    issue.current_status = "ESCALATED"
+    issue.save()
+
+    # Create status update
+    IssueStatus.objects.create(
+        issue=issue,
+        status="ESCALATED",
+        notes=f"Escalated: {reason}",
+        updated_by=request.user,
+    )
+
+    # Get ContentType for Issue model
+    issue_content_type = ContentType.objects.get_for_model(Issue)
+
+    # Create notification for admins
+    for admin in User.objects.filter(role="ADMIN"):
         Notification.objects.create(
-            user=faculty,
-            content_type=ContentType.objects.get_for_model(Issue),
+            user=admin,
+            content_type=issue_content_type,
             object_id=issue.id,
-            message=f"You have been assigned to issue: {issue.title}",
-            notification_type="ISSUE_ASSIGNED",
+            message=f"Issue escalated: {issue.title}",
+            notification_type="ISSUE_ESCALATED",
+            is_read=False,  # Use is_read instead of read
         )
 
-        return Response(
-            {"message": f"Issue assigned to {faculty.email}", "success": True},
-            status=status.HTTP_200_OK,
-        )
-
-    @action(detail=True, methods=["post"])
-    def escalate(self, request, pk=None):
-        """
-        Escalate an issue to admin.
-        """
-        issue = self.get_object()
-        reason = request.data.get("reason", "No reason provided")
-
-        issue.current_status = "ESCALATED"
-        issue.save()
-
-        # Create status update
-        IssueStatus.objects.create(
-            issue=issue,
-            status="ESCALATED",
-            notes=f"Escalated: {reason}",
-            updated_by=request.user,
-        )
-
-        # Get ContentType for Issue model
-        issue_content_type = ContentType.objects.get_for_model(Issue)
-
-        # Create notification for admins
-        for admin in User.objects.filter(role="ADMIN"):
-            Notification.objects.create(
-                user=admin,
-                content_type=issue_content_type,
-                object_id=issue.id,
-                message=f"Issue escalated: {issue.title}",
-                notification_type="ISSUE_ESCALATED",
-            )
-
-        return Response(
-            {"message": "Issue escalated successfully"}, status=status.HTTP_200_OK
-        )
+    return Response(
+        {"message": "Issue escalated successfully"}, status=status.HTTP_200_OK
+    )
 
 
 class IssueStatusViewSet(viewsets.ModelViewSet):
@@ -296,6 +332,7 @@ class CommentViewSet(viewsets.ModelViewSet):
                 object_id=issue.id,
                 message=f"New comment on issue: {issue.title}",
                 notification_type="COMMENT_ADDED",
+                is_read=False,  # Use is_read instead of read
             )
 
 
