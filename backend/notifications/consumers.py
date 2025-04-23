@@ -114,21 +114,23 @@ class NotificationConsumer(AsyncWebsocketConsumer):
 
     @database_sync_to_async
     def get_unread_count(self):
-        return Notification.objects.filter(user=self.user, read=False).count()
+        # Updated to use is_read
+        return Notification.objects.filter(user=self.user, is_read=False).count()
 
     @database_sync_to_async
     def mark_as_read(self, notification_id):
         try:
             notification = Notification.objects.get(id=notification_id, user=self.user)
-            notification.read = True
-            notification.save(update_fields=["read"])
+            notification.is_read = True  # Updated to use is_read
+            notification.save(update_fields=["is_read"])  # Updated to use is_read
             return True
         except Notification.DoesNotExist:
             return False
 
     @database_sync_to_async
     def mark_all_as_read(self):
-        Notification.objects.filter(user=self.user, read=False).update(read=True)
+        # Updated to use is_read
+        Notification.objects.filter(user=self.user, is_read=False).update(is_read=True)
         return True
 
 
