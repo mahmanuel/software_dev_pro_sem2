@@ -4,10 +4,8 @@ from rest_framework.response import Response
 from django.http import JsonResponse
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view, permission_classes
-from django.db.models import Q
 from .models import Notification
 from .serializers import NotificationSerializer
-from django.contrib.auth.decorators import login_required
 
 
 @api_view(["GET"])
@@ -38,8 +36,8 @@ class NotificationViewSet(viewsets.ReadOnlyModelViewSet):
         Mark a notification as read.
         """
         notification = self.get_object()
-        notification.read = True
-        notification.save(update_fields=["read"])
+        notification.is_read = True
+        notification.save(update_fields=["is_read"])
         return Response({"message": "Notification marked as read"})
 
     @action(detail=False, methods=["post"])
@@ -47,16 +45,10 @@ class NotificationViewSet(viewsets.ReadOnlyModelViewSet):
         """
         Mark all notifications as read.
         """
-        Notification.objects.filter(user=request.user, read=False).update(read=True)
+        Notification.objects.filter(user=request.user, is_read=False).update(
+            is_read=True
+        )
         return Response({"message": "All notifications marked as read"})
-
-    @action(detail=False, methods=["get"])
-    def unread_count(self, request):
-        """
-        Get the count of unread notifications.
-        """
-        count = Notification.objects.filter(user=request.user, read=False).count()
-        return Response({"count": count})
 
     @action(detail=False, methods=["get"])
     def recent(self, request):
