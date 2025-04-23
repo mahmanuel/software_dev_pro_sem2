@@ -28,8 +28,19 @@ export const getUserIssues = async (filters = {}) => {
       if (value) queryParams.append(key, value)
     })
 
-    const response = await api.get(`issues/user-issues/?${queryParams.toString()}`)
-    return response.data
+    // Try the user-issues endpoint first
+    try {
+      const response = await api.get(`issues/user-issues/?${queryParams.toString()}`)
+      return response.data
+    } catch (error) {
+      // If that fails, try the get-user-issues endpoint
+      if (error.response && error.response.status === 404) {
+        console.log("Falling back to get-user-issues endpoint")
+        const response = await api.get(`issues/get-user-issues/?${queryParams.toString()}`)
+        return response.data
+      }
+      throw error
+    }
   } catch (error) {
     console.error("Error in getUserIssues:", error)
     throw error.response ? error.response.data : error.message
@@ -61,22 +72,36 @@ export const createIssue = async (issueData) => {
 // Assign an issue to a faculty member
 export const assignIssue = async (issueId, facultyId) => {
   try {
-    console.log(`API call: Assigning issue ${issueId} to faculty ${facultyId}`)
+    console.log("API Assignment Request:", { issueId, facultyId });
+    
+    // Handle unassignment
+    if (facultyId === null) {
+      const response = await api.post(`issues/${issueId}/assign/`, { 
+        faculty_id: null 
+      });
+      return response.data;
+    }
+    
+    // Validate faculty ID before sending
+    if (typeof facultyId !== 'number' || isNaN(facultyId)) {
+      throw new Error(`Invalid faculty ID: ${facultyId}`);
+    }
 
-    // Ensure we're sending the correct payload format
-    const payload = { faculty_id: facultyId }
-    console.log("Assignment payload:", payload)
-
-    const response = await api.post(`issues/${issueId}/assign/`, payload)
-    console.log("Assignment response:", response.data)
-    return response.data
+    const response = await api.post(`issues/${issueId}/assign/`, { 
+      faculty_id: facultyId 
+    });
+    return response.data;
+    
   } catch (error) {
-    console.error("Error in assignIssue:", error)
-    // Provide more detailed error information
-    const errorMessage = error.response?.data?.detail || error.message || "Unknown error"
-    throw new Error(errorMessage)
+    console.error("API Assignment Error:", {
+      status: error.response?.status,
+      data: error.response?.data,
+      issueId,
+      facultyId
+    });
+    throw error;
   }
-}
+};
 
 // Add a status update to an issue
 export const addIssueStatus = async (issueId, statusData) => {

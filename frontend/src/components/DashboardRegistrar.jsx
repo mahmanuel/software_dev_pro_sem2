@@ -8,7 +8,7 @@ import { getAuditLogs } from "../services/analyticsService"
 import { logout } from "../services/authService"
 import NotificationBell from "./NotificationBell"
 import AlertNotification from "./AlertNotification"
-import { STATUS_LABELS, CATEGORY_LABELS, PRIORITY_LABELS, STATUS_TYPES } from "../constants/issueConstants"
+import { STATUS_LABELS, CATEGORY_LABELS, PRIORITY_LABELS } from "../constants/issueConstants"
 
 function DashboardRegistrar({ setUser }) {
   const [issues, setIssues] = useState([])
@@ -210,88 +210,59 @@ function DashboardRegistrar({ setUser }) {
     }))
   }
 
+  // Update the handleAssignIssue function to fix the faculty ID parsing issue
   const handleAssignIssue = async (issueId, facultyId) => {
     try {
-      // Ensure facultyId is valid
-      if (!facultyId || isNaN(Number(facultyId))) {
+      console.log("Assignment attempt:", { issueId, facultyId });
+  
+      // Handle unassignment case
+      if (facultyId === null) {
+        console.log("Processing unassignment");
+        await assignIssue(issueId, null); // Update your API to handle null
         setNotification({
-          message: `Invalid faculty ID: ${facultyId}. Please select a valid faculty member.`,
-          type: "error",
+          message: "Issue unassigned successfully",
+          type: "success",
         });
+        fetchIssues();
         return;
       }
   
-      console.log(`Assigning issue ${issueId} to faculty ID ${facultyId}`);
+      // Validate faculty ID
+      if (typeof facultyId === "string" && /^\d+$/.test(facultyId)) {
+        facultyId = Number(facultyId); // Convert to number if it's a valid numeric string
+      }
   
-      // Call the API to assign the issue
-      await assignIssue(issueId, Number(facultyId));
+      if (typeof facultyId !== "number" || isNaN(facultyId)) {
+        throw new Error(`Invalid faculty ID: must be a number, got ${facultyId}`);
+      }
   
-      // Find the faculty name for the notification
-      const faculty = facultyList.find((f) => f.id === Number(facultyId));
-      const facultyName = faculty ? faculty.name || faculty.email : "selected lecturer";
+      // Find faculty for confirmation message
+      const faculty = facultyList.find((f) => f.id === facultyId);
+      if (!faculty) {
+        throw new Error("Selected faculty member not found");
+      }
   
-      // Automatically update status to ASSIGNED
-      await addIssueStatus(issueId, {
-        status: STATUS_TYPES.ASSIGNED,
-        notes: `Issue assigned to ${facultyName}`,
-      });
+      await assignIssue(issueId, facultyId);
   
-      // Show success notification
       setNotification({
-        message: `Issue successfully assigned to ${facultyName}`,
+        message: `Assigned to ${faculty.name}`,
         type: "success",
       });
-  
-      fetchIssues(); // Refresh the list
+      fetchIssues();
     } catch (err) {
-      console.error("Error assigning issue:", err);
+      console.error("Assignment failed:", {
+        error: err,
+        issueId,
+        facultyId,
+        facultyListLength: facultyList.length,
+      });
   
-      // Handle backend-specific errors
-      if (err.message && err.message.includes("Backend configuration error: The User model")) {
-        setNotification({
-          message: `${err.message} Please provide the following instructions to your backend developer:
-          
-          In issues/views.py, replace:
-          faculty = User.objects.get(id=faculty_id, role="FACULTY")
-          
-          With:
-          from django.contrib.auth import get_user_model
-          User = get_user_model()
-          
-          And then use:
-          faculty = User.objects.get(id=faculty_id, role="FACULTY")`,
-          type: "error",
-        });
-      } else if (err.message && err.message.includes("ContentType")) {
-        setNotification({
-          message: `${err.message} Please provide the following instructions to your backend developer:
-          
-          In issues/views.py, find the Notification.objects.create() call and update it:
-          
-          from django.contrib.contenttypes.models import ContentType
-          
-          # Get the ContentType for the Issue model
-          issue_content_type = ContentType.objects.get_for_model(Issue)
-          
-          # Then in the Notification.objects.create() call:
-          Notification.objects.create(
-              user=faculty,
-              content_type=issue_content_type,  # Use the ContentType instance
-              object_id=issue.id,
-              issue=issue,
-              notification_type="ISSUE_ASSIGNED",
-          )`,
-          type: "error",
-        });
-      } else {
-        setNotification({
-          message: `Failed to assign issue: ${err.message || "Unknown error"}`,
-          type: "error",
-        });
-      }
+      setNotification({
+        message: `Assignment failed: ${err.message}`,
+        type: "error",
+      });
     }
   };
-
   const handleStatusChange = async (issueId, newStatus) => {
     try {
       console.log(`Updating issue ${issueId} status to ${newStatus}`)
@@ -731,22 +702,36 @@ function DashboardRegistrar({ setUser }) {
                       <select
                       value={issue.assigned_to?.id || ""}
                       onChange={(e) => {
-                        console.log("Selected faculty ID:", e.target.value);
-                        handleAssignIssue(issue.id, e.target.value);
+                        const selectedValue = e.target.value;
+                        console.log("Selected faculty ID (raw):", selectedValue, typeof selectedValue); // Debugging log
+                    
+                        // Handle unassignment case
+                        if (selectedValue === "") {
+                          console.log("Unassigning issue");
+                          handleAssignIssue(issue.id, null); // Explicit null for unassignment
+                          return;
+                        }
+                    
+                        // Convert to number and validate
+                        const facultyId = Number(selectedValue);
+                        if (isNaN(facultyId)) {
+                          console.error("Invalid faculty ID conversion:", selectedValue);
+                          setNotification({
+                            message: "Please select a valid faculty member",
+                            type: "error",
+                          });
+                          return;
+                        }
+                    
+                        handleAssignIssue(issue.id, facultyId);
                       }}
                     >
                       <option value="">Unassigned</option>
-                      {facultyList && facultyList.length > 0 ? (
-                        facultyList.map((faculty) => (
-                          <option key={faculty.id} value={faculty.id}>
-                            {faculty.name} ({faculty.department})
-                          </option>
-                        ))
-                      ) : (
-                        <option value="" disabled>
-                          No faculty members available
+                      {facultyList.map((faculty) => (
+                        <option key={faculty.id} value={faculty.id}>
+                          {faculty.name} ({faculty.department})
                         </option>
-                      )}
+                      ))}
                     </select>
                     )}
                   </div>

@@ -27,13 +27,13 @@ class Notification(models.Model):
     notification_type = models.CharField(
         max_length=50, choices=NOTIFICATION_TYPES, default="ISSUE_CREATED"
     )
-    read = models.BooleanField(default=False)
+    is_read = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering = ["-created_at"]
         indexes = [
-            models.Index(fields=["user", "read", "created_at"]),
+            models.Index(fields=["user", "is_read", "created_at"]),
             models.Index(fields=["content_type", "object_id"]),
         ]
 

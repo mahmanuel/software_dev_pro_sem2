@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react"
 import { useNavigate } from "react-router-dom"
-import { addIssueStatus, addComment, getUserIssues } from "../services/issueService"
+import { addIssueStatus, addComment, getUserIssues, getAllIssues } from "../services/issueService"
 import { logout } from "../services/authService"
 import NotificationBell from "./NotificationBell"
 import AlertNotification from "./AlertNotification"
@@ -25,7 +25,7 @@ function DashboardFaculty({ setUser }) {
   const [refreshInterval, setRefreshInterval] = useState(null)
   const navigate = useNavigate()
 
-  // Use useCallback to memoize the fetchIssues function
+  // Update the fetchIssues function to handle API errors better
   const fetchIssues = useCallback(async () => {
     setIsLoading(true)
     try {
@@ -33,25 +33,22 @@ function DashboardFaculty({ setUser }) {
       // Remove empty filters
       const activeFilters = Object.fromEntries(Object.entries(filters).filter(([_, value]) => value !== ""))
 
+      // Try to get issues using getUserIssues
       let data
       try {
         data = await getUserIssues(activeFilters)
+        console.log("Issues fetched:", data)
       } catch (apiError) {
         console.error("API Error:", apiError)
 
-        // If the user-issues endpoint fails, try falling back to the regular issues endpoint
-        if (apiError.detail === "Not found") {
-          console.log("Falling back to regular issues endpoint")
-          // Assuming getAllIssues is defined elsewhere and accessible
-          // You might need to import it if it's in a different module
-          // import { getAllIssues } from '../services/issueService';
-          // data = await getAllIssues(activeFilters); // Uncomment this line after importing getAllIssues
-        } else {
-          throw apiError
-        }
-      }
+        // Try a fallback approach - get all issues and filter client-side
+        console.log("Falling back to getAllIssues")
+        const allIssuesResponse = await getAllIssues(activeFilters)
 
-      console.log("Issues fetched:", data)
+        // If we get here, we have data from getAllIssues
+        data = allIssuesResponse
+        console.log("All issues fetched:", data)
+      }
 
       // Check if the response is paginated and extract the results array
       const issuesArray = data.results ? data.results : Array.isArray(data) ? data : []
@@ -62,6 +59,7 @@ function DashboardFaculty({ setUser }) {
         (issue) => issue.assigned_to?.id === userInfo.id || issue.assigned_to === userInfo.id,
       )
 
+      console.log("Filtered issues for faculty:", assignedIssues)
       setIssues(assignedIssues)
       setError("")
     } catch (err) {
