@@ -21,15 +21,15 @@ function AnalyticsDashboard() {
     setIsLoading(true)
     try {
       // Fetch dashboard stats
-      const statsResponse = await api.get("/analytics/analytics/dashboard_stats/")
+      const statsResponse = await api.get("/analytics/dashboard_stats/")
       setDashboardStats(statsResponse.data)
 
       // Fetch issue trends
-      const trendsResponse = await api.get(`/analytics/analytics/issue_trends/?days=${timeRange}`)
+      const trendsResponse = await api.get(`/analytics/issue_trends/?days=${timeRange}`)
       setIssueTrends(trendsResponse.data)
 
       // Fetch user activity
-      const activityResponse = await api.get(`/analytics/analytics/user_activity/?days=${timeRange}`)
+      const activityResponse = await api.get(`/analytics/user_activity/?days=${timeRange}`)
       setUserActivity(activityResponse.data)
 
       setError("")

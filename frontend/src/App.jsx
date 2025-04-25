@@ -10,6 +10,8 @@ import DashboardStudent from "./components/DashboardStudent"
 import DashboardRegistrar from "./components/DashboardRegistrar"
 import DashboardFaculty from "./components/DashboardFaculty"
 import IssueDetail from "./components/IssueDetail"
+import AuditLogDashboard from "./components/AuditLogDashboard"
+import AnalyticsDashboard from "./components/AnalyticsDashboard";
 import "./styles.css"
 
 function App() {
@@ -146,6 +148,17 @@ function App() {
         <Route
           path="/registrar"
           element={isAdminOrRegistrar(user) ? <DashboardRegistrar setUser={setUser} /> : <Navigate to="/login" />}
+        />
+
+        {/* Audit Log Dashboard route - accessible only to admin/registrar */}
+        <Route
+          path="/audit-logs"
+          element={isAdminOrRegistrar(user) ? <AuditLogDashboard /> : <Navigate to="/login" />}
+        />
+
+        <Route
+          path="/analytics"
+          element={isAdminOrRegistrar(user) ? <AnalyticsDashboard /> : <Navigate to="/login" />}
         />
 
         {/* Issue detail route - accessible to all authenticated users */}

@@ -8,14 +8,6 @@ from .models import Notification
 from .serializers import NotificationSerializer
 
 
-@api_view(["GET"])
-@permission_classes([IsAuthenticated])
-def unread_count(request):
-    user = request.user
-    count = Notification.objects.filter(user=user, is_read=False).count()
-    return Response({"count": count})
-
-
 class NotificationViewSet(viewsets.ReadOnlyModelViewSet):
     """
     ViewSet for viewing notifications.
@@ -59,3 +51,12 @@ class NotificationViewSet(viewsets.ReadOnlyModelViewSet):
         notifications = self.get_queryset().order_by("-created_at")[:limit]
         serializer = self.get_serializer(notifications, many=True)
         return Response(serializer.data)
+
+    @action(detail=False, methods=["get"])
+    def unread_count(self, request):
+        """
+        Get the count of unread notifications for the current user.
+        """
+        user = request.user
+        count = Notification.objects.filter(user=user, is_read=False).count()
+        return Response({"count": count})

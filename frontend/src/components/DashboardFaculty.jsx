@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react"
 import { useNavigate } from "react-router-dom"
-import { addIssueStatus, addComment, getUserIssues, getAllIssues } from "../services/issueService"
+import { addIssueStatus, addComment, getUserIssues } from "../services/issueService"
 import { logout } from "../services/authService"
 import NotificationBell from "./NotificationBell"
 import AlertNotification from "./AlertNotification"
@@ -30,34 +30,33 @@ function DashboardFaculty({ setUser }) {
     setIsLoading(true)
     try {
       console.log("Fetching issues for faculty dashboard")
-      // Remove empty filters
-      const activeFilters = Object.fromEntries(Object.entries(filters).filter(([_, value]) => value !== ""))
+      const data = await getUserIssues(filters)
 
-      // Try to get issues using getUserIssues
-      let data
-      try {
-        data = await getUserIssues(activeFilters)
-        console.log("Issues fetched:", data)
-      } catch (apiError) {
-        console.error("API Error:", apiError)
+      // Log the response for debugging
+      console.log("Issues fetched from faculty endpoint:", data)
 
-        // Try a fallback approach - get all issues and filter client-side
-        console.log("Falling back to getAllIssues")
-        const allIssuesResponse = await getAllIssues(activeFilters)
-
-        // If we get here, we have data from getAllIssues
-        data = allIssuesResponse
-        console.log("All issues fetched:", data)
-      }
-
-      // Check if the response is paginated and extract the results array
-      const issuesArray = data.results ? data.results : Array.isArray(data) ? data : []
-
-      // Filter issues assigned to this faculty member
+      // Get the logged-in user info
       const userInfo = JSON.parse(localStorage.getItem("user") || "{}")
-      const assignedIssues = issuesArray.filter(
-        (issue) => issue.assigned_to?.id === userInfo.id || issue.assigned_to === userInfo.id,
-      )
+      console.log("Current user info:", userInfo)
+
+      // Improved filtering logic to handle different ID formats
+      const assignedIssues = data.filter((issue) => {
+        // If the issue has no assigned_to field, it's not assigned to anyone
+        if (!issue.assigned_to) return false
+
+        console.log(`Comparing issue assigned_to:`, issue.assigned_to, `with user:`, userInfo)
+
+        // Check if IDs match (handling both string and number types)
+        const issueAssignedId = String(issue.assigned_to.id || issue.assigned_to)
+        const userIdStr = String(userInfo.id)
+
+        // Also check if the email matches as a fallback
+        const emailMatches =
+          issue.assigned_to.email === userInfo.email ||
+          (issue.assigned_to_details && issue.assigned_to_details.email === userInfo.email)
+
+        return issueAssignedId === userIdStr || emailMatches
+      })
 
       console.log("Filtered issues for faculty:", assignedIssues)
       setIssues(assignedIssues)
@@ -99,10 +98,18 @@ function DashboardFaculty({ setUser }) {
       [name]: value,
     }))
   }
-
   const handleStatusChange = async (issueId, newStatus) => {
     try {
       console.log(`Updating issue ${issueId} status to ${newStatus}`)
+
+      // Show a confirmation dialog for resolving issues
+      if (newStatus === "RESOLVED") {
+        const confirmed = window.confirm("Are you sure you want to mark this issue as resolved?")
+        if (!confirmed) {
+          return
+        }
+      }
+
       await addIssueStatus(issueId, {
         status: newStatus,
         notes: `Status updated to ${STATUS_LABELS[newStatus] || newStatus}`,
@@ -116,8 +123,15 @@ function DashboardFaculty({ setUser }) {
       fetchIssues() // Refresh the list
     } catch (err) {
       console.error("Error updating issue status:", err)
+
+      // Provide a more specific error message
+      let errorMessage = "Failed to update issue status. Please try again."
+      if (typeof err === "object" && err.issue) {
+        errorMessage = Array.isArray(err.issue) ? err.issue.join(", ") : err.issue
+      }
+
       setNotification({
-        message: "Failed to update issue status. Please try again.",
+        message: errorMessage,
         type: "error",
       })
     }

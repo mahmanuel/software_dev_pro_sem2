@@ -10,9 +10,9 @@ class IsRegistrar(BasePermission):
         return request.user.is_authenticated and request.user.role == "ADMIN"
 
 
-class IsAssignedLecturer(BasePermission):
+class IsAssignedFaculty(BasePermission):
     """
-    Custom permission to allow only the assigned lecturer to resolve issues.
+    Custom permission to allow only the assigned faculty member to resolve issues.
     """
 
     def has_object_permission(self, request, view, obj):

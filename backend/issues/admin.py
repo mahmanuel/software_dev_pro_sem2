@@ -38,7 +38,7 @@ class IssueForm(forms.ModelForm):
         # Assuming 'lecturer' is a user role in your system
         self.fields["assigned_to"].queryset = self.fields[
             "assigned_to"
-        ].queryset.filter(role="LECTURER")
+        ].queryset.filter(role="FACULTY")
 
     class Meta:
         model = Issue

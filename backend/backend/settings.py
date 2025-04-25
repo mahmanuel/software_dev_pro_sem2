@@ -87,6 +87,8 @@ INSTALLED_APPS = [
     "realtime",
     "backend_api",
     "api",
+    "django_extensions",
+    "auditlog",
 ]
 
 # WebSocket Configuration
@@ -128,6 +130,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "corsheaders.middleware.CorsMiddleware",
+    "auditlog.middleware.AuditLogMiddleware",
 ]
 
 ROOT_URLCONF = "backend.urls"

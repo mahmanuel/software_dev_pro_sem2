@@ -66,13 +66,16 @@ class Issue(models.Model):
     def __str__(self):
         return self.title
 
-    def assign_to(self, user, registrar):
+    def assign_to(self, faculty, registrar):
         """Assign the issue to a lecturer."""
         if not registrar.is_staff:  # Assuming registrars are staff users
             raise PermissionDenied("Only registrars can assign issues.")
-        self.assigned_to = user
+        self.assigned_to = faculty
         self.current_status = "ASSIGNED"
         self.save()
+        print(
+            f"Issue {self.id} assigned to {faculty.email} with status {self.current_status}"
+        )
 
     def resolve(self, lecturer):
         """Mark the issue as resolved by the assigned lecturer."""

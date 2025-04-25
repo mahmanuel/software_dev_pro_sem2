@@ -169,75 +169,11 @@
         "documentation": {}
     },
     {
-        "label": "migrations",
-        "importPath": "django.db",
-        "description": "django.db",
+        "label": "settings",
+        "importPath": "django.conf",
+        "description": "django.conf",
         "isExtraImport": true,
-        "detail": "django.db",
-        "documentation": {}
-    },
-    {
-        "label": "models",
-        "importPath": "django.db",
-        "description": "django.db",
-        "isExtraImport": true,
-        "detail": "django.db",
-        "documentation": {}
-    },
-    {
-        "label": "models",
-        "importPath": "django.db",
-        "description": "django.db",
-        "isExtraImport": true,
-        "detail": "django.db",
-        "documentation": {}
-    },
-    {
-        "label": "migrations",
-        "importPath": "django.db",
-        "description": "django.db",
-        "isExtraImport": true,
-        "detail": "django.db",
-        "documentation": {}
-    },
-    {
-        "label": "models",
-        "importPath": "django.db",
-        "description": "django.db",
-        "isExtraImport": true,
-        "detail": "django.db",
-        "documentation": {}
-    },
-    {
-        "label": "migrations",
-        "importPath": "django.db",
-        "description": "django.db",
-        "isExtraImport": true,
-        "detail": "django.db",
-        "documentation": {}
-    },
-    {
-        "label": "models",
-        "importPath": "django.db",
-        "description": "django.db",
-        "isExtraImport": true,
-        "detail": "django.db",
-        "documentation": {}
-    },
-    {
-        "label": "models",
-        "importPath": "django.db",
-        "description": "django.db",
-        "isExtraImport": true,
-        "detail": "django.db",
-        "documentation": {}
-    },
-    {
-        "label": "models",
-        "importPath": "django.db",
-        "description": "django.db",
-        "isExtraImport": true,
-        "detail": "django.db",
+        "detail": "django.conf",
         "documentation": {}
     },
     {
@@ -297,14 +233,6 @@
         "documentation": {}
     },
     {
-        "label": "migrations",
-        "importPath": "django.db",
-        "description": "django.db",
-        "isExtraImport": true,
-        "detail": "django.db",
-        "documentation": {}
-    },
-    {
         "label": "models",
         "importPath": "django.db",
         "description": "django.db",
@@ -330,46 +258,6 @@
     },
     {
         "label": "models",
-        "importPath": "django.db",
-        "description": "django.db",
-        "isExtraImport": true,
-        "detail": "django.db",
-        "documentation": {}
-    },
-    {
-        "label": "migrations",
-        "importPath": "django.db",
-        "description": "django.db",
-        "isExtraImport": true,
-        "detail": "django.db",
-        "documentation": {}
-    },
-    {
-        "label": "models",
-        "importPath": "django.db",
-        "description": "django.db",
-        "isExtraImport": true,
-        "detail": "django.db",
-        "documentation": {}
-    },
-    {
-        "label": "migrations",
-        "importPath": "django.db",
-        "description": "django.db",
-        "isExtraImport": true,
-        "detail": "django.db",
-        "documentation": {}
-    },
-    {
-        "label": "models",
-        "importPath": "django.db",
-        "description": "django.db",
-        "isExtraImport": true,
-        "detail": "django.db",
-        "documentation": {}
-    },
-    {
-        "label": "migrations",
         "importPath": "django.db",
         "description": "django.db",
         "isExtraImport": true,
@@ -449,11 +337,171 @@
         "documentation": {}
     },
     {
+        "label": "migrations",
+        "importPath": "django.db",
+        "description": "django.db",
+        "isExtraImport": true,
+        "detail": "django.db",
+        "documentation": {}
+    },
+    {
         "label": "models",
         "importPath": "django.db",
         "description": "django.db",
         "isExtraImport": true,
         "detail": "django.db",
+        "documentation": {}
+    },
+    {
+        "label": "models",
+        "importPath": "django.db",
+        "description": "django.db",
+        "isExtraImport": true,
+        "detail": "django.db",
+        "documentation": {}
+    },
+    {
+        "label": "migrations",
+        "importPath": "django.db",
+        "description": "django.db",
+        "isExtraImport": true,
+        "detail": "django.db",
+        "documentation": {}
+    },
+    {
+        "label": "models",
+        "importPath": "django.db",
+        "description": "django.db",
+        "isExtraImport": true,
+        "detail": "django.db",
+        "documentation": {}
+    },
+    {
+        "label": "migrations",
+        "importPath": "django.db",
+        "description": "django.db",
+        "isExtraImport": true,
+        "detail": "django.db",
+        "documentation": {}
+    },
+    {
+        "label": "models",
+        "importPath": "django.db",
+        "description": "django.db",
+        "isExtraImport": true,
+        "detail": "django.db",
+        "documentation": {}
+    },
+    {
+        "label": "migrations",
+        "importPath": "django.db",
+        "description": "django.db",
+        "isExtraImport": true,
+        "detail": "django.db",
+        "documentation": {}
+    },
+    {
+        "label": "models",
+        "importPath": "django.db",
+        "description": "django.db",
+        "isExtraImport": true,
+        "detail": "django.db",
+        "documentation": {}
+    },
+    {
+        "label": "migrations",
+        "importPath": "django.db",
+        "description": "django.db",
+        "isExtraImport": true,
+        "detail": "django.db",
+        "documentation": {}
+    },
+    {
+        "label": "models",
+        "importPath": "django.db",
+        "description": "django.db",
+        "isExtraImport": true,
+        "detail": "django.db",
+        "documentation": {}
+    },
+    {
+        "label": "models",
+        "importPath": "django.db",
+        "description": "django.db",
+        "isExtraImport": true,
+        "detail": "django.db",
+        "documentation": {}
+    },
+    {
+        "label": "migrations",
+        "importPath": "django.db",
+        "description": "django.db",
+        "isExtraImport": true,
+        "detail": "django.db",
+        "documentation": {}
+    },
+    {
+        "label": "models",
+        "importPath": "django.db",
+        "description": "django.db",
+        "isExtraImport": true,
+        "detail": "django.db",
+        "documentation": {}
+    },
+    {
+        "label": "models",
+        "importPath": "django.db",
+        "description": "django.db",
+        "isExtraImport": true,
+        "detail": "django.db",
+        "documentation": {}
+    },
+    {
+        "label": "migrations",
+        "importPath": "django.db",
+        "description": "django.db",
+        "isExtraImport": true,
+        "detail": "django.db",
+        "documentation": {}
+    },
+    {
+        "label": "models",
+        "importPath": "django.db",
+        "description": "django.db",
+        "isExtraImport": true,
+        "detail": "django.db",
+        "documentation": {}
+    },
+    {
+        "label": "migrations",
+        "importPath": "django.db",
+        "description": "django.db",
+        "isExtraImport": true,
+        "detail": "django.db",
+        "documentation": {}
+    },
+    {
+        "label": "models",
+        "importPath": "django.db",
+        "description": "django.db",
+        "isExtraImport": true,
+        "detail": "django.db",
+        "documentation": {}
+    },
+    {
+        "label": "models",
+        "importPath": "django.db",
+        "description": "django.db",
+        "isExtraImport": true,
+        "detail": "django.db",
+        "documentation": {}
+    },
+    {
+        "label": "admin",
+        "importPath": "django.contrib",
+        "description": "django.contrib",
+        "isExtraImport": true,
+        "detail": "django.contrib",
         "documentation": {}
     },
     {
@@ -590,6 +638,22 @@
         "description": "django.apps",
         "isExtraImport": true,
         "detail": "django.apps",
+        "documentation": {}
+    },
+    {
+        "label": "AppConfig",
+        "importPath": "django.apps",
+        "description": "django.apps",
+        "isExtraImport": true,
+        "detail": "django.apps",
+        "documentation": {}
+    },
+    {
+        "label": "timezone",
+        "importPath": "django.utils",
+        "description": "django.utils",
+        "isExtraImport": true,
+        "detail": "django.utils",
         "documentation": {}
     },
     {
@@ -889,6 +953,38 @@
         "documentation": {}
     },
     {
+        "label": "filters",
+        "importPath": "rest_framework",
+        "description": "rest_framework",
+        "isExtraImport": true,
+        "detail": "rest_framework",
+        "documentation": {}
+    },
+    {
+        "label": "status",
+        "importPath": "rest_framework",
+        "description": "rest_framework",
+        "isExtraImport": true,
+        "detail": "rest_framework",
+        "documentation": {}
+    },
+    {
+        "label": "serializers",
+        "importPath": "rest_framework",
+        "description": "rest_framework",
+        "isExtraImport": true,
+        "detail": "rest_framework",
+        "documentation": {}
+    },
+    {
+        "label": "viewsets",
+        "importPath": "rest_framework",
+        "description": "rest_framework",
+        "isExtraImport": true,
+        "detail": "rest_framework",
+        "documentation": {}
+    },
+    {
         "label": "permissions",
         "importPath": "rest_framework",
         "description": "rest_framework",
@@ -1073,6 +1169,46 @@
         "documentation": {}
     },
     {
+        "label": "post_delete",
+        "importPath": "django.db.models.signals",
+        "description": "django.db.models.signals",
+        "isExtraImport": true,
+        "detail": "django.db.models.signals",
+        "documentation": {}
+    },
+    {
+        "label": "post_save",
+        "importPath": "django.db.models.signals",
+        "description": "django.db.models.signals",
+        "isExtraImport": true,
+        "detail": "django.db.models.signals",
+        "documentation": {}
+    },
+    {
+        "label": "post_save",
+        "importPath": "django.db.models.signals",
+        "description": "django.db.models.signals",
+        "isExtraImport": true,
+        "detail": "django.db.models.signals",
+        "documentation": {}
+    },
+    {
+        "label": "receiver",
+        "importPath": "django.dispatch",
+        "description": "django.dispatch",
+        "isExtraImport": true,
+        "detail": "django.dispatch",
+        "documentation": {}
+    },
+    {
+        "label": "receiver",
+        "importPath": "django.dispatch",
+        "description": "django.dispatch",
+        "isExtraImport": true,
+        "detail": "django.dispatch",
+        "documentation": {}
+    },
+    {
         "label": "receiver",
         "importPath": "django.dispatch",
         "description": "django.dispatch",
@@ -1217,6 +1353,38 @@
         "documentation": {}
     },
     {
+        "label": "get_user_model",
+        "importPath": "django.contrib.auth",
+        "description": "django.contrib.auth",
+        "isExtraImport": true,
+        "detail": "django.contrib.auth",
+        "documentation": {}
+    },
+    {
+        "label": "get_user_model",
+        "importPath": "django.contrib.auth",
+        "description": "django.contrib.auth",
+        "isExtraImport": true,
+        "detail": "django.contrib.auth",
+        "documentation": {}
+    },
+    {
+        "label": "get_user_model",
+        "importPath": "django.contrib.auth",
+        "description": "django.contrib.auth",
+        "isExtraImport": true,
+        "detail": "django.contrib.auth",
+        "documentation": {}
+    },
+    {
+        "label": "TestCase",
+        "importPath": "django.test",
+        "description": "django.test",
+        "isExtraImport": true,
+        "detail": "django.test",
+        "documentation": {}
+    },
+    {
         "label": "TestCase",
         "importPath": "django.test",
         "description": "django.test",
@@ -1353,14 +1521,6 @@
         "documentation": {}
     },
     {
-        "label": "re_path",
-        "importPath": "django.urls",
-        "description": "django.urls",
-        "isExtraImport": true,
-        "detail": "django.urls",
-        "documentation": {}
-    },
-    {
         "label": "path",
         "importPath": "django.urls",
         "description": "django.urls",
@@ -1401,6 +1561,30 @@
         "documentation": {}
     },
     {
+        "label": "re_path",
+        "importPath": "django.urls",
+        "description": "django.urls",
+        "isExtraImport": true,
+        "detail": "django.urls",
+        "documentation": {}
+    },
+    {
+        "label": "path",
+        "importPath": "django.urls",
+        "description": "django.urls",
+        "isExtraImport": true,
+        "detail": "django.urls",
+        "documentation": {}
+    },
+    {
+        "label": "include",
+        "importPath": "django.urls",
+        "description": "django.urls",
+        "isExtraImport": true,
+        "detail": "django.urls",
+        "documentation": {}
+    },
+    {
         "label": "path",
         "importPath": "django.urls",
         "description": "django.urls",
@@ -1462,6 +1646,22 @@
         "description": "rest_framework.routers",
         "isExtraImport": true,
         "detail": "rest_framework.routers",
+        "documentation": {}
+    },
+    {
+        "label": "DefaultRouter",
+        "importPath": "rest_framework.routers",
+        "description": "rest_framework.routers",
+        "isExtraImport": true,
+        "detail": "rest_framework.routers",
+        "documentation": {}
+    },
+    {
+        "label": "action",
+        "importPath": "rest_framework.decorators",
+        "description": "rest_framework.decorators",
+        "isExtraImport": true,
+        "detail": "rest_framework.decorators",
         "documentation": {}
     },
     {
@@ -1534,6 +1734,14 @@
         "description": "rest_framework.decorators",
         "isExtraImport": true,
         "detail": "rest_framework.decorators",
+        "documentation": {}
+    },
+    {
+        "label": "Response",
+        "importPath": "rest_framework.response",
+        "description": "rest_framework.response",
+        "isExtraImport": true,
+        "detail": "rest_framework.response",
         "documentation": {}
     },
     {
@@ -2006,6 +2214,200 @@
         "documentation": {}
     },
     {
+        "label": "wraps",
+        "importPath": "functools",
+        "description": "functools",
+        "isExtraImport": true,
+        "detail": "functools",
+        "documentation": {}
+    },
+    {
+        "label": "django_filters",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "django_filters",
+        "description": "django_filters",
+        "detail": "django_filters",
+        "documentation": {}
+    },
+    {
+        "label": "MiddlewareMixin",
+        "importPath": "django.utils.deprecation",
+        "description": "django.utils.deprecation",
+        "isExtraImport": true,
+        "detail": "django.utils.deprecation",
+        "documentation": {}
+    },
+    {
+        "label": "threading",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "threading",
+        "description": "threading",
+        "detail": "threading",
+        "documentation": {}
+    },
+    {
+        "label": "ContentType",
+        "importPath": "django.contrib.contenttypes.models",
+        "description": "django.contrib.contenttypes.models",
+        "isExtraImport": true,
+        "detail": "django.contrib.contenttypes.models",
+        "documentation": {}
+    },
+    {
+        "label": "ContentType",
+        "importPath": "django.contrib.contenttypes.models",
+        "description": "django.contrib.contenttypes.models",
+        "isExtraImport": true,
+        "detail": "django.contrib.contenttypes.models",
+        "documentation": {}
+    },
+    {
+        "label": "ContentType",
+        "importPath": "django.contrib.contenttypes.models",
+        "description": "django.contrib.contenttypes.models",
+        "isExtraImport": true,
+        "detail": "django.contrib.contenttypes.models",
+        "documentation": {}
+    },
+    {
+        "label": "ContentType",
+        "importPath": "django.contrib.contenttypes.models",
+        "description": "django.contrib.contenttypes.models",
+        "isExtraImport": true,
+        "detail": "django.contrib.contenttypes.models",
+        "documentation": {}
+    },
+    {
+        "label": "ContentType",
+        "importPath": "django.contrib.contenttypes.models",
+        "description": "django.contrib.contenttypes.models",
+        "isExtraImport": true,
+        "detail": "django.contrib.contenttypes.models",
+        "documentation": {}
+    },
+    {
+        "label": "ContentType",
+        "importPath": "django.contrib.contenttypes.models",
+        "description": "django.contrib.contenttypes.models",
+        "isExtraImport": true,
+        "detail": "django.contrib.contenttypes.models",
+        "documentation": {}
+    },
+    {
+        "label": "ContentType",
+        "importPath": "django.contrib.contenttypes.models",
+        "description": "django.contrib.contenttypes.models",
+        "isExtraImport": true,
+        "detail": "django.contrib.contenttypes.models",
+        "documentation": {}
+    },
+    {
+        "label": "GenericForeignKey",
+        "importPath": "django.contrib.contenttypes.fields",
+        "description": "django.contrib.contenttypes.fields",
+        "isExtraImport": true,
+        "detail": "django.contrib.contenttypes.fields",
+        "documentation": {}
+    },
+    {
+        "label": "GenericForeignKey",
+        "importPath": "django.contrib.contenttypes.fields",
+        "description": "django.contrib.contenttypes.fields",
+        "isExtraImport": true,
+        "detail": "django.contrib.contenttypes.fields",
+        "documentation": {}
+    },
+    {
+        "label": "user_logged_in",
+        "importPath": "django.contrib.auth.signals",
+        "description": "django.contrib.auth.signals",
+        "isExtraImport": true,
+        "detail": "django.contrib.auth.signals",
+        "documentation": {}
+    },
+    {
+        "label": "user_logged_out",
+        "importPath": "django.contrib.auth.signals",
+        "description": "django.contrib.auth.signals",
+        "isExtraImport": true,
+        "detail": "django.contrib.auth.signals",
+        "documentation": {}
+    },
+    {
+        "label": "IsAuthenticated",
+        "importPath": "rest_framework.permissions",
+        "description": "rest_framework.permissions",
+        "isExtraImport": true,
+        "detail": "rest_framework.permissions",
+        "documentation": {}
+    },
+    {
+        "label": "IsAdminUser",
+        "importPath": "rest_framework.permissions",
+        "description": "rest_framework.permissions",
+        "isExtraImport": true,
+        "detail": "rest_framework.permissions",
+        "documentation": {}
+    },
+    {
+        "label": "BasePermission",
+        "importPath": "rest_framework.permissions",
+        "description": "rest_framework.permissions",
+        "isExtraImport": true,
+        "detail": "rest_framework.permissions",
+        "documentation": {}
+    },
+    {
+        "label": "BasePermission",
+        "importPath": "rest_framework.permissions",
+        "description": "rest_framework.permissions",
+        "isExtraImport": true,
+        "detail": "rest_framework.permissions",
+        "documentation": {}
+    },
+    {
+        "label": "IsAuthenticated",
+        "importPath": "rest_framework.permissions",
+        "description": "rest_framework.permissions",
+        "isExtraImport": true,
+        "detail": "rest_framework.permissions",
+        "documentation": {}
+    },
+    {
+        "label": "IsAuthenticated",
+        "importPath": "rest_framework.permissions",
+        "description": "rest_framework.permissions",
+        "isExtraImport": true,
+        "detail": "rest_framework.permissions",
+        "documentation": {}
+    },
+    {
+        "label": "IsAuthenticated",
+        "importPath": "rest_framework.permissions",
+        "description": "rest_framework.permissions",
+        "isExtraImport": true,
+        "detail": "rest_framework.permissions",
+        "documentation": {}
+    },
+    {
+        "label": "AllowAny",
+        "importPath": "rest_framework.permissions",
+        "description": "rest_framework.permissions",
+        "isExtraImport": true,
+        "detail": "rest_framework.permissions",
+        "documentation": {}
+    },
+    {
+        "label": "DjangoFilterBackend",
+        "importPath": "django_filters.rest_framework",
+        "description": "django_filters.rest_framework",
+        "isExtraImport": true,
+        "detail": "django_filters.rest_framework",
+        "documentation": {}
+    },
+    {
         "label": "os",
         "kind": 6,
         "isExtraImport": true,
@@ -2164,54 +2566,6 @@
         "documentation": {}
     },
     {
-        "label": "BasePermission",
-        "importPath": "rest_framework.permissions",
-        "description": "rest_framework.permissions",
-        "isExtraImport": true,
-        "detail": "rest_framework.permissions",
-        "documentation": {}
-    },
-    {
-        "label": "BasePermission",
-        "importPath": "rest_framework.permissions",
-        "description": "rest_framework.permissions",
-        "isExtraImport": true,
-        "detail": "rest_framework.permissions",
-        "documentation": {}
-    },
-    {
-        "label": "IsAuthenticated",
-        "importPath": "rest_framework.permissions",
-        "description": "rest_framework.permissions",
-        "isExtraImport": true,
-        "detail": "rest_framework.permissions",
-        "documentation": {}
-    },
-    {
-        "label": "IsAuthenticated",
-        "importPath": "rest_framework.permissions",
-        "description": "rest_framework.permissions",
-        "isExtraImport": true,
-        "detail": "rest_framework.permissions",
-        "documentation": {}
-    },
-    {
-        "label": "IsAuthenticated",
-        "importPath": "rest_framework.permissions",
-        "description": "rest_framework.permissions",
-        "isExtraImport": true,
-        "detail": "rest_framework.permissions",
-        "documentation": {}
-    },
-    {
-        "label": "AllowAny",
-        "importPath": "rest_framework.permissions",
-        "description": "rest_framework.permissions",
-        "isExtraImport": true,
-        "detail": "rest_framework.permissions",
-        "documentation": {}
-    },
-    {
         "label": "forms",
         "importPath": "django",
         "description": "django",
@@ -2265,38 +2619,6 @@
         "description": "notifications.models",
         "isExtraImport": true,
         "detail": "notifications.models",
-        "documentation": {}
-    },
-    {
-        "label": "ContentType",
-        "importPath": "django.contrib.contenttypes.models",
-        "description": "django.contrib.contenttypes.models",
-        "isExtraImport": true,
-        "detail": "django.contrib.contenttypes.models",
-        "documentation": {}
-    },
-    {
-        "label": "ContentType",
-        "importPath": "django.contrib.contenttypes.models",
-        "description": "django.contrib.contenttypes.models",
-        "isExtraImport": true,
-        "detail": "django.contrib.contenttypes.models",
-        "documentation": {}
-    },
-    {
-        "label": "ContentType",
-        "importPath": "django.contrib.contenttypes.models",
-        "description": "django.contrib.contenttypes.models",
-        "isExtraImport": true,
-        "detail": "django.contrib.contenttypes.models",
-        "documentation": {}
-    },
-    {
-        "label": "ContentType",
-        "importPath": "django.contrib.contenttypes.models",
-        "description": "django.contrib.contenttypes.models",
-        "isExtraImport": true,
-        "detail": "django.contrib.contenttypes.models",
         "documentation": {}
     },
     {
@@ -2369,14 +2691,6 @@
         "description": "rest_framework_simplejwt.exceptions",
         "isExtraImport": true,
         "detail": "rest_framework_simplejwt.exceptions",
-        "documentation": {}
-    },
-    {
-        "label": "GenericForeignKey",
-        "importPath": "django.contrib.contenttypes.fields",
-        "description": "django.contrib.contenttypes.fields",
-        "isExtraImport": true,
-        "detail": "django.contrib.contenttypes.fields",
         "documentation": {}
     },
     {
@@ -2668,7 +2982,7 @@
         "kind": 5,
         "importPath": "backend.analytics.urls",
         "description": "backend.analytics.urls",
-        "peekOfCode": "router = DefaultRouter()\nrouter.register(r\"analytics\", AnalyticsViewSet, basename=\"analytics\")\nrouter.register(r\"user-activity\", UserActivityViewSet, basename=\"user-activity\")\nurlpatterns = [\n    path(\"\", include(router.urls)),\n]",
+        "peekOfCode": "router = DefaultRouter()\nrouter.register(r\"\", AnalyticsViewSet, basename=\"analytics\")\nrouter.register(r\"\", UserActivityViewSet, basename=\"user-activity\")\nurlpatterns = [\n    path(\"\", include(router.urls)),\n]",
         "detail": "backend.analytics.urls",
         "documentation": {}
     },
@@ -2979,6 +3293,267 @@
         "documentation": {}
     },
     {
+        "label": "Migration",
+        "kind": 6,
+        "importPath": "backend.auditlog.migrations.0001_initial",
+        "description": "backend.auditlog.migrations.0001_initial",
+        "peekOfCode": "class Migration(migrations.Migration):\n    initial = True\n    dependencies = [\n        ('contenttypes', '0002_remove_content_type_name'),\n        migrations.swappable_dependency(settings.AUTH_USER_MODEL),\n    ]\n    operations = [\n        migrations.CreateModel(\n            name='AuditLog',\n            fields=[",
+        "detail": "backend.auditlog.migrations.0001_initial",
+        "documentation": {}
+    },
+    {
+        "label": "AuditLogAdmin",
+        "kind": 6,
+        "importPath": "backend.auditlog.admin",
+        "description": "backend.auditlog.admin",
+        "peekOfCode": "class AuditLogAdmin(admin.ModelAdmin):\n    list_display = (\"timestamp\", \"user\", \"action\", \"content_type_name\", \"object_repr\")\n    list_filter = (\"action\", \"timestamp\", \"content_type\")\n    search_fields = (\"user__email\", \"object_repr\", \"content_type_name\")\n    readonly_fields = (\n        \"timestamp\",\n        \"user\",\n        \"action\",\n        \"content_type\",\n        \"object_id\",",
+        "detail": "backend.auditlog.admin",
+        "documentation": {}
+    },
+    {
+        "label": "AuditlogConfig",
+        "kind": 6,
+        "importPath": "backend.auditlog.apps",
+        "description": "backend.auditlog.apps",
+        "peekOfCode": "class AuditlogConfig(AppConfig):\n    default_auto_field = \"django.db.models.BigAutoField\"\n    name = \"auditlog\"\n    def ready(self):\n        import auditlog.signals",
+        "detail": "backend.auditlog.apps",
+        "documentation": {}
+    },
+    {
+        "label": "log_view_action",
+        "kind": 2,
+        "importPath": "backend.auditlog.decorators",
+        "description": "backend.auditlog.decorators",
+        "peekOfCode": "def log_view_action(action, get_instance=None, get_details=None):\n    \"\"\"\n    Decorator to log actions performed in views\n    Parameters:\n    - action: The action to log (e.g., 'CREATE', 'UPDATE')\n    - get_instance: A function that takes the view, request, *args, **kwargs and returns the instance to log\n    - get_details: A function that takes the view, request, *args, **kwargs and returns details to log\n    \"\"\"\n    def decorator(view_func):\n        @wraps(view_func)",
+        "detail": "backend.auditlog.decorators",
+        "documentation": {}
+    },
+    {
+        "label": "AuditLogFilter",
+        "kind": 6,
+        "importPath": "backend.auditlog.filters",
+        "description": "backend.auditlog.filters",
+        "peekOfCode": "class AuditLogFilter(django_filters.FilterSet):\n    action = django_filters.CharFilter(lookup_expr=\"exact\")\n    timestamp_after = django_filters.DateTimeFilter(\n        field_name=\"timestamp\", lookup_expr=\"gte\"\n    )\n    timestamp_before = django_filters.DateTimeFilter(\n        field_name=\"timestamp\", lookup_expr=\"lte\"\n    )\n    user = django_filters.NumberFilter(field_name=\"user__id\")\n    content_type_name = django_filters.CharFilter(lookup_expr=\"icontains\")",
+        "detail": "backend.auditlog.filters",
+        "documentation": {}
+    },
+    {
+        "label": "AuditLogMiddleware",
+        "kind": 6,
+        "importPath": "backend.auditlog.middleware",
+        "description": "backend.auditlog.middleware",
+        "peekOfCode": "class AuditLogMiddleware(MiddlewareMixin):\n    \"\"\"Middleware to capture request information for audit logging\"\"\"\n    def process_request(self, request):\n        _thread_locals.request = request\n    def process_response(self, request, response):\n        if hasattr(_thread_locals, \"request\"):\n            del _thread_locals.request\n        return response",
+        "detail": "backend.auditlog.middleware",
+        "documentation": {}
+    },
+    {
+        "label": "get_current_request",
+        "kind": 2,
+        "importPath": "backend.auditlog.middleware",
+        "description": "backend.auditlog.middleware",
+        "peekOfCode": "def get_current_request():\n    \"\"\"Return the current request if available\"\"\"\n    return getattr(_thread_locals, \"request\", None)\ndef get_current_user():\n    \"\"\"Return the current user if available\"\"\"\n    request = get_current_request()\n    if request and hasattr(request, \"user\"):\n        return request.user\n    return None\nclass AuditLogMiddleware(MiddlewareMixin):",
+        "detail": "backend.auditlog.middleware",
+        "documentation": {}
+    },
+    {
+        "label": "get_current_user",
+        "kind": 2,
+        "importPath": "backend.auditlog.middleware",
+        "description": "backend.auditlog.middleware",
+        "peekOfCode": "def get_current_user():\n    \"\"\"Return the current user if available\"\"\"\n    request = get_current_request()\n    if request and hasattr(request, \"user\"):\n        return request.user\n    return None\nclass AuditLogMiddleware(MiddlewareMixin):\n    \"\"\"Middleware to capture request information for audit logging\"\"\"\n    def process_request(self, request):\n        _thread_locals.request = request",
+        "detail": "backend.auditlog.middleware",
+        "documentation": {}
+    },
+    {
+        "label": "_thread_locals",
+        "kind": 5,
+        "importPath": "backend.auditlog.middleware",
+        "description": "backend.auditlog.middleware",
+        "peekOfCode": "_thread_locals = threading.local()\ndef get_current_request():\n    \"\"\"Return the current request if available\"\"\"\n    return getattr(_thread_locals, \"request\", None)\ndef get_current_user():\n    \"\"\"Return the current user if available\"\"\"\n    request = get_current_request()\n    if request and hasattr(request, \"user\"):\n        return request.user\n    return None",
+        "detail": "backend.auditlog.middleware",
+        "documentation": {}
+    },
+    {
+        "label": "AuditLog",
+        "kind": 6,
+        "importPath": "backend.auditlog.models",
+        "description": "backend.auditlog.models",
+        "peekOfCode": "class AuditLog(models.Model):\n    ACTION_CHOICES = (\n        (\"CREATE\", \"Create\"),\n        (\"UPDATE\", \"Update\"),\n        (\"DELETE\", \"Delete\"),\n        (\"LOGIN\", \"Login\"),\n        (\"LOGOUT\", \"Logout\"),\n        (\"ASSIGN\", \"Assign\"),\n        (\"STATUS_CHANGE\", \"Status Change\"),\n        (\"COMMENT\", \"Comment\"),",
+        "detail": "backend.auditlog.models",
+        "documentation": {}
+    },
+    {
+        "label": "User",
+        "kind": 5,
+        "importPath": "backend.auditlog.models",
+        "description": "backend.auditlog.models",
+        "peekOfCode": "User = get_user_model()\nclass AuditLog(models.Model):\n    ACTION_CHOICES = (\n        (\"CREATE\", \"Create\"),\n        (\"UPDATE\", \"Update\"),\n        (\"DELETE\", \"Delete\"),\n        (\"LOGIN\", \"Login\"),\n        (\"LOGOUT\", \"Logout\"),\n        (\"ASSIGN\", \"Assign\"),\n        (\"STATUS_CHANGE\", \"Status Change\"),",
+        "detail": "backend.auditlog.models",
+        "documentation": {}
+    },
+    {
+        "label": "UserSerializer",
+        "kind": 6,
+        "importPath": "backend.auditlog.serializers",
+        "description": "backend.auditlog.serializers",
+        "peekOfCode": "class UserSerializer(serializers.ModelSerializer):\n    class Meta:\n        model = User\n        fields = [\"id\", \"email\", \"first_name\", \"last_name\"]\nclass AuditLogSerializer(serializers.ModelSerializer):\n    user_details = serializers.SerializerMethodField()\n    class Meta:\n        model = AuditLog\n        fields = [\n            \"id\",",
+        "detail": "backend.auditlog.serializers",
+        "documentation": {}
+    },
+    {
+        "label": "AuditLogSerializer",
+        "kind": 6,
+        "importPath": "backend.auditlog.serializers",
+        "description": "backend.auditlog.serializers",
+        "peekOfCode": "class AuditLogSerializer(serializers.ModelSerializer):\n    user_details = serializers.SerializerMethodField()\n    class Meta:\n        model = AuditLog\n        fields = [\n            \"id\",\n            \"timestamp\",\n            \"action\",\n            \"content_type_name\",\n            \"object_repr\",",
+        "detail": "backend.auditlog.serializers",
+        "documentation": {}
+    },
+    {
+        "label": "User",
+        "kind": 5,
+        "importPath": "backend.auditlog.serializers",
+        "description": "backend.auditlog.serializers",
+        "peekOfCode": "User = get_user_model()\nclass UserSerializer(serializers.ModelSerializer):\n    class Meta:\n        model = User\n        fields = [\"id\", \"email\", \"first_name\", \"last_name\"]\nclass AuditLogSerializer(serializers.ModelSerializer):\n    user_details = serializers.SerializerMethodField()\n    class Meta:\n        model = AuditLog\n        fields = [",
+        "detail": "backend.auditlog.serializers",
+        "documentation": {}
+    },
+    {
+        "label": "log_create",
+        "kind": 2,
+        "importPath": "backend.auditlog.services",
+        "description": "backend.auditlog.services",
+        "peekOfCode": "def log_create(user, instance, details=None, request=None):\n    \"\"\"Log a creation action\"\"\"\n    from .signals import log_action\n    return log_action(user, \"CREATE\", instance, details, request)\ndef log_update(user, instance, details=None, request=None):\n    \"\"\"Log an update action\"\"\"\n    from .signals import log_action\n    return log_action(user, \"UPDATE\", instance, details, request)\ndef log_delete(user, instance, details=None, request=None):\n    \"\"\"Log a deletion action\"\"\"",
+        "detail": "backend.auditlog.services",
+        "documentation": {}
+    },
+    {
+        "label": "log_update",
+        "kind": 2,
+        "importPath": "backend.auditlog.services",
+        "description": "backend.auditlog.services",
+        "peekOfCode": "def log_update(user, instance, details=None, request=None):\n    \"\"\"Log an update action\"\"\"\n    from .signals import log_action\n    return log_action(user, \"UPDATE\", instance, details, request)\ndef log_delete(user, instance, details=None, request=None):\n    \"\"\"Log a deletion action\"\"\"\n    from .signals import log_action\n    return log_action(user, \"DELETE\", instance, details, request)\ndef log_assign(user, instance, details=None, request=None):\n    \"\"\"Log an assignment action\"\"\"",
+        "detail": "backend.auditlog.services",
+        "documentation": {}
+    },
+    {
+        "label": "log_delete",
+        "kind": 2,
+        "importPath": "backend.auditlog.services",
+        "description": "backend.auditlog.services",
+        "peekOfCode": "def log_delete(user, instance, details=None, request=None):\n    \"\"\"Log a deletion action\"\"\"\n    from .signals import log_action\n    return log_action(user, \"DELETE\", instance, details, request)\ndef log_assign(user, instance, details=None, request=None):\n    \"\"\"Log an assignment action\"\"\"\n    from .signals import log_action\n    return log_action(user, \"ASSIGN\", instance, details, request)\ndef log_status_change(user, instance, details=None, request=None):\n    \"\"\"Log a status change action\"\"\"",
+        "detail": "backend.auditlog.services",
+        "documentation": {}
+    },
+    {
+        "label": "log_assign",
+        "kind": 2,
+        "importPath": "backend.auditlog.services",
+        "description": "backend.auditlog.services",
+        "peekOfCode": "def log_assign(user, instance, details=None, request=None):\n    \"\"\"Log an assignment action\"\"\"\n    from .signals import log_action\n    return log_action(user, \"ASSIGN\", instance, details, request)\ndef log_status_change(user, instance, details=None, request=None):\n    \"\"\"Log a status change action\"\"\"\n    from .signals import log_action\n    return log_action(user, \"STATUS_CHANGE\", instance, details, request)\ndef log_comment(user, instance, details=None, request=None):\n    \"\"\"Log a comment action\"\"\"",
+        "detail": "backend.auditlog.services",
+        "documentation": {}
+    },
+    {
+        "label": "log_status_change",
+        "kind": 2,
+        "importPath": "backend.auditlog.services",
+        "description": "backend.auditlog.services",
+        "peekOfCode": "def log_status_change(user, instance, details=None, request=None):\n    \"\"\"Log a status change action\"\"\"\n    from .signals import log_action\n    return log_action(user, \"STATUS_CHANGE\", instance, details, request)\ndef log_comment(user, instance, details=None, request=None):\n    \"\"\"Log a comment action\"\"\"\n    from .signals import log_action\n    return log_action(user, \"COMMENT\", instance, details, request)\ndef log_custom_action(user, action, instance=None, details=None, request=None):\n    \"\"\"Log a custom action\"\"\"",
+        "detail": "backend.auditlog.services",
+        "documentation": {}
+    },
+    {
+        "label": "log_comment",
+        "kind": 2,
+        "importPath": "backend.auditlog.services",
+        "description": "backend.auditlog.services",
+        "peekOfCode": "def log_comment(user, instance, details=None, request=None):\n    \"\"\"Log a comment action\"\"\"\n    from .signals import log_action\n    return log_action(user, \"COMMENT\", instance, details, request)\ndef log_custom_action(user, action, instance=None, details=None, request=None):\n    \"\"\"Log a custom action\"\"\"\n    from .signals import log_action\n    return log_action(user, action, instance, details, request)",
+        "detail": "backend.auditlog.services",
+        "documentation": {}
+    },
+    {
+        "label": "log_custom_action",
+        "kind": 2,
+        "importPath": "backend.auditlog.services",
+        "description": "backend.auditlog.services",
+        "peekOfCode": "def log_custom_action(user, action, instance=None, details=None, request=None):\n    \"\"\"Log a custom action\"\"\"\n    from .signals import log_action\n    return log_action(user, action, instance, details, request)",
+        "detail": "backend.auditlog.services",
+        "documentation": {}
+    },
+    {
+        "label": "get_client_ip",
+        "kind": 2,
+        "importPath": "backend.auditlog.signals",
+        "description": "backend.auditlog.signals",
+        "peekOfCode": "def get_client_ip(request):\n    x_forwarded_for = request.META.get(\"HTTP_X_FORWARDED_FOR\")\n    if x_forwarded_for:\n        ip = x_forwarded_for.split(\",\")[0]\n    else:\n        ip = request.META.get(\"REMOTE_ADDR\")\n    return ip\ndef log_action(user, action, instance=None, details=None, request=None):\n    \"\"\"\n    Create an audit log entry for the given action",
+        "detail": "backend.auditlog.signals",
+        "documentation": {}
+    },
+    {
+        "label": "log_action",
+        "kind": 2,
+        "importPath": "backend.auditlog.signals",
+        "description": "backend.auditlog.signals",
+        "peekOfCode": "def log_action(user, action, instance=None, details=None, request=None):\n    \"\"\"\n    Create an audit log entry for the given action\n    \"\"\"\n    ip_address = None\n    if request:\n        ip_address = get_client_ip(request)\n    log_entry = AuditLog(\n        user=user, action=action, details=details, ip_address=ip_address\n    )",
+        "detail": "backend.auditlog.signals",
+        "documentation": {}
+    },
+    {
+        "label": "user_logged_in_callback",
+        "kind": 2,
+        "importPath": "backend.auditlog.signals",
+        "description": "backend.auditlog.signals",
+        "peekOfCode": "def user_logged_in_callback(sender, request, user, **kwargs):\n    log_action(user, \"LOGIN\", request=request)\n@receiver(user_logged_out)\ndef user_logged_out_callback(sender, request, user, **kwargs):\n    if user and user.is_authenticated:\n        log_action(user, \"LOGOUT\", request=request)",
+        "detail": "backend.auditlog.signals",
+        "documentation": {}
+    },
+    {
+        "label": "user_logged_out_callback",
+        "kind": 2,
+        "importPath": "backend.auditlog.signals",
+        "description": "backend.auditlog.signals",
+        "peekOfCode": "def user_logged_out_callback(sender, request, user, **kwargs):\n    if user and user.is_authenticated:\n        log_action(user, \"LOGOUT\", request=request)",
+        "detail": "backend.auditlog.signals",
+        "documentation": {}
+    },
+    {
+        "label": "User",
+        "kind": 5,
+        "importPath": "backend.auditlog.signals",
+        "description": "backend.auditlog.signals",
+        "peekOfCode": "User = get_user_model()\ndef get_client_ip(request):\n    x_forwarded_for = request.META.get(\"HTTP_X_FORWARDED_FOR\")\n    if x_forwarded_for:\n        ip = x_forwarded_for.split(\",\")[0]\n    else:\n        ip = request.META.get(\"REMOTE_ADDR\")\n    return ip\ndef log_action(user, action, instance=None, details=None, request=None):\n    \"\"\"",
+        "detail": "backend.auditlog.signals",
+        "documentation": {}
+    },
+    {
+        "label": "router",
+        "kind": 5,
+        "importPath": "backend.auditlog.urls",
+        "description": "backend.auditlog.urls",
+        "peekOfCode": "router = DefaultRouter()\nrouter.register(r\"logs\", AuditLogViewSet)\nurlpatterns = [\n    path(\"\", include(router.urls)),\n]",
+        "detail": "backend.auditlog.urls",
+        "documentation": {}
+    },
+    {
+        "label": "urlpatterns",
+        "kind": 5,
+        "importPath": "backend.auditlog.urls",
+        "description": "backend.auditlog.urls",
+        "peekOfCode": "urlpatterns = [\n    path(\"\", include(router.urls)),\n]",
+        "detail": "backend.auditlog.urls",
+        "documentation": {}
+    },
+    {
+        "label": "AuditLogViewSet",
+        "kind": 6,
+        "importPath": "backend.auditlog.views",
+        "description": "backend.auditlog.views",
+        "peekOfCode": "class AuditLogViewSet(viewsets.ReadOnlyModelViewSet):\n    queryset = AuditLog.objects.all()\n    serializer_class = AuditLogSerializer\n    permission_classes = [IsAuthenticated]\n    filter_backends = [\n        DjangoFilterBackend,\n        filters.SearchFilter,\n        filters.OrderingFilter,\n    ]\n    filterset_class = AuditLogFilter",
+        "detail": "backend.auditlog.views",
+        "documentation": {}
+    },
+    {
         "label": "django_asgi_app",
         "kind": 5,
         "importPath": "backend.backend.asgi",
@@ -3181,7 +3756,7 @@
         "kind": 5,
         "importPath": "backend.backend.settings",
         "description": "backend.backend.settings",
-        "peekOfCode": "MIDDLEWARE = [\n    \"django.middleware.security.SecurityMiddleware\",\n    \"django.contrib.sessions.middleware.SessionMiddleware\",\n    \"django.middleware.common.CommonMiddleware\",\n    \"django.middleware.csrf.CsrfViewMiddleware\",\n    \"django.contrib.auth.middleware.AuthenticationMiddleware\",\n    \"django.contrib.messages.middleware.MessageMiddleware\",\n    \"django.middleware.clickjacking.XFrameOptionsMiddleware\",\n    \"corsheaders.middleware.CorsMiddleware\",\n]",
+        "peekOfCode": "MIDDLEWARE = [\n    \"django.middleware.security.SecurityMiddleware\",\n    \"django.contrib.sessions.middleware.SessionMiddleware\",\n    \"django.middleware.common.CommonMiddleware\",\n    \"django.middleware.csrf.CsrfViewMiddleware\",\n    \"django.contrib.auth.middleware.AuthenticationMiddleware\",\n    \"django.contrib.messages.middleware.MessageMiddleware\",\n    \"django.middleware.clickjacking.XFrameOptionsMiddleware\",\n    \"corsheaders.middleware.CorsMiddleware\",\n    \"auditlog.middleware.AuditLogMiddleware\",",
         "detail": "backend.backend.settings",
         "documentation": {}
     },
@@ -3595,7 +4170,7 @@
         "kind": 6,
         "importPath": "backend.issues.admin",
         "description": "backend.issues.admin",
-        "peekOfCode": "class IssueForm(forms.ModelForm):\n    \"\"\"\n    Custom form for the Issue model to allow assigning issues to lecturers.\n    \"\"\"\n    def __init__(self, *args, **kwargs):\n        super().__init__(*args, **kwargs)\n        # Assuming 'lecturer' is a user role in your system\n        self.fields[\"assigned_to\"].queryset = self.fields[\n            \"assigned_to\"\n        ].queryset.filter(role=\"LECTURER\")",
+        "peekOfCode": "class IssueForm(forms.ModelForm):\n    \"\"\"\n    Custom form for the Issue model to allow assigning issues to lecturers.\n    \"\"\"\n    def __init__(self, *args, **kwargs):\n        super().__init__(*args, **kwargs)\n        # Assuming 'lecturer' is a user role in your system\n        self.fields[\"assigned_to\"].queryset = self.fields[\n            \"assigned_to\"\n        ].queryset.filter(role=\"FACULTY\")",
         "detail": "backend.issues.admin",
         "documentation": {}
     },
@@ -3685,16 +4260,16 @@
         "kind": 6,
         "importPath": "backend.issues.permissions",
         "description": "backend.issues.permissions",
-        "peekOfCode": "class IsRegistrar(BasePermission):\n    \"\"\"\n    Custom permission to allow only registrars (admins) to assign issues.\n    \"\"\"\n    def has_permission(self, request, view):\n        return request.user.is_authenticated and request.user.role == \"ADMIN\"\nclass IsAssignedLecturer(BasePermission):\n    \"\"\"\n    Custom permission to allow only the assigned lecturer to resolve issues.\n    \"\"\"",
+        "peekOfCode": "class IsRegistrar(BasePermission):\n    \"\"\"\n    Custom permission to allow only registrars (admins) to assign issues.\n    \"\"\"\n    def has_permission(self, request, view):\n        return request.user.is_authenticated and request.user.role == \"ADMIN\"\nclass IsAssignedFaculty(BasePermission):\n    \"\"\"\n    Custom permission to allow only the assigned faculty member to resolve issues.\n    \"\"\"",
         "detail": "backend.issues.permissions",
         "documentation": {}
     },
     {
-        "label": "IsAssignedLecturer",
+        "label": "IsAssignedFaculty",
         "kind": 6,
         "importPath": "backend.issues.permissions",
         "description": "backend.issues.permissions",
-        "peekOfCode": "class IsAssignedLecturer(BasePermission):\n    \"\"\"\n    Custom permission to allow only the assigned lecturer to resolve issues.\n    \"\"\"\n    def has_object_permission(self, request, view, obj):\n        return request.user.is_authenticated and obj.assigned_to == request.user",
+        "peekOfCode": "class IsAssignedFaculty(BasePermission):\n    \"\"\"\n    Custom permission to allow only the assigned faculty member to resolve issues.\n    \"\"\"\n    def has_object_permission(self, request, view, obj):\n        return request.user.is_authenticated and obj.assigned_to == request.user",
         "detail": "backend.issues.permissions",
         "documentation": {}
     },
@@ -3766,7 +4341,7 @@
         "kind": 5,
         "importPath": "backend.issues.urls",
         "description": "backend.issues.urls",
-        "peekOfCode": "router = DefaultRouter()\nrouter.register(r\"\", IssueViewSet, basename=\"issues\")\nurlpatterns = [\n    path(\"\", include(router.urls)),\n    path(\"my-issues/\", my_issues, name=\"my_issues\"),\n    path(\n        \"user-issues/\", getUserIssues, name=\"user_issues\"\n    ),  # This is the endpoint we need\n    path(\n        \"get-user-issues/\", getUserIssues, name=\"get_user_issues\"",
+        "peekOfCode": "router = DefaultRouter()\nrouter.register(r\"\", IssueViewSet, basename=\"issues\")\nurlpatterns = [\n    path(\"\", include(router.urls)),\n    path(\"my-issues/\", my_issues, name=\"my_issues\"),\n    path(\"<int:issue_id>/resolve/\", resolve_issue, name=\"resolve_issue\"),\n    path(\n        \"<int:issue_pk>/status/\",\n        IssueStatusViewSet.as_view({\"get\": \"list\", \"post\": \"create\"}),\n        name=\"issue_status\",",
         "detail": "backend.issues.urls",
         "documentation": {}
     },
@@ -3775,7 +4350,7 @@
         "kind": 5,
         "importPath": "backend.issues.urls",
         "description": "backend.issues.urls",
-        "peekOfCode": "urlpatterns = [\n    path(\"\", include(router.urls)),\n    path(\"my-issues/\", my_issues, name=\"my_issues\"),\n    path(\n        \"user-issues/\", getUserIssues, name=\"user_issues\"\n    ),  # This is the endpoint we need\n    path(\n        \"get-user-issues/\", getUserIssues, name=\"get_user_issues\"\n    ),  # Add an alias for compatibility\n    path(\"faculty-issues/\", lecturer_assigned_issues, name=\"faculty_issues\"),",
+        "peekOfCode": "urlpatterns = [\n    path(\"\", include(router.urls)),\n    path(\"my-issues/\", my_issues, name=\"my_issues\"),\n    path(\"<int:issue_id>/resolve/\", resolve_issue, name=\"resolve_issue\"),\n    path(\n        \"<int:issue_pk>/status/\",\n        IssueStatusViewSet.as_view({\"get\": \"list\", \"post\": \"create\"}),\n        name=\"issue_status\",\n    ),\n    path(",
         "detail": "backend.issues.urls",
         "documentation": {}
     },
@@ -3793,7 +4368,7 @@
         "kind": 6,
         "importPath": "backend.issues.views",
         "description": "backend.issues.views",
-        "peekOfCode": "class IssueStatusViewSet(viewsets.ModelViewSet):\n    \"\"\"\n    ViewSet for viewing and editing issue statuses.\n    \"\"\"\n    serializer_class = IssueStatusSerializer\n    permission_classes = [permissions.IsAuthenticated, IsAssignedLecturer]\n    def get_queryset(self):\n        issue_id = self.kwargs.get(\"issue_pk\")\n        return IssueStatus.objects.filter(issue_id=issue_id)\n    def perform_create(self, serializer):",
+        "peekOfCode": "class IssueStatusViewSet(viewsets.ModelViewSet):\n    \"\"\"\n    ViewSet for viewing and editing issue statuses.\n    \"\"\"\n    serializer_class = IssueStatusSerializer\n    permission_classes = [permissions.IsAuthenticated, IsAssignedFaculty]\n    def get_queryset(self):\n        issue_id = self.kwargs.get(\"issue_pk\")\n        return IssueStatus.objects.filter(issue_id=issue_id)\n    def perform_create(self, serializer):",
         "detail": "backend.issues.views",
         "documentation": {}
     },
@@ -3829,25 +4404,7 @@
         "kind": 2,
         "importPath": "backend.issues.views",
         "description": "backend.issues.views",
-        "peekOfCode": "def my_issues(request):\n    user = request.user\n    # Filter issues assigned to the logged-in user\n    issues = Issue.objects.filter(assigned_to=user)\n    serializer = IssueSerializer(issues, many=True)\n    return Response(serializer.data)\n@api_view([\"GET\"])\n@permission_classes([IsAuthenticated])\ndef getUserIssues(request):\n    \"\"\"",
-        "detail": "backend.issues.views",
-        "documentation": {}
-    },
-    {
-        "label": "getUserIssues",
-        "kind": 2,
-        "importPath": "backend.issues.views",
-        "description": "backend.issues.views",
-        "peekOfCode": "def getUserIssues(request):\n    \"\"\"\n    Endpoint for users to view issues assigned to them.\n    This is an alias for get_user_issues to maintain compatibility with frontend.\n    \"\"\"\n    user = request.user\n    # Filter issues based on user role\n    if user.role == \"FACULTY\":\n        issues = Issue.objects.filter(assigned_to=user)\n    else:",
-        "detail": "backend.issues.views",
-        "documentation": {}
-    },
-    {
-        "label": "getUserIssues",
-        "kind": 2,
-        "importPath": "backend.issues.views",
-        "description": "backend.issues.views",
-        "peekOfCode": "def getUserIssues(request):\n    \"\"\"\n    Endpoint for users to view issues assigned to them.\n    This is an alias for get_user_issues to maintain compatibility with frontend.\n    \"\"\"\n    user = request.user\n    # Filter issues based on user role\n    if user.role == \"FACULTY\":\n        issues = Issue.objects.filter(assigned_to=user)\n    else:",
+        "peekOfCode": "def my_issues(request):\n    user = request.user\n    # Filter issues assigned to the logged-in user\n    issues = Issue.objects.filter(assigned_to=user)\n    serializer = IssueSerializer(issues, many=True)\n    return Response(serializer.data)\n@api_view([\"POST\"])\ndef update_status(request, issue_id):\n    print(request.data)  # Debugging: Log the payload\n    # ...existing code...",
         "detail": "backend.issues.views",
         "documentation": {}
     },
@@ -3856,7 +4413,7 @@
         "kind": 2,
         "importPath": "backend.issues.views",
         "description": "backend.issues.views",
-        "peekOfCode": "def update_status(request, issue_id):\n    print(request.data)  # Debugging: Log the payload\n    # ...existing code...\n    if not request.data.get(\"status\"):\n        return Response(\n            {\"error\": \"Status is required\"}, status=status.HTTP_400_BAD_REQUEST\n        )\n@api_view([\"POST\"])\n@permission_classes([IsAuthenticated, IsAssignedLecturer])\ndef resolve_issue(request, issue_id):",
+        "peekOfCode": "def update_status(request, issue_id):\n    print(request.data)  # Debugging: Log the payload\n    # ...existing code...\n    if not request.data.get(\"status\"):\n        return Response(\n            {\"error\": \"Status is required\"}, status=status.HTTP_400_BAD_REQUEST\n        )\n@api_view([\"POST\"])\n@permission_classes([IsAuthenticated, IsAssignedFaculty])\ndef resolve_issue(request, issue_id):",
         "detail": "backend.issues.views",
         "documentation": {}
     },
@@ -3865,34 +4422,16 @@
         "kind": 2,
         "importPath": "backend.issues.views",
         "description": "backend.issues.views",
-        "peekOfCode": "def resolve_issue(request, issue_id):\n    \"\"\"\n    Endpoint for lecturers to resolve an issue assigned to them.\n    \"\"\"\n    user = request.user\n    issue = get_object_or_404(Issue, id=issue_id)\n    if issue.assigned_to != user:\n        return Response(\n            {\"error\": \"You are not authorized to resolve this issue.\"},\n            status=status.HTTP_403_FORBIDDEN,",
+        "peekOfCode": "def resolve_issue(request, issue_id):\n    \"\"\"\n    Endpoint for faculty to resolve an issue assigned to them.\n    \"\"\"\n    try:\n        user = request.user\n        issue = get_object_or_404(Issue, id=issue_id)\n        # Log the request\n        logger.info(\n            f\"Resolve request for issue {issue_id} by user {user.id} ({user.email})\"",
         "detail": "backend.issues.views",
         "documentation": {}
     },
     {
-        "label": "lecturer_assigned_issues",
-        "kind": 2,
+        "label": "logger",
+        "kind": 5,
         "importPath": "backend.issues.views",
         "description": "backend.issues.views",
-        "peekOfCode": "def lecturer_assigned_issues(request):\n    \"\"\"\n    Endpoint for lecturers to view issues assigned to them.\n    \"\"\"\n    user = request.user\n    issues = Issue.objects.filter(assigned_to=user)\n    serializer = IssueSerializer(issues, many=True)\n    return Response(serializer.data)\nclass IssueViewSet(viewsets.ModelViewSet):\n    \"\"\"",
-        "detail": "backend.issues.views",
-        "documentation": {}
-    },
-    {
-        "label": "assign",
-        "kind": 2,
-        "importPath": "backend.issues.views",
-        "description": "backend.issues.views",
-        "peekOfCode": "def assign(self, request, pk=None):\n    issue = self.get_object()\n    faculty_id = request.data.get(\"faculty_id\")\n    # Handle unassignment\n    if faculty_id is None:\n        issue.assigned_to = None\n        issue.current_status = \"SUBMITTED\"  # Or appropriate status\n        issue.save()\n        IssueStatus.objects.create(\n            issue=issue,",
-        "detail": "backend.issues.views",
-        "documentation": {}
-    },
-    {
-        "label": "escalate",
-        "kind": 2,
-        "importPath": "backend.issues.views",
-        "description": "backend.issues.views",
-        "peekOfCode": "def escalate(self, request, pk=None):\n    \"\"\"\n    Escalate an issue to admin.\n    \"\"\"\n    issue = self.get_object()\n    reason = request.data.get(\"reason\", \"No reason provided\")\n    issue.current_status = \"ESCALATED\"\n    issue.save()\n    # Create status update\n    IssueStatus.objects.create(",
+        "peekOfCode": "logger = logging.getLogger(__name__)\nUser = get_user_model()\n@api_view([\"GET\"])\n@permission_classes([IsAuthenticated])\ndef my_issues(request):\n    user = request.user\n    # Filter issues assigned to the logged-in user\n    issues = Issue.objects.filter(assigned_to=user)\n    serializer = IssueSerializer(issues, many=True)\n    return Response(serializer.data)",
         "detail": "backend.issues.views",
         "documentation": {}
     },
@@ -3901,7 +4440,7 @@
         "kind": 5,
         "importPath": "backend.issues.views",
         "description": "backend.issues.views",
-        "peekOfCode": "User = get_user_model()\n@api_view([\"GET\"])\n@permission_classes([IsAuthenticated])\ndef my_issues(request):\n    user = request.user\n    # Filter issues assigned to the logged-in user\n    issues = Issue.objects.filter(assigned_to=user)\n    serializer = IssueSerializer(issues, many=True)\n    return Response(serializer.data)\n@api_view([\"GET\"])",
+        "peekOfCode": "User = get_user_model()\n@api_view([\"GET\"])\n@permission_classes([IsAuthenticated])\ndef my_issues(request):\n    user = request.user\n    # Filter issues assigned to the logged-in user\n    issues = Issue.objects.filter(assigned_to=user)\n    serializer = IssueSerializer(issues, many=True)\n    return Response(serializer.data)\n@api_view([\"POST\"])",
         "detail": "backend.issues.views",
         "documentation": {}
     },
@@ -4045,7 +4584,7 @@
         "kind": 5,
         "importPath": "backend.notifications.urls",
         "description": "backend.notifications.urls",
-        "peekOfCode": "router = DefaultRouter()\nrouter.register(r\"\", NotificationViewSet, basename=\"notifications\")\nurlpatterns = [\n    path(\"\", include(router.urls)),\n    path(\"unread-count/\", unread_count, name=\"unread_count\"),\n    path(\n        \"<int:pk>/read/\",\n        NotificationViewSet.as_view({\"post\": \"mark_as_read\"}),\n        name=\"mark_as_read\",\n    ),",
+        "peekOfCode": "router = DefaultRouter()\nrouter.register(r\"\", NotificationViewSet, basename=\"notifications\")\nurlpatterns = [\n    path(\"\", include(router.urls)),\n]",
         "detail": "backend.notifications.urls",
         "documentation": {}
     },
@@ -4054,7 +4593,7 @@
         "kind": 5,
         "importPath": "backend.notifications.urls",
         "description": "backend.notifications.urls",
-        "peekOfCode": "urlpatterns = [\n    path(\"\", include(router.urls)),\n    path(\"unread-count/\", unread_count, name=\"unread_count\"),\n    path(\n        \"<int:pk>/read/\",\n        NotificationViewSet.as_view({\"post\": \"mark_as_read\"}),\n        name=\"mark_as_read\",\n    ),\n    path(\n        \"mark-all-read/\",",
+        "peekOfCode": "urlpatterns = [\n    path(\"\", include(router.urls)),\n]",
         "detail": "backend.notifications.urls",
         "documentation": {}
     },
@@ -4064,15 +4603,6 @@
         "importPath": "backend.notifications.views",
         "description": "backend.notifications.views",
         "peekOfCode": "class NotificationViewSet(viewsets.ReadOnlyModelViewSet):\n    \"\"\"\n    ViewSet for viewing notifications.\n    \"\"\"\n    serializer_class = NotificationSerializer\n    permission_classes = [IsAuthenticated]\n    def get_queryset(self):\n        \"\"\"\n        Return notifications for the current user.\n        \"\"\"",
-        "detail": "backend.notifications.views",
-        "documentation": {}
-    },
-    {
-        "label": "unread_count",
-        "kind": 2,
-        "importPath": "backend.notifications.views",
-        "description": "backend.notifications.views",
-        "peekOfCode": "def unread_count(request):\n    user = request.user\n    count = Notification.objects.filter(user=user, is_read=False).count()\n    return Response({\"count\": count})\nclass NotificationViewSet(viewsets.ReadOnlyModelViewSet):\n    \"\"\"\n    ViewSet for viewing notifications.\n    \"\"\"\n    serializer_class = NotificationSerializer\n    permission_classes = [IsAuthenticated]",
         "detail": "backend.notifications.views",
         "documentation": {}
     },

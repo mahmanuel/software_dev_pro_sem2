@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { getAuditLogs } from "../services/analyticsService"
+import './styles/AuditLogDashboard.css'
 
 function AuditLogDashboard() {
   const [logs, setLogs] = useState([])
@@ -22,46 +23,59 @@ function AuditLogDashboard() {
   const navigate = useNavigate()
 
   useEffect(() => {
+    // Check if user is authorized
+    const userInfo = JSON.parse(localStorage.getItem("user") || "{}")
+    const userRole = userInfo.role?.toUpperCase() || ""
+
+    if (userRole !== "ADMIN" && userRole !== "REGISTRAR") {
+      setError("You do not have permission to access this page")
+      return
+    }
+
     fetchAuditLogs()
   }, [pagination.current, pagination.pageSize])
 
   const fetchAuditLogs = async () => {
     try {
-      setIsLoading(true)
-
+      setIsLoading(true);
+  
       const queryParams = {
         page: pagination.current,
-        limit: pagination.pageSize,
-      }
-
+        page_size: pagination.pageSize, // Ensure this matches the backend's expected parameter
+      };
+  
       if (filters.action) {
-        queryParams.action = filters.action
+        queryParams.action = filters.action;
       }
-
+  
       if (filters.search) {
-        queryParams.search = filters.search
+        queryParams.search = filters.search;
       }
-
+  
       if (filters.user) {
-        queryParams.user = filters.user
+        queryParams.user = filters.user;
       }
-
-      const response = await getAuditLogs(queryParams)
-
-      setLogs(response.results || [])
+  
+      console.log("Query Params:", queryParams); // Debugging
+  
+      const response = await getAuditLogs(queryParams);
+  
+      console.log("Response:", response); // Debugging
+  
+      setLogs(response.results || []);
       setPagination({
         ...pagination,
         total: response.count || 0,
-      })
-
-      setError("")
+      });
+  
+      setError("");
     } catch (err) {
-      console.error("Error fetching audit logs:", err)
-      setError("Failed to load audit logs. Please try again later.")
+      console.error("Error fetching audit logs:", err);
+      setError(err.response?.data?.detail || "Failed to load audit logs. Please try again later.");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const handleTableChange = (pagination) => {
     setPagination({

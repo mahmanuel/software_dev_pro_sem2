@@ -1,79 +1,59 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
-import { getUnreadCount, markAllAsRead } from "../services/notificationService"
-import { NotificationSocket } from "../services/websocketService"
+import { useState, useEffect } from "react"
+import { getUnreadCount, markAllAsRead, getRecentNotifications } from "../services/notificationService"
 
-function NotificationBell({ onNotificationClick }) {
+function NotificationBell() {
   const [unreadCount, setUnreadCount] = useState(0)
   const [showDropdown, setShowDropdown] = useState(false)
   const [notifications, setNotifications] = useState([])
-  const [wsConnected, setWsConnected] = useState(false)
-  const notificationSocketRef = useRef(null)
-  const dropdownRef = useRef(null)
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState(null)
 
+  // Fetch unread count on component mount and periodically
   useEffect(() => {
-    // Fetch initial unread count
-    const fetchUnreadCount = async () => {
-      try {
-        const count = await getUnreadCount()
-        setUnreadCount(count)
-      } catch (error) {
-        console.error("Error fetching unread count:", error)
-      }
-    }
-
     fetchUnreadCount()
 
-    // Set up WebSocket connection for real-time notifications
-    const token = localStorage.getItem("token")
-    if (token) {
-      const handleNotificationMessage = (data) => {
-        if (data.type === "unread_count") {
-          setUnreadCount(data.count)
-        } else if (data.type === "notification_message") {
-          // Add new notification to the list
-          setNotifications((prev) => [data.notification, ...prev].slice(0, 5))
-          // Update unread count
-          setUnreadCount((prev) => prev + 1)
-        }
-      }
+    // Set up polling for notifications
+    const interval = setInterval(fetchUnreadCount, 30000) // every 30 seconds
 
-      const handleWsOpen = () => {
-        setWsConnected(true)
-      }
+    return () => clearInterval(interval)
+  }, [])
 
+  const fetchUnreadCount = async () => {
+    try {
+      const data = await getUnreadCount()
+      setUnreadCount(data.count || 0)
+      setError(null)
+    } catch (err) {
+      console.error("Error fetching unread count:", err)
+      // Don't set error state to avoid UI disruption for this non-critical feature
+    }
+  }
+
+  const fetchNotifications = async () => {
+    if (showDropdown) {
+      setIsLoading(true)
       try {
-        notificationSocketRef.current = new NotificationSocket(token, handleNotificationMessage, handleWsOpen)
-        notificationSocketRef.current.connect()
-      } catch (error) {
-        console.error("Failed to initialize WebSocket:", error)
+        const data = await getRecentNotifications(5)
+        setNotifications(Array.isArray(data) ? data : [])
+        setError(null)
+      } catch (err) {
+        console.error("Error fetching notifications:", err)
+        setNotifications([])
+        // Don't set error state to avoid UI disruption
+      } finally {
+        setIsLoading(false)
       }
     }
+  }
 
-    // Cleanup WebSocket connection on unmount
-    return () => {
-      if (notificationSocketRef.current) {
-        notificationSocketRef.current.disconnect()
-      }
-    }
-  }, [])
-
-  // Close dropdown when clicking outside
+  // Fetch notifications when dropdown is opened
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setShowDropdown(false)
-      }
-    }
+    fetchNotifications()
+  }, [showDropdown])
 
-    document.addEventListener("mousedown", handleClickOutside)
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside)
-    }
-  }, [])
-
-  const handleBellClick = () => {
+  const handleToggleDropdown = () => {
     setShowDropdown(!showDropdown)
   }
 
@@ -81,74 +61,49 @@ function NotificationBell({ onNotificationClick }) {
     try {
       await markAllAsRead()
       setUnreadCount(0)
-
-      // Also send WebSocket message to mark all as read
-      if (notificationSocketRef.current && wsConnected) {
-        notificationSocketRef.current.markAllAsRead()
-      }
-
-      // Update notifications list to mark all as read
-      setNotifications((prev) => prev.map((notif) => ({ ...notif, read: true })))
-    } catch (error) {
-      console.error("Error marking all as read:", error)
+      // Update the notifications to show they're read
+      setNotifications(notifications.map((notif) => ({ ...notif, is_read: true })))
+    } catch (err) {
+      console.error("Error marking all as read:", err)
+      // Don't set error state to avoid UI disruption
     }
-  }
-
-  const handleNotificationClick = (notification) => {
-    // Mark as read via WebSocket
-    if (notificationSocketRef.current && wsConnected && !notification.read) {
-      notificationSocketRef.current.markAsRead(notification.id)
-    }
-
-    // Call the parent callback
-    if (onNotificationClick) {
-      onNotificationClick(notification)
-    }
-
-    setShowDropdown(false)
   }
 
   return (
-    <div className="notification-bell-container" ref={dropdownRef}>
-      <div className="notification-bell" onClick={handleBellClick}>
-        <i className="bell-icon">🔔</i>
+    <div className="notification-bell-container">
+      <button
+        className="notification-bell-button"
+        onClick={handleToggleDropdown}
+        aria-label={`Notifications ${unreadCount > 0 ? `(${unreadCount} unread)` : ""}`}
+      >
+        <span className="bell-icon">🔔</span>
         {unreadCount > 0 && <span className="notification-badge">{unreadCount}</span>}
-      </div>
+      </button>
 
       {showDropdown && (
         <div className="notification-dropdown">
           <div className="notification-header">
             <h3>Notifications</h3>
             {unreadCount > 0 && (
-              <button className="mark-all-read" onClick={handleMarkAllAsRead}>
+              <button className="mark-all-read-button" onClick={handleMarkAllAsRead}>
                 Mark all as read
               </button>
             )}
           </div>
 
           <div className="notification-list">
-            {notifications.length > 0 ? (
-              notifications.map((notification, index) => (
-                <div
-                  key={index}
-                  className={`notification-item ${notification.read ? "" : "unread"}`}
-                  onClick={() => handleNotificationClick(notification)}
-                >
-                  <div className="notification-content">
-                    <p>{notification.message}</p>
-                    <span className="notification-time">{new Date(notification.created_at).toLocaleTimeString()}</span>
-                  </div>
+            {isLoading ? (
+              <div className="notification-loading">Loading...</div>
+            ) : notifications.length > 0 ? (
+              notifications.map((notification) => (
+                <div key={notification.id} className={`notification-item ${!notification.is_read ? "unread" : ""}`}>
+                  <div className="notification-content">{notification.message}</div>
+                  <div className="notification-time">{new Date(notification.created_at).toLocaleString()}</div>
                 </div>
               ))
             ) : (
-              <div className="no-notifications">
-                <p>No notifications</p>
-              </div>
+              <div className="no-notifications">No notifications available</div>
             )}
-          </div>
-
-          <div className="notification-footer">
-            <button onClick={() => onNotificationClick({ viewAll: true })}>View all notifications</button>
           </div>
         </div>
       )}
@@ -157,4 +112,3 @@ function NotificationBell({ onNotificationClick }) {
 }
 
 export default NotificationBell
-

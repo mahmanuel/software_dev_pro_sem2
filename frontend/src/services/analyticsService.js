@@ -60,19 +60,35 @@ export const getIssueTrends = async (period = "month") => {
   }
 }
 
-// Get audit logs
-export const getAuditLogs = async (filters = {}) => {
+/**
+ * Get audit logs with optional filtering
+ * @param {Object} params - Query parameters for filtering
+ * @returns {Promise} - Promise with the audit logs data
+ */
+// Function to fetch audit logs
+export const getAuditLogs = async (params = {}) => {
   try {
-    const queryParams = new URLSearchParams()
-    Object.entries(filters).forEach(([key, value]) => {
-      if (value) {
-        queryParams.append(key, value)
-      }
-    })
-
-    return await api.get(`/auditlog/?${queryParams.toString()}`)
+    console.log("Fetching audit logs with params:", params)
+    // Fix the endpoint path - change from "/api/auditlog/logs/" to "/api/audit/logs/"
+    const response = await api.get("/auditlog/logs/", { params })
+    console.log("Audit logs response:", response.data)
+    return response.data
   } catch (error) {
-    console.error("Get audit logs error:", error)
+    console.error("Error fetching audit logs:", error)
+    throw error
+  }
+}
+
+/**
+ * Get analytics data for audit logs
+ * @returns {Promise} - Promise with the analytics data
+ */
+export const getAuditLogAnalytics = async () => {
+  try {
+    const response = await api.get("/analytics/audit-log-analytics/")
+    return response.data
+  } catch (error) {
+    console.error("Error fetching audit log analytics:", error)
     throw error
   }
 }

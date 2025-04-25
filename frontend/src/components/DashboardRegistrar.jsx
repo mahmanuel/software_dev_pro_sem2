@@ -2,8 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react"
 import { useNavigate } from "react-router-dom"
-import { getAllIssues, assignIssue, addIssueStatus, addComment } from "../services/issueService"
-import { getFacultyList, getAnalyticsData } from "../services/userService"
+import { getAllIssues, assignIssue, addIssueStatus, addComment, getFacultyList, getAnalyticsData } from "../services" // Import from the index file
 import { getAuditLogs } from "../services/analyticsService"
 import { logout } from "../services/authService"
 import NotificationBell from "./NotificationBell"
@@ -117,6 +116,9 @@ function DashboardRegistrar({ setUser }) {
       console.log("Faculty list fetched:", data)
 
       if (Array.isArray(data) && data.length > 0) {
+        // Log the first faculty member to see its structure
+        console.log("Sample faculty member:", data[0])
+
         setFacultyList(data)
         console.log("Faculty list set:", data)
       } else {
@@ -212,57 +214,39 @@ function DashboardRegistrar({ setUser }) {
 
   // Update the handleAssignIssue function to fix the faculty ID parsing issue
   const handleAssignIssue = async (issueId, facultyId) => {
-    try {
-      console.log("Assignment attempt:", { issueId, facultyId });
-  
-      // Handle unassignment case
-      if (facultyId === null) {
-        console.log("Processing unassignment");
-        await assignIssue(issueId, null); // Update your API to handle null
-        setNotification({
-          message: "Issue unassigned successfully",
-          type: "success",
-        });
-        fetchIssues();
-        return;
-      }
-  
-      // Validate faculty ID
-      if (typeof facultyId === "string" && /^\d+$/.test(facultyId)) {
-        facultyId = Number(facultyId); // Convert to number if it's a valid numeric string
-      }
-  
-      if (typeof facultyId !== "number" || isNaN(facultyId)) {
-        throw new Error(`Invalid faculty ID: must be a number, got ${facultyId}`);
-      }
-  
-      // Find faculty for confirmation message
-      const faculty = facultyList.find((f) => f.id === facultyId);
-      if (!faculty) {
-        throw new Error("Selected faculty member not found");
-      }
-  
-      await assignIssue(issueId, facultyId);
-  
+    console.log("Assignment attempt:", { issueId, facultyId })
+
+    // Find faculty by ID
+    const faculty = facultyList.find((f) => String(f.id) === String(facultyId))
+    if (!faculty) {
+      console.error(`Faculty with ID ${facultyId} not found`)
       setNotification({
-        message: `Assigned to ${faculty.name}`,
-        type: "success",
-      });
-      fetchIssues();
-    } catch (err) {
-      console.error("Assignment failed:", {
-        error: err,
-        issueId,
-        facultyId,
-        facultyListLength: facultyList.length,
-      });
-  
-      setNotification({
-        message: `Assignment failed: ${err.message}`,
+        message: "Invalid faculty selection. Please try again.",
         type: "error",
-      });
+      })
+      return
     }
-  };
+
+    console.log("Found faculty:", faculty)
+
+    try {
+      // Send the numeric faculty ID to the backend
+      await assignIssue(issueId, faculty.id)
+
+      setNotification({
+        message: `Assigned to ${faculty.name || faculty.email}`,
+        type: "success",
+      })
+      fetchIssues() // Refresh the issue list
+    } catch (err) {
+      console.error("Assignment failed:", err)
+      setNotification({
+        message: "Failed to assign issue. Please try again.",
+        type: "error",
+      })
+    }
+  }
+
   const handleStatusChange = async (issueId, newStatus) => {
     try {
       console.log(`Updating issue ${issueId} status to ${newStatus}`)
@@ -328,6 +312,14 @@ function DashboardRegistrar({ setUser }) {
     navigate("/")
   }
 
+  const navigateToAuditLogDashboard = () => {
+    navigate("/audit-logs")
+  }
+
+  const navigateToAnalyticsDashboard = () => {
+    navigate("/analytics");
+  }
+
   const toggleAuditLog = () => {
     setShowAuditLog(!showAuditLog)
     setShowAnalytics(false)
@@ -384,11 +376,11 @@ function DashboardRegistrar({ setUser }) {
             Refresh Issues
           </button>
           <NotificationBell />
-          <button onClick={toggleAnalytics} className="analytics-button">
-            {showAnalytics ? "Hide Analytics" : "Show Analytics"}
+          <button onClick={navigateToAuditLogDashboard} className="audit-log-dashboard-button">
+            Audit Log Dashboard
           </button>
-          <button onClick={toggleAuditLog} className="audit-log-button">
-            {showAuditLog ? "Hide Audit Log" : "Show Audit Log"}
+          <button onClick={navigateToAnalyticsDashboard} className="analytics-dashboard-button">
+            Analytics Dashboard
           </button>
           <button onClick={handleLogout} className="logout-button">
             Logout
@@ -700,39 +692,29 @@ function DashboardRegistrar({ setUser }) {
                       <div className="loading-select">Loading faculty...</div>
                     ) : (
                       <select
-                      value={issue.assigned_to?.id || ""}
-                      onChange={(e) => {
-                        const selectedValue = e.target.value;
-                        console.log("Selected faculty ID (raw):", selectedValue, typeof selectedValue); // Debugging log
-                    
-                        // Handle unassignment case
-                        if (selectedValue === "") {
-                          console.log("Unassigning issue");
-                          handleAssignIssue(issue.id, null); // Explicit null for unassignment
-                          return;
-                        }
-                    
-                        // Convert to number and validate
-                        const facultyId = Number(selectedValue);
-                        if (isNaN(facultyId)) {
-                          console.error("Invalid faculty ID conversion:", selectedValue);
-                          setNotification({
-                            message: "Please select a valid faculty member",
-                            type: "error",
-                          });
-                          return;
-                        }
-                    
-                        handleAssignIssue(issue.id, facultyId);
-                      }}
-                    >
-                      <option value="">Unassigned</option>
-                      {facultyList.map((faculty) => (
-                        <option key={faculty.id} value={faculty.id}>
-                          {faculty.name} ({faculty.department})
-                        </option>
-                      ))}
-                    </select>
+                        value={issue.assigned_to?.id || ""}
+                        onChange={(e) => {
+                          const selectedValue = e.target.value
+                          console.log("Selected faculty value:", selectedValue, typeof selectedValue)
+
+                          // Handle unassignment case
+                          if (selectedValue === "") {
+                            handleAssignIssue(issue.id, null)
+                            return
+                          }
+
+                          // Pass the selected value directly
+                          handleAssignIssue(issue.id, selectedValue)
+                        }}
+                      >
+                        <option value="">Unassigned</option>
+                        {facultyList.map((faculty) => (
+                          <option key={String(faculty.id)} value={String(faculty.id)}>
+                            {faculty.name || faculty.email || `Faculty ${faculty.id}`}
+                            {faculty.department ? ` (${faculty.department})` : ""}
+                          </option>
+                        ))}
+                      </select>
                     )}
                   </div>
 

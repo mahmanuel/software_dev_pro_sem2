@@ -18,6 +18,7 @@ urlpatterns = [
     path("api/realtime/", include("realtime.urls")),
     path("api/backend-api/", include("backend_api.urls")),
     path("api/api/", include("api.urls")),
+    path("api/auditlog/", include("auditlog.urls")),
 ]
 
 if settings.DEBUG:

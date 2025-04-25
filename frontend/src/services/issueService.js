@@ -28,18 +28,18 @@ export const getUserIssues = async (filters = {}) => {
       if (value) queryParams.append(key, value)
     })
 
-    // Try the user-issues endpoint first
+    // Try both endpoints to ensure we get the data
     try {
-      const response = await api.get(`issues/user-issues/?${queryParams.toString()}`)
-      return response.data
-    } catch (error) {
-      // If that fails, try the get-user-issues endpoint
-      if (error.response && error.response.status === 404) {
-        console.log("Falling back to get-user-issues endpoint")
-        const response = await api.get(`issues/get-user-issues/?${queryParams.toString()}`)
-        return response.data
-      }
-      throw error
+      // First try the faculty_issues endpoint
+      const response = await api.get(`issues/faculty_issues/?${queryParams.toString()}`)
+      console.log("Faculty issues response:", response.data)
+      return Array.isArray(response.data) ? response.data : response.data.results ? response.data.results : []
+    } catch (firstError) {
+      console.log("First endpoint failed, trying my-issues endpoint")
+      // If that fails, try the my-issues endpoint
+      const response = await api.get(`issues/my-issues/?${queryParams.toString()}`)
+      console.log("My issues response:", response.data)
+      return Array.isArray(response.data) ? response.data : response.data.results ? response.data.results : []
     }
   } catch (error) {
     console.error("Error in getUserIssues:", error)
@@ -72,44 +72,83 @@ export const createIssue = async (issueData) => {
 // Assign an issue to a faculty member
 export const assignIssue = async (issueId, facultyId) => {
   try {
-    console.log("API Assignment Request:", { issueId, facultyId });
-    
-    // Handle unassignment
-    if (facultyId === null) {
-      const response = await api.post(`issues/${issueId}/assign/`, { 
-        faculty_id: null 
-      });
-      return response.data;
-    }
-    
-    // Validate faculty ID before sending
-    if (typeof facultyId !== 'number' || isNaN(facultyId)) {
-      throw new Error(`Invalid faculty ID: ${facultyId}`);
+    console.log("API Assignment Request:", { issueId, facultyId })
+
+    // Create the request payload
+    let payload = {}
+
+    if (facultyId === null || facultyId === "") {
+      // Handle unassignment
+      payload = { faculty_id: null }
+    } else if (typeof facultyId === "string" && facultyId.includes("-")) {
+      // This is our custom ID format (e.g., "mark-nsubuga-csc")
+      // Extract the name parts from our custom ID
+      const parts = facultyId.split("-")
+
+      if (parts.length >= 2) {
+        // Reconstruct the name from the ID parts
+        const firstName = parts[0].charAt(0).toUpperCase() + parts[0].slice(1)
+        const lastName = parts[1].charAt(0).toUpperCase() + parts[1].slice(1)
+
+        // Send the faculty name to the backend
+        payload = {
+          faculty_name: `${firstName} ${lastName}`,
+          department: parts.length >= 3 ? parts[2] : "",
+        }
+
+        console.log("Using faculty name for assignment:", payload)
+      } else {
+        // Fallback to sending the ID as is
+        payload = { faculty_id: facultyId }
+      }
+    } else {
+      // If it's not in our custom format, pass it through
+      payload = { faculty_id: facultyId }
     }
 
-    const response = await api.post(`issues/${issueId}/assign/`, { 
-      faculty_id: facultyId 
-    });
-    return response.data;
-    
+    console.log("Assignment payload:", payload)
+
+    // Send the request
+    const response = await api.post(`issues/${issueId}/assign/`, payload)
+    return response.data
   } catch (error) {
     console.error("API Assignment Error:", {
       status: error.response?.status,
       data: error.response?.data,
       issueId,
-      facultyId
-    });
-    throw error;
+      facultyId,
+    })
+    throw error.response ? error.response.data : error
   }
-};
+}
 
-// Add a status update to an issue
-export const addIssueStatus = async (issueId, statusData) => {
+// Resolve an issue
+export const resolveIssue = async (issueId) => {
   try {
-    const response = await api.post(`issues/${issueId}/status/`, statusData)
+    const response = await api.post(`issues/${issueId}/resolve/`)
     return response.data
   } catch (error) {
-    console.error("Error in addIssueStatus:", error)
+    console.error("Error in resolveIssue:", error)
+    throw error.response ? error.response.data : error.message
+  }
+}
+
+// Add a status update to an issue
+export const addIssueStatus = async (issueId, { status, notes }) => {
+  try {
+    console.log("Payload for addIssueStatus:", { status, notes })
+
+    // For RESOLVED status, use the dedicated resolve endpoint
+    if (status === "RESOLVED") {
+      const response = await api.post(`issues/${issueId}/resolve/`, { notes })
+      return response.data
+    } else {
+      // For other statuses, use the regular status endpoint
+      const response = await api.post(`issues/${issueId}/status/`, { status, notes })
+      return response.data
+    }
+  } catch (error) {
+    console.error("Error in addIssueStatus:", error.response?.data || error.message)
     throw error.response ? error.response.data : error.message
   }
 }

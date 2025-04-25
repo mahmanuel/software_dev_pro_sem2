@@ -123,7 +123,7 @@ function Register({ setUser }) {
             value={formData.department}
             onChange={handleChange}
             className="input" >
-          <option value="">Select Department (optional)</option>
+          <option value="">Select Department </option>
   {DEPARTMENTS.map((dept) => (
           <option key={dept.id} value={dept.id}>
       {dept.name}</option>
