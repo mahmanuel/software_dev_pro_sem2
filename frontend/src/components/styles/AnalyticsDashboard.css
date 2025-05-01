@@ -1,0 +1,266 @@
+/* AnalyticsDashboard.css */
+
+/* General Styles */
+.analytics-dashboard {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+  }
+  
+  .dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .dashboard-header h1 {
+    font-size: 2rem;
+    color: #333;
+  }
+  
+  .back-button {
+    padding: 8px 16px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .back-button:hover {
+    background-color: #2980b9;
+  }
+  
+  .time-range-selector {
+    display: flex;
+    align-items: center;
+  }
+  
+  .time-range-selector label {
+    margin-right: 10px;
+    font-size: 1rem;
+    color: #555;
+  }
+  
+  .time-range-selector select {
+    padding: 6px 10px;
+    font-size: 1rem;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+  }
+  
+  /* Stats Overview */
+  .stats-overview {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 40px;
+  }
+  
+  .stat-card {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    width: 22%;
+  }
+  
+  .stat-card h3 {
+    font-size: 1.2rem;
+    color: #333;
+  }
+  
+  .stat-value {
+    font-size: 1.5rem;
+    color: #3498db;
+    font-weight: bold;
+  }
+  
+  /* Analytics Section */
+  .analytics-section {
+    margin-bottom: 40px;
+  }
+  
+  .analytics-section h2 {
+    font-size: 1.5rem;
+    color: #333;
+    margin-bottom: 20px;
+  }
+  
+  .chart-container {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .status-bars, .category-chart, .trend-chart, .user-activity-chart {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  
+  .status-bar-item, .category-item, .trend-day, .activity-day {
+    flex: 1;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .status-bar-container, .category-bar-container {
+    height: 20px;
+    background-color: #ddd;
+    border-radius: 5px;
+    margin-top: 10px;
+  }
+  
+  .status-bar, .category-bar {
+    height: 100%;
+    border-radius: 5px;
+  }
+  
+  .status-label, .category-label {
+    font-size: 1rem;
+    color: #555;
+  }
+  
+  .status-count, .category-value {
+    font-size: 1rem;
+    color: #333;
+    margin-top: 5px;
+  }
+  
+  .legend-item {
+    display: flex;
+    align-items: center;
+    margin-right: 15px;
+  }
+  
+  .legend-color {
+    width: 15px;
+    height: 15px;
+    margin-right: 5px;
+    border-radius: 50%;
+  }
+  
+  .legend-label {
+    font-size: 1rem;
+    color: #333;
+  }
+  
+  .trend-legend {
+    display: flex;
+    justify-content: flex-start;
+    margin-bottom: 10px;
+  }
+  
+  .trend-chart-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  
+  .trend-day {
+    width: 100px;
+    text-align: center;
+  }
+  
+  .trend-date {
+    font-size: 1rem;
+    color: #333;
+  }
+  
+  .trend-bars {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+  }
+  
+  .trend-bar {
+    width: 40px;
+    border-radius: 5px;
+    margin: 0 5px;
+  }
+  
+  .trend-value {
+    color: white;
+    font-weight: bold;
+    text-align: center;
+  }
+  
+  .activity-chart-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  
+  .activity-day {
+    width: 100px;
+    text-align: center;
+  }
+  
+  .activity-date {
+    font-size: 1rem;
+    color: #333;
+  }
+  
+  .activity-bars {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+  }
+  
+  .activity-bar {
+    width: 40px;
+    border-radius: 5px;
+    margin: 0 5px;
+  }
+  
+  .activity-value {
+    color: white;
+    font-weight: bold;
+    text-align: center;
+  }
+  
+  .recent-activity {
+    margin-top: 20px;
+  }
+  
+  .activity-list {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .activity-item {
+    background-color: #f9f9f9;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .activity-user {
+    font-weight: bold;
+    color: #3498db;
+  }
+  
+  .activity-type, .activity-time {
+    color: #777;
+  }
+  
+  .activity-issue a {
+    color: #3498db;
+    text-decoration: none;
+  }
+  
+  .activity-issue a:hover {
+    text-decoration: underline;
+  }
+  
+  /* Loading and Error States */
+  .loading, .error-message {
+    font-size: 1.2rem;
+    color: #e74c3c;
+    text-align: center;
+    margin-top: 50px;
+  }
+  
