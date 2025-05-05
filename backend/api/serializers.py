@@ -8,7 +8,6 @@ from .models import AuditLog, Issue, Notification, Assignment, User
 
 User = get_user_model()
 
-
 # User Registration Serializer
 class UserRegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, min_length=6)
@@ -90,6 +89,8 @@ class AuditLogSerializer(serializers.ModelSerializer):
     class Meta:
         model = AuditLog
         fields = ["id", "title", "description", "created_by", "created_at"]
+
+        
         
         
        
