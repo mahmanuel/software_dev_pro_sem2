@@ -162,10 +162,18 @@ WSGI_APPLICATION = "backend.wsgi.application"
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {
-     'default': dj_database_url.config(
-        default='postgres://USER:PASSWORD@localhost:5432/dbname'  # Update this for production (Heroku will set this automatically)
-    )
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'aits_db',          # Your database name
+        'USER': 'aits_user',        # Your database username
+        'PASSWORD': 'Baker11.',     # Your database password
+        'HOST': 'localhost',        # Database host (usually localhost for local dev)
+        'PORT': '5432',             # Default PostgreSQL port
+    }
 }
+
+
+
 
 
 # Password validation
