@@ -30,7 +30,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-*bmvy__rzkseat-9xzd&#j_pquh-k*g#wwtffl4b^o_43fyurg"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv("DEBUG", "False") == "True"
+
 
 ALLOWED_HOSTS = ["*"]
 
@@ -102,7 +103,10 @@ ASGI_APPLICATION = "backend.asgi.application"
 # Channels settings
 CHANNEL_LAYERS = {
     "default": {
-        "BACKEND": "channels.layers.InMemoryChannelLayer",
+        "BACKEND": "channels_redis.core.RedisChannelLayer",  # Change this line
+        "CONFIG": {
+            "hosts": [('localhost', 6379)],  # Use Redis on localhost for development
+        },
     },
 }
 
@@ -161,16 +165,25 @@ WSGI_APPLICATION = "backend.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+
+import dj_database_url
+
+# Default: Local PostgreSQL for development
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'aits_db',          # Your database name
-        'USER': 'aits_user',        # Your database username
-        'PASSWORD': 'Baker11.',     # Your database password
-        'HOST': 'localhost',        # Database host (usually localhost for local dev)
-        'PORT': '5432',             # Default PostgreSQL port
+        'NAME': 'aits_db',
+        'USER': 'aits_user',
+        'PASSWORD': 'Baker11.',
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
+
+# On Heroku: Use DATABASE_URL if it exists
+DATABASE_URL = os.getenv("DATABASE_URL")
+if DATABASE_URL:
+    DATABASES['default'] = dj_database_url.config(conn_max_age=600, ssl_require=True)
 
 
 
