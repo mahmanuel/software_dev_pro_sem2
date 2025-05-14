@@ -15,6 +15,8 @@ from datetime import timedelta
 from dotenv import load_dotenv
 import os
 import dj_database_url
+from decouple import config
+
 
 
 load_dotenv()
@@ -112,11 +114,9 @@ CHANNEL_LAYERS = {
 
 
 # CORS settings
-CORS_ALLOW_ALL_ORIGINS = DEBUG
-CORS_ALLOWED_ORIGINS = os.getenv(
-    "CORS_ALLOWED_ORIGINS", "http://localhost:5173,http://127.0.0.1:3000"
-).split(",")
-CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_ALL_ORIGINS = False  # For security, allow only certain origins
+CORS_ALLOWED_ORIGINS = os.getenv("CORS_ALLOWED_ORIGINS", "http://localhost:5173").split(",")
+
 
 # Email settings
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
@@ -166,25 +166,13 @@ WSGI_APPLICATION = "backend.wsgi.application"
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 
-import dj_database_url
-
-# Default: Local PostgreSQL for development
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'aits_db',
-        'USER': 'aits_user',
-        'PASSWORD': 'Baker11.',
-        'HOST': 'localhost',
-        'PORT': '5432',
-    }
-}
-
-# On Heroku: Use DATABASE_URL if it exists
-DATABASE_URL = os.getenv("DATABASE_URL")
-if DATABASE_URL:
-    DATABASES['default'] = dj_database_url.config(conn_max_age=600, ssl_require=True)
-
+    'default': dj_database_url.config(
+        default=os.getenv('DATABASE_URL', 'postgres://localhost:5432/aits_db'),
+        conn_max_age=600,
+        ssl_require=True
+    )
+} 
 
 
 
