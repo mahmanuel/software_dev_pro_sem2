@@ -1,4 +1,4 @@
-#importing django models
+# importing django models
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.conf import settings
@@ -10,7 +10,7 @@ from rest_framework import serializers
 from rest_framework import serializers, permissions
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-from django.utils.translation import gettext_lazy as 
+from django.utils.translation import gettext_lazy as _
 
 
 class User(AbstractUser):
@@ -24,7 +24,6 @@ class User(AbstractUser):
     role = models.CharField(max_length=10, choices=Role.choices, default=Role.STUDENT)
 
 
-
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
     phone_number = models.CharField(max_length=15, blank=True, null=True)
@@ -36,7 +35,6 @@ class Profile(models.Model):
 
     def __str__(self):
         return f"{self.user.username}'s Profile"
-
 
 
 class Issue(models.Model):
@@ -73,7 +71,6 @@ class Issue(models.Model):
         return self.title
 
 
-
 class Assignment(models.Model):
     issue = models.ForeignKey(
         Issue, on_delete=models.CASCADE, related_name="assignments"
@@ -85,7 +82,6 @@ class Assignment(models.Model):
 
     def __str__(self):
         return f"{self.faculty.username} assigned to {self.issue.title}"
-
 
 
 class Notification(models.Model):
@@ -100,10 +96,10 @@ class Notification(models.Model):
     is_read = models.BooleanField(default=False)
 
     class Meta:
-        ordering=['_created_at'] #order notifications by the newest first 
-        
+        ordering = ["_created_at"]  # order notifications by the newest first
+
         indexes = [
-            models.Index(fields=['user', 'is_read']),  # Correctly defining the index
+            models.Index(fields=["user", "is_read"]),  # Correctly defining the index
         ]
 
     def __str__(self):
