@@ -14,6 +14,7 @@ from pathlib import Path
 from datetime import timedelta
 from dotenv import load_dotenv
 import os
+import dj_database_url
 
 
 load_dotenv()
@@ -26,12 +27,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-*bmvy__rzkseat-9xzd&#j_pquh-k*g#wwtffl4b^o_43fyurg"
+SECRET_KEY = os.getenv(
+    "SECRET_KEY", "django-insecure-*bmvy__rzkseat-9xzd&#j_pquh-k*g#wwtffl4b^o_43fyurg"
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv("DEBUG", "False") == "True"
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ["sdp-aits-6ba12d9aa057.herokuapp.com"]
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
@@ -123,6 +126,7 @@ DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "noreply@academisissuetrack
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -157,12 +161,7 @@ WSGI_APPLICATION = "backend.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
-}
+DATABASES = {"default": dj_database_url.config(default="postgres://localhost")}
 
 
 # Password validation
@@ -222,4 +221,4 @@ FILE_UPLOAD_MAX_MEMORY_SIZE = 5 * 1024 * 1024  # 5 MB
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5173")
 # Frontend API settings
 FRONTEND_API_KEY = "your-frontend-api-key"
-FRONTEND_BASE_URL = "http://localhost:5173"  # Your frontend URL
+FRONTEND_BASE_URL = "http://localhost:5173"
