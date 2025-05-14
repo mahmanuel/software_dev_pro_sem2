@@ -1,6 +1,6 @@
 import axios from "axios";
  
- const API = axios.create({ baseURL: "http://127.0.0.1:8000/api" });
+ const API = axios.create({ baseURL: "https://aits-backend-baker-b43b47caaf44.herokuapp.com/api" });
  
  export const loginUser = (data) => API.post("/auth/login/", data);
  export const registerUser = (data) => API.post("/auth/register/", data);
